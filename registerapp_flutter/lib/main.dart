@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/screens/listitem.dart';
+import 'package:registerapp_flutter/screens/Welcome/welcome_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,8 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ListItem(),
+      home: WelcomeScreen(),
     );
   }
 }
-
