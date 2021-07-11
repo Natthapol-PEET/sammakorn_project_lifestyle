@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class AppBarTitle extends StatelessWidget {
+  final String title;
+
   const AppBarTitle({
     Key key,
+    @required this.title,
   }) : super(key: key);
 
   @override
@@ -16,7 +19,7 @@ class AppBarTitle extends StatelessWidget {
         ),
         SizedBox(width: 10),
         Text(
-          "Condo Project 1",
+          title,
           style: TextStyle(color: goldenSecondary),
         )
       ],

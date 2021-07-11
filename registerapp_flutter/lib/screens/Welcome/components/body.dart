@@ -10,6 +10,7 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Backgroud(
+      isLogin: false,
       child: SingleChildScrollView(
         child: Column(
           children: [

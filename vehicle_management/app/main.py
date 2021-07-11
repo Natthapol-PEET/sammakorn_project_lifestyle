@@ -1,36 +1,36 @@
-from .schemas import VisitorIN, VisitorOUT, Blacklist, Whitelist, WhitelistLog, UpdateVisitor, \
-    CreateResponse, UpdateVisitorResponse
-from .schemas import Note, NoteIn
+from .auth import AuthHandler
+from .logout import Logout
+from .login import Login
+from .register import Register
+from .schemas import RegisterDetails, LoginDetails, LoginResident
+from .schemas import VisitorIN, HomeIn, ResidentHomeIn
+
 from fastapi import FastAPI, status, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.encoders import jsonable_encoder
 
 from typing import List
 
 from .database import database as db
+from .check_token import is_token_blacklisted as isTokenBlacklisted
+from .api import API
+from .home import Home
 
-# from .api import API
-# api = API()
-
-from .schemas import RegisterDetails, LoginDetails
-
-from .register import Register
-from .login import Login
-from .logout import Logout
-from .auth import AuthHandler
 auth_handler = AuthHandler()
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/token')
+api = API()
 register = Register()
 login = Login()
-
+home = Home()
 
 tags_metadata = [
     {"name": "Register", "description": ""},
     {"name": "Login", "description": ""},
+    {"name": "Logout", "description": ""},
     {"name": "Visitor", "description": ""},
     {"name": "Blacklist", "description": ""},
     {"name": "Whitelist", "description": ""},
+    {"name": "Resident Home", "description": ""},
+    {"name": "Home", "description": ""},
 ]
 
 app = FastAPI(
@@ -82,7 +82,7 @@ async def register_guard(auth_details: RegisterDetails):
 
 
 @app.post('/login_resident/', tags=["Login"], status_code=200)
-async def login_resident(auth_details: LoginDetails):
+async def login_resident(auth_details: LoginResident):
     return await login.login_resident(db, auth_details=auth_details)
 
 
@@ -97,17 +97,37 @@ async def login_guard(auth_details: LoginDetails):
 
 
 @app.get('/protected/',  status_code=200)
-async def protected(username=Depends(auth_handler.auth_wrapper)):
-    return {'name': username}
+async def protected(username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        return {"msg": f"{username} is blacklist token"}
+    else:
+        return {"msg": f"{username} is not blacklisted token"}
 
 
 # ------------------------------------- End Login ---------------------------
 
 # ------------------------------------- End Logout ---------------------------
-@app.post("/logout/", status_code=302)
-async def logout(token=Depends(oauth2_scheme)):
+@app.post("/logout/", tags=["Logout"], status_code=302)
+async def logout(token=Depends(auth_handler.get_token)):
     return await Logout().logout(db, token=token)
 # ------------------------------------- End Logout ---------------------------
+
+
+# ------------------------------------- Resident Home ---------------------------
+@app.post("/home/", tags=["Home"], status_code=status.HTTP_201_CREATED)
+async def Add_Home(Home: HomeIn):
+    return await home.Add_Home(db, Home=Home)
+
+
+@app.post("/resident_home/", tags=["Resident Home"], status_code=status.HTTP_201_CREATED)
+async def Add_Resident_Home(ResidentHome: ResidentHomeIn):
+    return await home.Add_Resident_Home(db, ResidentHome=ResidentHome)
+
+
+@app.get("/home/", tags=["Home"], status_code=status.HTTP_200_OK)
+async def get_all_home():
+    return await home.get_all_home(db)
+# ------------------------------------- End Resident Home ---------------------------
 
 
 # @app.get("/notes/", response_model=List[Note], status_code=status.HTTP_200_OK)
@@ -137,9 +157,9 @@ async def logout(token=Depends(oauth2_scheme)):
 
 # ------------------------------------- Application ---------------------------
 
-# @app.post("/register/visitor/", tags=["Visitor"], response_model=CreateResponse, status_code=status.HTTP_201_CREATED)
-# async def Register_Visitor(register: VisitorIN):
-#     return await api.Register_Visitor(db, register=register)
+@app.post("/invite/visitor/", tags=["Visitor"],  status_code=status.HTTP_201_CREATED)
+async def Invite_Visitor(invite: VisitorIN):
+    return await api.Invite_Visitor(db, invite=invite)
 
 
 # @app.post("/register/blacklist/", tags=["Blacklist"], response_model=CreateResponse, status_code=status.HTTP_201_CREATED)
@@ -208,3 +228,18 @@ async def logout(token=Depends(oauth2_scheme)):
 # @app.get("/get_all_items/",  status_code=status.HTTP_200_OK)
 # async def get_all_items():
 #     return await api.get_all_items(db)
+
+
+@app.get("/website", status_code=200)
+async def website(username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = "SELECT resident_id, firstname, lastname FROM resident_account"
+
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+
+        print(username)
+
+        return data

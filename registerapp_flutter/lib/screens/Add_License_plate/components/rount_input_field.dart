@@ -3,10 +3,12 @@ import '../../../constance.dart';
 
 class RoundInputField extends StatelessWidget {
   final String title;
+  final TextEditingController controller;
 
   const RoundInputField({
     Key key,
     @required this.title,
+    @required this.controller,
   }) : super(key: key);
 
   @override
@@ -39,6 +41,7 @@ class RoundInputField extends StatelessWidget {
                 ),
               ),
               child: TextField(
+                controller: controller,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),

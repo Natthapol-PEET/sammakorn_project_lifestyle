@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class DropdownItem extends StatelessWidget {
+  final Function onChanged;
+  final String chosenValue;
+
   const DropdownItem({
     Key key,
+    @required this.onChanged,
+    @required this.chosenValue,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    String _chosenValue = "Visitor";
+    
 
     return Container(
       child: Column(
@@ -38,7 +43,7 @@ class DropdownItem extends StatelessWidget {
               ),
               child: DropdownButton(
                 isExpanded: true,
-                value: _chosenValue,
+                value: chosenValue,
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -47,18 +52,16 @@ class DropdownItem extends StatelessWidget {
                 icon: Icon(Icons.expand_more, color: Colors.black),
                 underline: Divider(color: Colors.transparent),
                 items: [
-                  'Visitor',
-                  'Whitelist',
-                  'Blacklist',
+                  'visitor',
+                  'whitelist',
+                  'blacklist',
                 ].map((String value) {
                   return DropdownMenuItem(
                     value: value,
                     child: Text("\t\t\t$value"),
                   );
                 }).toList(),
-                onChanged: (String value) {
-                  _chosenValue = value;
-                },
+                onChanged: onChanged,
               ),
             ),
           ),

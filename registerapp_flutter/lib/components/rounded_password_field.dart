@@ -4,11 +4,13 @@ import 'package:registerapp_flutter/components/text_field_container.dart';
 class RoundedPasswordField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final String textHiht;
-  
+  final TextEditingController controller;
+
   const RoundedPasswordField({
     Key key,
-    this.onChanged, 
+    this.onChanged,
     @required this.textHiht,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -21,6 +23,7 @@ class RoundedPasswordField extends StatelessWidget {
         width: size.width,
         child: TextFieldContainer(
           child: TextField(
+            controller: controller,
             obscureText: true,
             onChanged: onChanged,
             cursorColor: Colors.black,

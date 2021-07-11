@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/screens/Welcome/welcome_screen.dart';
-
 import '../../../constance.dart';
+import '../service/logout.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({
@@ -15,6 +15,7 @@ class LogoutButton extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () {
+          _logout();
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -38,5 +39,10 @@ class LogoutButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _logout() {
+    Services services = Services();
+    services.logout();
   }
 }

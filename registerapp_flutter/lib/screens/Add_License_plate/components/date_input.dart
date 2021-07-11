@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class DateInput extends StatelessWidget {
+  final String date;
+  final Function press;
+
   const DateInput({
     Key key,
+    @required this.date,
+    @required this.press,
   }) : super(key: key);
 
   @override
@@ -38,15 +43,20 @@ class DateInput extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("\t\t\t10-04-41",
+                Text("\t\t\t${date}",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold)),
                 Padding(
                   padding: const EdgeInsets.only(right: 10),
-                  child: Icon(Icons.calendar_today_outlined,
-                      color: goldenSecondary),
+                  child: GestureDetector(
+                    onTap: press,
+                    child: Icon(
+                      Icons.calendar_today_outlined,
+                      color: goldenSecondary,
+                    ),
+                  ),
                 ),
               ],
             ),

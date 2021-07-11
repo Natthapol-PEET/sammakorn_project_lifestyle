@@ -13,3 +13,9 @@ const listColor = Color(0xff003330);
 const bgDialog = Color(0xff4A5E5E);
 const dividerColor = Color(0xffF5F4EC);
 const backgrounditem = Color(0xff305250);
+
+
+// const String URL = "http://13.229.234.126:8080"; // server aws
+// const String URL = "http://192.168.1.191:8080";  // lifestyle
+// const String URL = "http://192.168.0.100:8000";   // PEET-Pocket
+const String URL = "http://192.168.43.160:8000";   // Da

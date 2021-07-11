@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class ButtonGroup extends StatelessWidget {
+  final Function save_press;
+
   const ButtonGroup({
+    @required this.save_press,
     Key key,
   }) : super(key: key);
 
@@ -42,9 +45,7 @@ class ButtonGroup extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: save_press,
             ),
           ),
         )
