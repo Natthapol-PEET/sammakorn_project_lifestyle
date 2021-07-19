@@ -16,6 +16,8 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   bool isLogin = false;
   bool isLoad = true;
+  bool lock1 = false;
+  bool lock2 = false;
 
   Auth auth = Auth();
   Home home = Home();
@@ -23,27 +25,75 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    // SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+
+    // home.deleteHome();
+    // auth.deleteToken();
 
     checkDB();
-
-    Future.delayed(const Duration(milliseconds: 2000), () => _checkLogin());
   }
 
-  void checkDB() async {
-    var isHaveDB = await home.checkDBHome();
-    if (!isHaveDB) {
-      home.initHome();
-    }
+  Future checkDB() async {
+    var isHaveDBH = home.checkDBHome();
+    var isHaveDBA = auth.checkDBAuth();
 
-    isHaveDB = await auth.checkDBAuth();
-    if (!isHaveDB) {
-      auth.initAuth();
-    }
+    isHaveDBH.then((v) {
+      if (!v) {
+        setLock(1);
+      } else {
+        setState(() {
+          lock1 = true;
+        });
+      }
+    });
+
+    isHaveDBA.then((v) {
+      if (!v) {
+        setLock(2);
+      } else {
+        setState(() {
+          lock2 = true;
+        });
+      }
+    });
+
+    // if (!isHaveDBH) {
+    //   await home.initHome();
+    //   setState(() {
+    //     lock1 = true;
+    //   });
+    // } else {
+    //   setLock(1);
+    // }
+
+    // if (!isHaveDBA) {
+    //   await auth.initAuth();
+    //   setState(() {
+    //     lock2 = true;
+    //   });
+    // } else {
+    //   setLock(2);
+    // }
+  }
+
+  setLock(int lockIndex) {
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      setState(() {
+        if (lockIndex == 1) {
+          lock1 = true;
+        } else {
+          lock2 = true;
+        }
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (lock1 && lock2) {
+      _checkLogin();
+    }
+
     return Scaffold(
       body: isLoad
           ? IsLoadding(isLogin: true)
@@ -54,20 +104,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   _checkLogin() async {
-    var token = auth.getToken();
+    var token = await auth.getToken();
 
-    token.then((token) {
-      if (token[0]["TOKEN"] == "-1") {
-        setState(() {
-          isLogin = false;
-          isLoad = false;
-        });
-      } else {
-        setState(() {
-          isLogin = true;
-          isLoad = false;
-        });
-      }
+    setState(() {
+      lock1 = false;
+      lock2 = false;
     });
+
+    if (token[0]["TOKEN"] == "-1") {
+      setState(() {
+        isLogin = false;
+        isLoad = false;
+      });
+    } else {
+      setState(() {
+        isLogin = true;
+        isLoad = false;
+      });
+    }
   }
 }

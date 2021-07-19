@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/screens/Password/password_screen.dart';
 import '../../constance.dart';
@@ -15,12 +16,14 @@ class LogoutScreen extends StatefulWidget {
 
 class _LogoutScreenState extends State<LogoutScreen> {
   String title = "";
+  String username = "";
 
   @override
   void initState() {
     super.initState();
 
     getHome();
+    getUser();
   }
 
   @override
@@ -43,32 +46,34 @@ class _LogoutScreenState extends State<LogoutScreen> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          SizedBox(height: size.height * 0.05),
-          ListItem(
-            title: "Email",
-            desc: "natthapol593@gmail.com",
-          ),
-          SizedBox(height: size.height * 0.02),
-          ListItem(
-              title: "Password",
-              desc: "********",
-              press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return PasswordScreen();
-                    },
-                  ),
-                );
-              }),
-          SizedBox(height: size.height * 0.02),
-          ListItem(title: "Version", desc: "1.0"),
-          SizedBox(height: size.height * 0.46),
-          LogoutButton()
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: size.height * 0.05),
+            ListItem(
+              title: "Username",
+              desc: username,
+            ),
+            SizedBox(height: size.height * 0.02),
+            ListItem(
+                title: "Password",
+                desc: "********",
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return PasswordScreen();
+                      },
+                    ),
+                  );
+                }),
+            SizedBox(height: size.height * 0.02),
+            ListItem(title: "Version", desc: "1.0"),
+            SizedBox(height: size.height * 0.46),
+            LogoutButton()
+          ],
+        ),
       ),
     );
   }
@@ -76,10 +81,18 @@ class _LogoutScreenState extends State<LogoutScreen> {
   Future getHome() async {
     Home home = Home();
     String _home = await home.getHome();
-    print(_home);
 
     setState(() {
       title = _home;
+    });
+  }
+
+  Future getUser() async {
+    Auth auth = Auth();
+    String user = await auth.getUser();
+
+    setState(() {
+      username = user;
     });
   }
 }

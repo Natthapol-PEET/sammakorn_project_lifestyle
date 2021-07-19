@@ -3,7 +3,8 @@ from .logout import Logout
 from .login import Login
 from .register import Register
 from .schemas import RegisterDetails, LoginDetails, LoginResident
-from .schemas import VisitorIN, HomeIn, ResidentHomeIn
+from .schemas import VisitorIN, HomeIn, ResidentHomeIn, WhitelistIN, BlacklistIN, \
+    listItem_whitelist_blacklist, deleteBlackWhite, HomeId, VisitorId, HistoryLog
 
 from fastapi import FastAPI, status, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,13 +15,17 @@ from typing import List
 from .database import database as db
 from .check_token import is_token_blacklisted as isTokenBlacklisted
 from .api import API
-from .home import Home
+from .home import Home, LicensePlate
+from .list_item import ListItem, History
 
 auth_handler = AuthHandler()
 api = API()
 register = Register()
 login = Login()
 home = Home()
+listItem = ListItem()
+history = History()
+licensePlate = LicensePlate()
 
 tags_metadata = [
     {"name": "Register", "description": ""},
@@ -31,6 +36,7 @@ tags_metadata = [
     {"name": "Whitelist", "description": ""},
     {"name": "Resident Home", "description": ""},
     {"name": "Home", "description": ""},
+    {"name": "List Items", "description": ""},
 ]
 
 app = FastAPI(
@@ -114,6 +120,11 @@ async def logout(token=Depends(auth_handler.get_token)):
 
 
 # ------------------------------------- Resident Home ---------------------------
+@app.get("/home/", tags=["Home"], status_code=status.HTTP_200_OK)
+async def get_all_home():
+    return await home.get_all_home(db)
+
+
 @app.post("/home/", tags=["Home"], status_code=status.HTTP_201_CREATED)
 async def Add_Home(Home: HomeIn):
     return await home.Add_Home(db, Home=Home)
@@ -122,11 +133,6 @@ async def Add_Home(Home: HomeIn):
 @app.post("/resident_home/", tags=["Resident Home"], status_code=status.HTTP_201_CREATED)
 async def Add_Resident_Home(ResidentHome: ResidentHomeIn):
     return await home.Add_Resident_Home(db, ResidentHome=ResidentHome)
-
-
-@app.get("/home/", tags=["Home"], status_code=status.HTTP_200_OK)
-async def get_all_home():
-    return await home.get_all_home(db)
 # ------------------------------------- End Resident Home ---------------------------
 
 
@@ -158,88 +164,119 @@ async def get_all_home():
 # ------------------------------------- Application ---------------------------
 
 @app.post("/invite/visitor/", tags=["Visitor"],  status_code=status.HTTP_201_CREATED)
-async def Invite_Visitor(invite: VisitorIN):
-    return await api.Invite_Visitor(db, invite=invite)
+async def Invite_Visitor(invite: VisitorIN, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await api.Invite_Visitor(db, invite=invite, username=username)
 
 
-# @app.post("/register/blacklist/", tags=["Blacklist"], response_model=CreateResponse, status_code=status.HTTP_201_CREATED)
-# async def Register_Backlist(register: Blacklist):
-#     return await api.Register_Backlist(db, register=register)
+@app.post("/register/whitelist/", tags=["Whitelist"],  status_code=status.HTTP_201_CREATED)
+async def register_whitelist(register: WhitelistIN, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await api.register_whitelist(db, register=register, username=username)
 
 
-# @app.post("/register/whitelist/", tags=["Whitelist"], response_model=CreateResponse, status_code=status.HTTP_201_CREATED)
-# async def Register_Whitelist(register: Whitelist):
-#     return await api.Register_Whitelist(db, register=register)
+@app.post("/register/blacklist/", tags=["Blacklist"],  status_code=status.HTTP_201_CREATED)
+async def register_blacklist(register: BlacklistIN, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await api.register_blacklist(db, register=register, username=username)
 
 # ------------------------------------- End Application ---------------------------
 
-
-# -------------------------------- Website ------------------------
-# @app.put("/visitor/", tags=["Visitor"], response_model=UpdateVisitorResponse, status_code=status.HTTP_200_OK)
-# async def Visitor_CheckIN(visitor_id: int, payload: UpdateVisitor):
-#     if visitor_id or payload.timestamp:
-#         return await api.Visitor_CheckIN(db, visitor_id=visitor_id, payload=payload)
-#     else:
-#         raise HTTPException(
-#             status_code=400, detail="visitor_id or timestamp not found")
+# -------------------------------- List Items -----------------------------------------
 
 
-# @app.post("/register/whitelist_log/", tags=["Whitelist"], response_model=CreateResponse, status_code=status.HTTP_201_CREATED)
-# async def Register_Whitelist_log(register: WhitelistLog):
-#     return await api.Register_Whitelist_log(db, register=register)
-
-
-# @app.get("/visitor_all_item/", tags=["Visitor"], response_model=List[VisitorOUT], status_code=status.HTTP_200_OK)
-# async def visitor_ALL_item():
-#     return await api.visitor_All_item(db)
-
-
-# @app.get("/visitor_item/", tags=["Visitor"], response_model=List[VisitorOUT], status_code=status.HTTP_200_OK)
-# async def Visitor_Item(home_number: str = "0/0"):
-#     if home_number == "0/0":
-#         raise HTTPException(status_code=404, detail="Home number not found")
-#     return await api.Visitor_Item(db, home_number=home_number)
-
-
-# @app.get("/blacklist_item/", tags=["Blacklist"], response_model=List[Blacklist], status_code=status.HTTP_200_OK)
-# async def Blacklist_Item(home_number: str = "0/0"):
-#     if home_number == "0/0":
-#         raise HTTPException(status_code=404, detail="Home number not found")
-#     return await api.Blacklist_Item(db, home_number=home_number)
-
-
-# @app.get("/whitelist_item/", tags=["Whitelist"], response_model=List[Whitelist], status_code=status.HTTP_200_OK)
-# async def Whitelist_Item(home_number: str = "0/0"):
-#     if home_number == "0/0":
-#         raise HTTPException(status_code=404, detail="Home number not found")
-#     return await api.Whitelist_Item(db, home_number=home_number)
-
-
-# @app.get("/whitelist_log_item/", tags=["Whitelist"], response_model=List[WhitelistLog], status_code=status.HTTP_200_OK)
-# async def Whitelist_log_Item(home_number: str = "0/0"):
-#     if home_number == "0/0":
-#         raise HTTPException(status_code=404, detail="Home number not found")
-#     return await api.Whitelist_log_Item(db, home_number=home_number)
-
-
-# -------------------------------- End Website ------------------------
-
-
-# @app.get("/get_all_items/",  status_code=status.HTTP_200_OK)
-# async def get_all_items():
-#     return await api.get_all_items(db)
-
-
-@app.get("/website", status_code=200)
-async def website(username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+@app.post("/listItem_whitelist_blacklist/", tags=["List Items"],  status_code=200)
+async def listItem_whitelist_blacklist(list_item: listItem_whitelist_blacklist, token=Depends(auth_handler.get_token)):
     if await isTokenBlacklisted(db, token):
-        raise HTTPException(status_code=401, detail='Invalid token')
-    else:
-        query = "SELECT resident_id, firstname, lastname FROM resident_account"
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await listItem.listItem_whitelist_blacklist(db, list_item=list_item)
 
-        data = await db.fetch_all(query)
-        data = jsonable_encoder(data)
 
-        print(username)
+@app.delete("/delete_backlist_whitelist/", tags=["List Items"],  status_code=200)
+async def delete_backlist_whitelist(item: deleteBlackWhite, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await listItem.delete_backlist_whitelist(db, item=item)
+# -------------------------------- End List Items -----------------------------------------
 
-        return data
+# ------------------------------ History --------------------------------
+
+
+@app.post('/history/', tags=["Home"], status_code=200)
+async def histoly_log(home_id: HomeId, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await history.histoly_log(db, home_id=home_id)
+
+# ------------------------------ End History --------------------------------
+
+# ------------------------------ License plate --------------------------------
+
+
+@app.post('/license_plate/invite/', tags=["Home"], status_code=200)
+async def license_plate_invite(home_id: HomeId, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.invite(db, home_id=home_id)
+
+
+@app.delete('/license_plate/invite/delete/', tags=["Home"], status_code=200)
+async def licensePlate_invite_delete(visitor: VisitorId, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.licensePlate_invite_delete(db, visitor=visitor)
+
+
+@app.post('/license_plate/coming_and_walk/', tags=["Home"], status_code=200)
+async def coming_and_walk(item: HomeId, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.coming_and_walk(db, item=item)
+
+
+@app.put('/license_plate/resident_stamp/', tags=["Home"], status_code=200)
+async def resident_stamp(item: HistoryLog, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.resident_stamp(db, item=item)
+
+
+@app.post('/license_plate/hsa_stamp/', tags=["Home"], status_code=200)
+async def resident_stamp(item: HomeId, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.hsa_stamp(db, item=item)
+
+
+@app.put('/license_plate/send_admin_stamp/', tags=["Home"], status_code=200)
+async def send_admin_stamp(item: HistoryLog, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.send_admin_stamp(db, item=item)
+
+
+@app.post('/license_plate/pms_show_list/', tags=["Home"], status_code=200)
+async def pms_show_list(item: HomeId, token=Depends(auth_handler.get_token)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.pms_show_list(db, item=item)
+
+
+
+# ------------------------------ End License plate  --------------------------------

@@ -24,15 +24,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  List listItem = [
-    // "บ้านสิรินธร - 1/1",
-    // "บ้านสิรินธร - 1/2",
-    // "บ้านสิรินธร - 1/3",
-    // "บ้านไลฟ์สไตล์ - 2/1",
-    // "บ้านไลฟ์สไตล์ - 2/2",
-    // "บ้านไลฟ์สไตล์ - 2/3",
-  ];
-  // String selectHome = "บ้านสิรินธร - 1/1";
+  List home_ids = [];
+  List listItem = [];
   String selectHome;
   final username = TextEditingController(text: "peet");
   final password = TextEditingController(text: "10042541");
@@ -117,11 +110,15 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundedButton(
               text: "LOGIN",
               press: () async {
-                var token = await services.login(username.text, password.text, selectHome);
+                var token = await services.login(
+                    username.text, password.text, selectHome);
 
                 if (token["statusCode"] == 200) {
-                  home.updateHome(selectHome);
-                  auth.updateToken(token["token"]);
+                  int find_id = listItem
+                      .indexWhere((item) => item.startsWith(selectHome));
+                  home.updateHome(selectHome, home_ids[find_id].toString());
+                  auth.updateToken(token["token"], token["id"].toString(),
+                      token["username"]);
 
                   Navigator.push(
                     context,
@@ -147,7 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   getAllHome() async {
-    var allHome = await services.getAllHome();
+    var data = await services.getAllHome();
+    var allHome = data[0], home_id = data[1];
 
     if (allHome == -1) {
       print("services error");
@@ -155,6 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         selectHome = allHome[0];
         listItem = allHome;
+        home_ids = home_id;
       });
     }
   }

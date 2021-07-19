@@ -20,7 +20,7 @@ class PopupBody extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: size.height * 0.03),
+        SizedBox(height: size.height * 0.025),
         Text(title, style: TextStyle(color: Colors.white)),
         SizedBox(height: size.height * 0.01),
         Text(value, style: TextStyle(color: goldenSecondary)),

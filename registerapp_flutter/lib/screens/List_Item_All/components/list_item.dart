@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:registerapp_flutter/screens/List_Item_All/service/service.dart';
 import '../../../constance.dart';
 import 'cancel_button.dart';
 import 'delete_button.dart';
@@ -8,12 +9,14 @@ class ListItem extends StatelessWidget {
   final String title;
   final String descTime;
   final Color color;
+  final Function pass;
 
   const ListItem({
     Key key,
     @required this.title,
     @required this.descTime,
     @required this.color,
+    @required this.pass,
   }) : super(key: key);
 
   @override
@@ -44,7 +47,7 @@ class ListItem extends StatelessWidget {
               iconWidget:
                   Icon(Icons.delete_outline, size: 36, color: Colors.white),
               onTap: () {
-                _show_dialod(context, color);
+                _show_dialog(context, color);
               },
             ),
           ),
@@ -53,7 +56,7 @@ class ListItem extends StatelessWidget {
     );
   }
 
-  Widget _show_dialod(BuildContext context, Color color) {
+  Widget _show_dialog(BuildContext context, Color color) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -65,15 +68,15 @@ class ListItem extends StatelessWidget {
             style: TextStyle(color: Colors.white),
           ),
           content: Text(
-            color == Colors.red
-                ? "Are you sure you want to delete\nyour Blacklist ?"
-                : "Are you sure you want to delete\nyour Whitelist ?",
+            "คุณต้องการลบหมายเลขทะเบียน \n${title} หรือไม่ ?",
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white),
           ),
           actions: [
             CancelButton(),
-            DeleteButton(),
+            DeleteButton(
+              pass: pass,
+            ),
           ],
         );
       },

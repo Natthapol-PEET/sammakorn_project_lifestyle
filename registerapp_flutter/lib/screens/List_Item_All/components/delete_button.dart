@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class DeleteButton extends StatelessWidget {
+  final Function pass;
+  
   const DeleteButton({
-    Key key,
+    Key key, 
+    @required this.pass,
   }) : super(key: key);
 
   @override
@@ -19,9 +22,7 @@ class DeleteButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: pass,
         ),
       ),
     );

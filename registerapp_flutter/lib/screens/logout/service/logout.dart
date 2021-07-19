@@ -31,7 +31,7 @@ class Services {
 
     if (response.statusCode == 302) {
       print("logout successful");
-      auth.updateToken("-1");
+      auth.updateToken("-1", "0", "NULL");
     }
   }
 }

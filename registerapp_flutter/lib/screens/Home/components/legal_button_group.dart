@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class LegalButtonGroup extends StatelessWidget {
+  final Function pass;
+
   const LegalButtonGroup({
     Key key,
+    this.pass,
   }) : super(key: key);
 
   @override
@@ -26,9 +29,7 @@ class LegalButtonGroup extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
           ),
         ),
@@ -41,9 +42,7 @@ class LegalButtonGroup extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: pass,
             ),
           ),
         )

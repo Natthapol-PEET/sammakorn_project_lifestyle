@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class StampButtonGroup extends StatelessWidget {
+  final Function pass;
+
   const StampButtonGroup({
     Key key,
+    this.pass,
   }) : super(key: key);
 
   @override
@@ -43,9 +46,7 @@ class StampButtonGroup extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: pass,
             ),
           ),
         )

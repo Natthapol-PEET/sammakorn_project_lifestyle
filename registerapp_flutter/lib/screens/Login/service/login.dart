@@ -48,14 +48,16 @@ class Services {
       String body = utf8.decode(response.bodyBytes);
       List allHome_list = json.decode(body);
       List allHome = [];
+      List home_id = [];
 
       for (var elem in allHome_list) {
         allHome.add(elem['home']);
+        home_id.add(elem['home_id']);
       }
 
-      return allHome;
+      return [allHome, home_id];
     } else {
-      return -1;
+      return [-1];
     }
   }
 }

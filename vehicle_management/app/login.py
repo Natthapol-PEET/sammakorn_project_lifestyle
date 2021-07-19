@@ -19,8 +19,11 @@ class Login:
             raise HTTPException(
                 status_code=401, detail='Invalid username and/or password and/or home')
         token = auth_handler.encode_token(user)
-        return {"token": token, "statusCode": 200}
 
+        if 'resident_id' in query_user:
+            return {"token": token, "statusCode": 200, "id": query_user['resident_id'], "username": query_user['username']}
+        else:
+            return {"token": token, "statusCode": 200}
 
     async def login_resident(self, db,  auth_details: LoginResident):
         # query = resident_account.select().where(
@@ -29,7 +32,7 @@ class Login:
         home_name = auth_details.home.split(' - ')[0]
         home_number = auth_details.home.split(' - ')[1]
 
-        query = f""" SELECT RA.username, RA.password FROM resident_account AS RA
+        query = f""" SELECT RA.username, RA.password, RA.resident_id, RA.username FROM resident_account AS RA
                     RIGHT JOIN resident_home AS RH
                     ON RA.resident_id = RH.resident_id
                     RIGHT JOIN home AS H
@@ -59,7 +62,6 @@ class Login:
             await db.execute(query)
 
         return Login().verify_password(admin, auth_details)
-
 
     async def login_guard(SELF, db, auth_details: LoginDetails):
         query = guard_account.select().where(

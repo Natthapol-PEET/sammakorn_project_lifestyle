@@ -8,14 +8,12 @@ const darkgreen200 = Color(0xff214643);
 const gray6 = Color(0xff1D1C1C);
 const tabBarColor = Color(0xff2D4E4C);
 const tabBarBodyColor = Color(0xff003330);
-const fededWhite = Color(0xff305250);
 const listColor = Color(0xff003330);
 const bgDialog = Color(0xff4A5E5E);
 const dividerColor = Color(0xffF5F4EC);
 const backgrounditem = Color(0xff305250);
+const fededWhite = Color(0xff305250);
+const fededWhite1 = Color(0xff305300);
 
 
-// const String URL = "http://13.229.234.126:8080"; // server aws
-// const String URL = "http://192.168.1.191:8080";  // lifestyle
-// const String URL = "http://192.168.0.100:8000";   // PEET-Pocket
-const String URL = "http://192.168.43.160:8000";   // Da
+const String URL = "http://192.168.0.101:8080";

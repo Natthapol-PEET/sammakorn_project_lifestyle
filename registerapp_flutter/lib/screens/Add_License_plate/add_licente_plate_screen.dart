@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:registerapp_flutter/data/home.dart';
+import 'package:registerapp_flutter/screens/Add_License_plate/service/service.dart';
+import 'package:registerapp_flutter/screens/Home/home_screen.dart';
 import '../../constance.dart';
 import 'components/button_group.dart';
 import 'components/date_input.dart';
@@ -19,6 +23,9 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
   final firstname = TextEditingController();
   final lastname = TextEditingController();
   final licenseplate = TextEditingController();
+
+  Services services = Services();
+  Home home = Home();
 
   void initState() {
     super.initState();
@@ -54,10 +61,12 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                 });
               },
             ),
-            classValue == "visitor" ? DateInput(
-              date: DateFormat('dd-MM-yyyy').format(dateTime),
-              press: () => chooseDate(),
-            ) : Container(),
+            classValue == "visitor"
+                ? DateInput(
+                    date: DateFormat('dd-MM-yyyy').format(dateTime),
+                    press: () => chooseDate(),
+                  )
+                : Container(),
             RoundInputField(
               title: "First Name",
               controller: firstname,
@@ -72,12 +81,57 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
             ),
             SizedBox(height: size.height * 0.1),
             ButtonGroup(
-              save_press: () {
-                print(classValue);
-                print(DateFormat('dd-MM-yyyy').format(dateTime));
-                print(firstname.text);
-                print(lastname.text);
-                print(licenseplate.text);
+              save_press: () async {
+                var Home = await home.getHomeAndId();
+                // String homename = Home[0]["home"];
+                String home_id = Home[0]["home_id"].toString();
+
+                if (firstname.text.isNotEmpty &&
+                    lastname.text.isNotEmpty &&
+                    licenseplate.text.isNotEmpty) {
+                  if (classValue == 'visitor') {
+                    String res_text = await services.invite_visitor(
+                        firstname.text,
+                        lastname.text,
+                        // homename,
+                        home_id,
+                        licenseplate.text,
+                        DateFormat('yyyy-MM-dd').format(dateTime));
+                    if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
+                      _move_to_home(context);
+                    } else {
+                      _show_error_toast(res_text);
+                    }
+                  } else if (classValue == 'whitelist') {
+                    String res_text = await services.register_whitelist(
+                      firstname.text,
+                      lastname.text,
+                      // homename,
+                      home_id,
+                      licenseplate.text,
+                    );
+                    if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
+                      _move_to_home(context);
+                    } else {
+                      _show_error_toast(res_text);
+                    }
+                  } else {
+                    String res_text = await services.register_blacklist(
+                      firstname.text,
+                      lastname.text,
+                      // homename,
+                      home_id,
+                      licenseplate.text,
+                    );
+                    if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
+                      _move_to_home(context);
+                    } else {
+                      _show_error_toast(res_text);
+                    }
+                  }
+                } else {
+                  _show_error_toast("กรุณาป้อนข้อมูลให้ครบทุกช่อง");
+                }
               },
             ),
           ],
@@ -107,6 +161,25 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
         dateTime = chooseDateTime;
       });
     }
+  }
+
+  _move_to_home(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return HomeScreen();
+        },
+      ),
+    );
+  }
+
+  _show_error_toast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+    );
   }
 
   @override
