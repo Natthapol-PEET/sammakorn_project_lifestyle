@@ -2,9 +2,9 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, func, Integer, Table, Column, MetaData
 
-from .auth import AuthHandler
-from .schemas import RegisterDetails
-from .models import resident_account, admin_account, guard_account
+from auth import AuthHandler
+from schemas import RegisterDetails
+from models import resident_account, admin_account, guard_account
 
 from datetime import datetime
 

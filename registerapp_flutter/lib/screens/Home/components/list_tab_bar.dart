@@ -5,16 +5,21 @@ import 'body_tab_bar.dart';
 class ListTabBar extends StatelessWidget {
   final Widget build_licensePLateInvite;
   final Widget build_comingAndWalk;
-  final Widget build_hsaStamp;
-
-  final List history;
+  final Widget build_resident_stamp;
+  final Widget build_resident_send_admin;
+  final Widget build_pms_show;
+  final Widget build_checkout;
+  final Widget history;
 
   const ListTabBar({
     Key key,
     this.history,
     this.build_licensePLateInvite,
     this.build_comingAndWalk,
-    this.build_hsaStamp,
+    this.build_resident_stamp,
+    this.build_pms_show,
+    this.build_resident_send_admin,
+    this.build_checkout,
   }) : super(key: key);
 
   @override
@@ -32,7 +37,10 @@ class ListTabBar extends StatelessWidget {
             BodytabBar(
               build_licensePLateInvite: build_licensePLateInvite,
               build_comingAndWalk: build_comingAndWalk,
-              build_hsaStamp: build_hsaStamp,
+              build_resident_stamp: build_resident_stamp,
+              build_resident_send_admin: build_resident_send_admin,
+              build_pms_show: build_pms_show,
+              build_checkout: build_checkout,
               history: history,
             ),
           ],

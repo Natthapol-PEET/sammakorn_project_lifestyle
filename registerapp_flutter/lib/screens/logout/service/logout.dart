@@ -4,9 +4,11 @@ import 'package:registerapp_flutter/data/auth.dart';
 import '../../../constance.dart';
 
 class Services {
+  Auth auth = Auth();
+
   logout() async {
     Uri url = Uri.parse("${URL}/logout/");
-    Auth auth = Auth();
+    String resident_id = await auth.getResidentId();
 
     var token = await auth.getToken();
 
@@ -16,20 +18,10 @@ class Services {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer  ${token[0]["TOKEN"]}'
       },
-      body: jsonEncode(<String, String>{
-        // "username": username,
-        // "password": password
-        // "firstname": firstname,
-        // "lastname": lastname,
-        // "home_number": address,
-        // "license_plate": carplat,
-        // "date": select_date,
-        // "start_time": start_time,
-        // "end_time": end_time
-      }),
+      body: jsonEncode(<String, String>{"resident_id": resident_id}),
     );
 
-    if (response.statusCode == 302) {
+    if (response.statusCode == 200) {
       print("logout successful");
       auth.updateToken("-1", "0", "NULL");
     }

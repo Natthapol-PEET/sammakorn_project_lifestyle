@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Table, Integer, String, Boolean, \
     Date, Time, DateTime, TIMESTAMP, ForeignKey
 from sqlalchemy import MetaData, create_engine
-from .database import DATABASE_URL
+from database import DATABASE_URL
 
 
 metadata = MetaData()
@@ -15,6 +15,8 @@ resident_account = Table(
     Column("username", String),
     Column("password", String),
     Column("email", String),
+    Column("device_token", String(255)),
+    Column("is_login", Boolean),
     Column("login_datetime", DateTime),
     Column("create_datetime", DateTime),
 )
@@ -75,6 +77,12 @@ blacklist = Table(
     Column("class_id", Integer),
     Column("firstname", String),
     Column("lastname", String),
+    Column("resident_add_reason", String),
+    Column("admin_datetime", DateTime),
+    Column("admin_approve", Boolean),
+    Column("admin_reason", String),
+    Column("resident_remove_reason", String),
+    Column("resident_remove_datetime", DateTime),
     Column("license_plate", String),
     Column("create_datetime", DateTime),
 )
@@ -88,9 +96,16 @@ whitelist = Table(
     Column("class_id", Integer),
     Column("firstname", String),
     Column("lastname", String),
+    Column("resident_add_reason", String),
+    Column("admin_datetime", DateTime),
+    Column("admin_approve", Boolean),
+    Column("admin_reason", String),
+    Column("resident_remove_reason", String),
+    Column("resident_remove_datetime", DateTime),
     Column("license_plate", String),
     Column("create_datetime", DateTime),
 )
+
 
 history_log = Table(
     "history_log",
@@ -99,13 +114,16 @@ history_log = Table(
     Column("class", String),
     Column("class_id", Integer),
     Column("datetime_in", DateTime),
-    Column("datetime_out", DateTime),
     Column("resident_stamp", DateTime),
     Column("resident_send_admin", DateTime),
-    Column("admin_stamp", DateTime),
-    Column("reason", String),
+    Column("resident_reason", String),
+    Column("admin_datetime", DateTime),
+    Column("admin_approve", Boolean),
+    Column("admin_reason", String),
+    Column("datetime_out", DateTime),
     Column("create_datetime", DateTime),
 )
+
 
 home = Table(
     "home",

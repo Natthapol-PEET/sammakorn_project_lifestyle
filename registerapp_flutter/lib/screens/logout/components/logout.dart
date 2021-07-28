@@ -16,14 +16,7 @@ class LogoutButton extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           _logout();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return WelcomeScreen();
-              },
-            ),
-          );
+          Navigator.pushNamed(context, '/');
         },
         child: Container(
           width: size.width * 0.9,

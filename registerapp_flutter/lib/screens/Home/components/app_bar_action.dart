@@ -3,8 +3,13 @@ import 'package:registerapp_flutter/screens/Notification/notification_screen.dar
 import '../../../constance.dart';
 
 class AppBarAction extends StatelessWidget {
+  final int countAlert;
+  final Function pass;
+
   const AppBarAction({
     Key key,
+    @required this.countAlert,
+    @required this.pass,
   }) : super(key: key);
 
   @override
@@ -19,16 +24,7 @@ class AppBarAction extends StatelessWidget {
             color: goldenSecondary,
             size: 36,
           ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return NotificationScreen();
-                },
-              ),
-            );
-          },
+          onPressed: pass,
         ),
         Positioned(
           right: 1,
@@ -45,7 +41,7 @@ class AppBarAction extends StatelessWidget {
               // ),
             ),
             child: Center(
-                child: Text('3',
+                child: Text(countAlert.toString(),
                     style:
                         TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
           ),

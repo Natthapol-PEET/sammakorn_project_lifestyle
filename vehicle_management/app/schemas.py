@@ -20,9 +20,20 @@ class LoginDetails(BaseModel):
 
 
 class LoginResident(BaseModel):
-    home: str
     username: str
     password: str
+    device_token: str
+
+
+class distTest(BaseModel):
+    Class: str
+    home_id: str
+
+
+class NotificationItem(BaseModel):
+    title: str
+    body: str
+    data: Optional[distTest]
 
 # ------------------------------------- End Authentication  ---------------------------
 
@@ -45,7 +56,6 @@ class VisitorIN(BaseModel):
     class_id: str
     firstname: str
     lastname: str
-    # homename: str
     home_id: str
     license_plate: str
     id_card: str
@@ -58,9 +68,9 @@ class WhitelistIN(BaseModel):
     id: str
     firstname: str
     lastname: str
-    # homename: str
     home_id: str
     license_plate: str
+    reason_resident: str
 
 
 class BlacklistIN(BaseModel):
@@ -68,9 +78,9 @@ class BlacklistIN(BaseModel):
     id: str
     firstname: str
     lastname: str
-    # homename: str
     home_id: str
     license_plate: str
+    reason_resident: str
 
 
 class listItem_whitelist_blacklist(BaseModel):
@@ -93,6 +103,21 @@ class VisitorId(BaseModel):
 
 class HistoryLog(BaseModel):
     log_id: str
+
+
+class SendToAdmin(BaseModel):
+    log_id: str
+    reason: str
+
+
+class AdminDelete(BaseModel):
+    type: str
+    id: str
+    reason: str
+
+
+class ResidentId(BaseModel):
+    resident_id: str
 
 # class VisitorOUT(BaseModel):
 #     visitor_id: int

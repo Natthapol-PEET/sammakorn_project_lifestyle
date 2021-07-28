@@ -1,5 +1,6 @@
 from fastapi.encoders import jsonable_encoder
-from .models import blacklist_token
+from models import blacklist_token, resident_account
+from schemas import ResidentId
 
 
 class Logout:
@@ -18,8 +19,10 @@ class Logout:
 
         return {'result': True}
 
-    async def logout(self, db, token):
+    async def logout(self, db, token, item: ResidentId):
         if await self.is_token_blacklisted(db, token):
             return {'result': True}
         else:
+            query = f"UPDATE resident_account SET is_login = False WHERE resident_id = {item.resident_id}"
+            await db.execute(query)
             return await self.add_blacklist_token(db, token)

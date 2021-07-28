@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
+import 'package:registerapp_flutter/data/notification.dart';
 import 'package:registerapp_flutter/screens/Home/home_screen.dart';
 import 'components/body.dart';
 import 'is_loading.dart';
@@ -21,6 +22,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   Auth auth = Auth();
   Home home = Home();
+  NotificationDB notification = NotificationDB();
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     // home.deleteHome();
     // auth.deleteToken();
+    // notification.deleteNotification();
 
     checkDB();
   }
@@ -36,6 +39,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Future checkDB() async {
     var isHaveDBH = home.checkDBHome();
     var isHaveDBA = auth.checkDBAuth();
+    await notification.checkDBNotification();
 
     isHaveDBH.then((v) {
       if (!v) {
@@ -56,24 +60,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         });
       }
     });
-
-    // if (!isHaveDBH) {
-    //   await home.initHome();
-    //   setState(() {
-    //     lock1 = true;
-    //   });
-    // } else {
-    //   setLock(1);
-    // }
-
-    // if (!isHaveDBA) {
-    //   await auth.initAuth();
-    //   setState(() {
-    //     lock2 = true;
-    //   });
-    // } else {
-    //   setLock(2);
-    // }
   }
 
   setLock(int lockIndex) {

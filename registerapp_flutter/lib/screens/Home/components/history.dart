@@ -5,7 +5,7 @@ import 'package:registerapp_flutter/screens/Home/components/popup_body.dart';
 import '../../../constance.dart';
 
 class History extends StatelessWidget {
-  final List history;
+  final Widget history;
 
   const History({
     Key key,
@@ -36,31 +36,28 @@ class History extends StatelessWidget {
             ],
           ),
           SizedBox(height: size.height * 0.02),
-          build_listview(context, history),
+          history,
         ],
       ),
     );
   }
 
-  Widget build_listview(BuildContext context, List lists) {
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          return ListItemField(
-            date: lists[index]['datetime_in'],
-            license_plate: lists[index]['license_plate'],
-            // color: lists[index]['type'] == 'whitelist'
-            //     ? Colors.green.shade500
-            //     : fededWhite,
-            color: fededWhite,
-            press: () {
-              show_dialod(context, lists[index]);
-            },
-          );
-        });
-  }
+  // Widget build_listview(BuildContext context, List lists) {
+  //   return ListView.builder(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       shrinkWrap: true,
+  //       itemCount: lists.length,
+  //       itemBuilder: (context, index) {
+  //         return ListItemField(
+  //           date: lists[index]['datetime_in'],
+  //           license_plate: lists[index]['license_plate'],
+  //           color: fededWhite,
+  //           press: () {
+  //             show_dialod(context, lists[index]);
+  //           },
+  //         );
+  //       });
+  // }
 
   Widget show_dialod(BuildContext context, Map lists) {
     Size size = MediaQuery.of(context).size;

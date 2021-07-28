@@ -48,3 +48,24 @@ class AuthHandler():
 
     def get_token(self, auth: HTTPAuthorizationCredentials = Security(security)):
         return auth.credentials
+
+
+    def decode_token_socket(self, token):
+        try:
+            payload = jwt.decode(token, self.SECRET_KEY,
+                                 algorithms=[self.ALGORITHM])
+            # return payload['sub']
+            return 1001
+        except jwt.ExpiredSignatureError:
+            return 1008
+        except jwt.InvalidTokenError as e:
+            return 1008
+
+    def auth_wrapper_socket(self, token):
+        return self.decode_token_socket(token)
+
+    
+    # async def get_token(websocket: WebSocket, token: Optional[str] = Query(None)):
+    # if token is None:
+    #     await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+    # return token

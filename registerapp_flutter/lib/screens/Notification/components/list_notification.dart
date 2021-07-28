@@ -8,12 +8,14 @@ class ListNotifiication extends StatelessWidget {
   final String title;
   final String descTime;
   final Color color;
+  final Function pass;
 
   const ListNotifiication({
     Key key,
     @required this.title,
     @required this.descTime,
     @required this.color,
+    @required this.pass,
   }) : super(key: key);
 
   @override
@@ -28,7 +30,9 @@ class ListNotifiication extends StatelessWidget {
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: color,
-              child: Icon(Icons.directions_car),
+              child: color == Colors.blue
+                  ? Icon(Icons.manage_accounts)
+                  : Icon(Icons.directions_car),
               foregroundColor: Colors.white,
             ),
             title: Text(title, style: TextStyle(color: Colors.white)),
@@ -71,7 +75,7 @@ class ListNotifiication extends StatelessWidget {
           ),
           actions: [
             KeepItButton(),
-            DeleteButton(),
+            DeleteButton(pass: pass),
           ],
         );
       },

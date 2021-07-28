@@ -16,14 +16,7 @@ class AppBarTitle extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return LogoutScreen();
-                },
-              ),
-            );
+            Navigator.pushNamed(context, '/logout');
           },
           child: CircleAvatar(
             backgroundImage: AssetImage('assets/images/Rectangle 2878.png'),

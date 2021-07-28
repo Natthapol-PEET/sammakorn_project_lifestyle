@@ -57,14 +57,12 @@ class Home {
   getHomeId() async {
     final String command = "SELECT home_id FROM HomeData";
     final row = await sqlite.queryDatabase(command);
-
     return row.toList()[0]['home_id'].toString();
   }
 
   getHomeAndId() async {
     final String command = "SELECT * FROM HomeData";
     final row = await sqlite.queryDatabase(command);
-
     return row;
   }
 
@@ -72,12 +70,12 @@ class Home {
     final String command =
         "UPDATE HomeData SET home = '${home}', home_id = ${home_id};";
     final row = await sqlite.updateDatabase(command);
-    print(row);
+    print("UPDATE HomeData ${row}");
   }
 
   void deleteHome() async {
     final String command = "DROP TABLE HomeData";
     final row = await sqlite.deleteDatabase(command);
-    print(row);
+    print("DROP TABLE HomeData ${row}");
   }
 }

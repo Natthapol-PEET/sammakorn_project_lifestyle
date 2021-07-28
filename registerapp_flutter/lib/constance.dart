@@ -16,4 +16,6 @@ const fededWhite = Color(0xff305250);
 const fededWhite1 = Color(0xff305300);
 
 
-const String URL = "http://192.168.0.101:8080";
+// const String URL = "http://13.229.234.126:8080"; // server aws
+const String URL = "http://192.168.0.100:8080";     // local
+const String WS = "ws://192.168.0.100:8080";

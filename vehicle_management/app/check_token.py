@@ -1,5 +1,5 @@
 from fastapi.encoders import jsonable_encoder
-from .models import blacklist_token
+from models import blacklist_token
 
 
 async def is_token_blacklisted(db, token):

@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from .models import visitor, blacklist, whitelist
-from .schemas import VisitorIN, WhitelistIN, BlacklistIN
+from models import visitor, blacklist, whitelist
+from schemas import VisitorIN, WhitelistIN, BlacklistIN
 from datetime import date, datetime
 
 # ------------------------------------- Application ---------------------------
@@ -13,10 +13,14 @@ class API:
         command = f'''
            SELECT type FROM (
                 SELECT *, 'blacklist' AS type FROM blacklist
-                WHERE home_id = {invite.home_id} and license_plate = '{invite.license_plate.strip().replace(' ', '')}'
+                WHERE home_id = {invite.home_id} 
+                    AND license_plate = '{invite.license_plate.strip().replace(' ', '')}'
+                    AND admin_approve is not NULL
                 UNION
                 SELECT *, 'whitelist' AS type FROM whitelist
-                WHERE home_id = {invite.home_id} and license_plate = '{invite.license_plate.strip().replace(' ', '')}'
+                WHERE home_id = {invite.home_id} 
+                    AND license_plate = '{invite.license_plate.strip().replace(' ', '')}'
+                    AND admin_approve is not NULL
             ) wb
         '''
         result = jsonable_encoder(await db.fetch_one(command))
@@ -86,8 +90,8 @@ class API:
 
         if result is None:
             command = f'''
-                INSERT INTO whitelist (home_id, class, class_id, firstname, lastname, license_plate, create_datetime)
-                    VALUES ({register.home_id}, '{register.Class}', {register.id}, '{register.firstname}', '{register.lastname}', '{register.license_plate.strip().replace(' ', '')}', CURRENT_TIMESTAMP);
+                INSERT INTO whitelist (home_id, class, class_id, firstname, lastname, license_plate, create_datetime, resident_add_reason)
+                    VALUES ({register.home_id}, '{register.Class}', {register.id}, '{register.firstname}', '{register.lastname}', '{register.license_plate.strip().replace(' ', '')}', CURRENT_TIMESTAMP, '{register.reason_resident}');
             '''
             await db.execute(command)
             return 201
@@ -110,8 +114,8 @@ class API:
 
         if result is None:
             command = f'''
-                INSERT INTO blacklist (home_id, class, class_id, firstname, lastname, license_plate, create_datetime)
-                    VALUES ({register.home_id}, '{register.Class}', {register.id}, '{register.firstname}', '{register.lastname}', '{register.license_plate.strip().replace(' ', '')}', CURRENT_TIMESTAMP);
+                INSERT INTO blacklist (home_id, class, class_id, firstname, lastname, license_plate, create_datetime, resident_add_reason)
+                    VALUES ({register.home_id}, '{register.Class}', {register.id}, '{register.firstname}', '{register.lastname}', '{register.license_plate.strip().replace(' ', '')}', CURRENT_TIMESTAMP, '{register.reason_resident}');
             '''
             await db.execute(command)
             return 201

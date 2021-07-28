@@ -10,6 +10,8 @@ import 'components/dropdown_item.dart';
 import 'components/rount_input_field.dart';
 import 'package:intl/intl.dart';
 
+import 'components/rount_input_large.dart';
+
 class AddLicensePlateScreen extends StatefulWidget {
   const AddLicensePlateScreen({Key key}) : super(key: key);
 
@@ -23,6 +25,7 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
   final firstname = TextEditingController();
   final lastname = TextEditingController();
   final licenseplate = TextEditingController();
+  final reason = TextEditingController();
 
   Services services = Services();
   Home home = Home();
@@ -79,13 +82,15 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
               title: "License plate",
               controller: licenseplate,
             ),
+            classValue == "visitor"
+                ? Container()
+                : RountInputLarge(
+                    title: "Reason",
+                    controller: reason,
+                  ),
             SizedBox(height: size.height * 0.1),
             ButtonGroup(
               save_press: () async {
-                var Home = await home.getHomeAndId();
-                // String homename = Home[0]["home"];
-                String home_id = Home[0]["home_id"].toString();
-
                 if (firstname.text.isNotEmpty &&
                     lastname.text.isNotEmpty &&
                     licenseplate.text.isNotEmpty) {
@@ -93,8 +98,6 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                     String res_text = await services.invite_visitor(
                         firstname.text,
                         lastname.text,
-                        // homename,
-                        home_id,
                         licenseplate.text,
                         DateFormat('yyyy-MM-dd').format(dateTime));
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
@@ -102,13 +105,26 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                     } else {
                       _show_error_toast(res_text);
                     }
-                  } else if (classValue == 'whitelist') {
+                  } else if (classValue == 'whitelist' &&
+                      reason.text.isNotEmpty) {
                     String res_text = await services.register_whitelist(
                       firstname.text,
                       lastname.text,
-                      // homename,
-                      home_id,
                       licenseplate.text,
+                      reason.text
+                    );
+                    if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
+                      _move_to_home(context);
+                    } else {
+                      _show_error_toast(res_text);
+                    }
+                  } else if (classValue == 'blacklist' &&
+                      reason.text.isNotEmpty) {
+                    String res_text = await services.register_blacklist(
+                      firstname.text,
+                      lastname.text,
+                      licenseplate.text,
+                      reason.text
                     );
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
                       _move_to_home(context);
@@ -116,18 +132,7 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                       _show_error_toast(res_text);
                     }
                   } else {
-                    String res_text = await services.register_blacklist(
-                      firstname.text,
-                      lastname.text,
-                      // homename,
-                      home_id,
-                      licenseplate.text,
-                    );
-                    if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      _move_to_home(context);
-                    } else {
-                      _show_error_toast(res_text);
-                    }
+                    _show_error_toast("กรุณาป้อนข้อมูลให้ครบทุกช่อง");
                   }
                 } else {
                   _show_error_toast("กรุณาป้อนข้อมูลให้ครบทุกช่อง");
@@ -187,6 +192,7 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
     firstname.dispose();
     lastname.dispose();
     licenseplate.dispose();
+    reason.dispose();
     super.dispose();
   }
 }

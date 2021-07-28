@@ -31,16 +31,35 @@ class Services {
       var lists = json.decode(body);
       List blacklist = [];
       List whitelist = [];
+      List whitelist_wait_approve = [];
+      List blacklist_wait_approve = [];
+      List whitelist_reject = [];
+      List blacklist_reject = [];
 
       for (var elem in lists) {
         if (elem["type"] == "blacklist") {
           blacklist.add(elem);
-        } else {
+        } else if (elem["type"] == "blacklist") {
           whitelist.add(elem);
+        } else if (elem["type"] == "blacklist wait approve") {
+          blacklist_wait_approve.add(elem);
+        } else if (elem["type"] == "whitelist wait approve") {
+          whitelist_wait_approve.add(elem);
+        } else if (elem["type"] == "whitelist reject") {
+          whitelist_reject.add(elem);
+        } else if (elem["type"] == "blacklist reject") {
+          blacklist_reject.add(elem);
         }
       }
 
-      return [whitelist, blacklist];
+      return [
+        whitelist,
+        blacklist,
+        whitelist_wait_approve,
+        blacklist_wait_approve,
+        whitelist_reject,
+        blacklist_reject,
+      ];
     } else {
       return 301;
     }

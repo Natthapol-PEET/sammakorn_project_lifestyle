@@ -1,8 +1,8 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException
-from .schemas import LoginDetails, LoginResident
-from .models import resident_account, admin_account, guard_account
-from .auth import AuthHandler
+from schemas import LoginDetails, LoginResident
+from models import resident_account, admin_account, guard_account
+from auth import AuthHandler
 from datetime import datetime
 
 auth_handler = AuthHandler()
@@ -23,21 +23,21 @@ class Login:
         if 'resident_id' in query_user:
             return {"token": token, "statusCode": 200, "id": query_user['resident_id'], "username": query_user['username']}
         else:
-            return {"token": token, "statusCode": 200}
+            return {"token": token}
 
     async def login_resident(self, db,  auth_details: LoginResident):
-        # query = resident_account.select().where(
-        #     resident_account.c.username == auth_details.username)
+        query = resident_account.select().where(
+            resident_account.c.username == auth_details.username)
 
-        home_name = auth_details.home.split(' - ')[0]
-        home_number = auth_details.home.split(' - ')[1]
+        # home_name = auth_details.home.split(' - ')[0]
+        # home_number = auth_details.home.split(' - ')[1]
 
-        query = f""" SELECT RA.username, RA.password, RA.resident_id, RA.username FROM resident_account AS RA
-                    RIGHT JOIN resident_home AS RH
-                    ON RA.resident_id = RH.resident_id
-                    RIGHT JOIN home AS H
-                    ON RH.home_id = H.home_id
-                    WHERE RA.username = '{auth_details.username}' and H.home_name = '{home_name}' and H.home_number = '{home_number}' """
+        # query = f""" SELECT RA.username, RA.password, RA.resident_id, RA.username FROM resident_account AS RA
+        #             RIGHT JOIN resident_home AS RH
+        #             ON RA.resident_id = RH.resident_id
+        #             RIGHT JOIN home AS H
+        #             ON RH.home_id = H.home_id
+        #             WHERE RA.username = '{auth_details.username}' and H.home_name = '{home_name}' and H.home_number = '{home_number}' """
 
         resident = jsonable_encoder(await db.fetch_one(query))
 
@@ -45,7 +45,7 @@ class Login:
             # update login
             query = resident_account.update()   \
                 .where(resident_account.c.username == auth_details.username)    \
-                .values(login_datetime=datetime.now())
+                .values(login_datetime=datetime.now(), device_token=auth_details.device_token, is_login=True)
             await db.execute(query)
 
         return Login().verify_password(resident, auth_details)

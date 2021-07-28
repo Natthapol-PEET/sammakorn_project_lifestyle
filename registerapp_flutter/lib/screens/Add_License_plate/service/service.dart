@@ -1,17 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:registerapp_flutter/data/auth.dart';
+import 'package:registerapp_flutter/data/home.dart';
 import '../../../constance.dart';
 
 class Services {
   Auth auth = Auth();
+  Home home = Home();
 
-  invite_visitor(String firstname, String lastname, String home_id,
-      String license_plate, String invite_date) async {
+  invite_visitor(String firstname, String lastname, String license_plate,
+      String invite_date) async {
     Uri url = Uri.parse("${URL}/invite/visitor/");
     var token_var = await auth.getToken();
     String token = 'Bearer ${token_var[0]["TOKEN"]}';
     String id = token_var[0]["ID_RES"].toString();
+    var Home = await home.getHomeAndId();
+    String home_id = Home[0]["home_id"].toString();
 
     var response = await http.post(
       url,
@@ -41,12 +45,14 @@ class Services {
     }
   }
 
-  register_whitelist(String firstname, String lastname, String home_id,
-      String license_plate) async {
+  register_whitelist(
+      String firstname, String lastname, String license_plate, String reason) async {
     Uri url = Uri.parse("${URL}/register/whitelist/");
     var token_var = await auth.getToken();
     String token = 'Bearer ${token_var[0]["TOKEN"]}';
     String id = token_var[0]["ID_RES"].toString();
+    var Home = await home.getHomeAndId();
+    String home_id = Home[0]["home_id"].toString();
 
     var response = await http.post(
       url,
@@ -59,9 +65,9 @@ class Services {
         "id": id,
         "firstname": firstname,
         "lastname": lastname,
-        // "homename": homename,
         "home_id": home_id,
         "license_plate": license_plate,
+        "reason_resident": reason,
       }),
     );
 
@@ -74,12 +80,14 @@ class Services {
     }
   }
 
-  register_blacklist(String firstname, String lastname, String home_id,
-      String license_plate) async {
+  register_blacklist(
+      String firstname, String lastname, String license_plate, String reason) async {
     Uri url = Uri.parse("${URL}/register/blacklist/");
     var token_var = await auth.getToken();
     String token = 'Bearer ${token_var[0]["TOKEN"]}';
     String id = token_var[0]["ID_RES"].toString();
+    var Home = await home.getHomeAndId();
+    String home_id = Home[0]["home_id"].toString();
 
     var response = await http.post(
       url,
@@ -92,9 +100,9 @@ class Services {
         "id": id,
         "firstname": firstname,
         "lastname": lastname,
-        // "homename": homename,
         "home_id": home_id,
         "license_plate": license_plate,
+        "reason_resident": reason,
       }),
     );
 
@@ -106,29 +114,4 @@ class Services {
       return detail['detail'];
     }
   }
-
-  // getAllHome() async {
-  //   Uri url = Uri.parse("${URL}/home/");
-
-  //   var response = await http.get(
-  //     url,
-  //     headers: <String, String>{
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     String body = utf8.decode(response.bodyBytes);
-  //     List allHome_list = json.decode(body);
-  //     List allHome = [];
-
-  //     for (var elem in allHome_list) {
-  //       allHome.add(elem['home']);
-  //     }
-
-  //     return allHome;
-  //   } else {
-  //     return -1;
-  //   }
-  // }
 }

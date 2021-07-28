@@ -4,12 +4,15 @@ import 'package:registerapp_flutter/screens/List_Item_All/service/service.dart';
 import '../../../constance.dart';
 import 'cancel_button.dart';
 import 'delete_button.dart';
+import 'dialog_send_admin.dart';
 
 class ListItem extends StatelessWidget {
   final String title;
   final String descTime;
   final Color color;
   final Function pass;
+  final String type;
+  final String id;
 
   const ListItem({
     Key key,
@@ -17,6 +20,8 @@ class ListItem extends StatelessWidget {
     @required this.descTime,
     @required this.color,
     @required this.pass,
+    this.id,
+    this.type,
   }) : super(key: key);
 
   @override
@@ -47,7 +52,18 @@ class ListItem extends StatelessWidget {
               iconWidget:
                   Icon(Icons.delete_outline, size: 36, color: Colors.white),
               onTap: () {
-                _show_dialog(context, color);
+                // _show_dialog(context, color);
+
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DialogSendAdmin(
+                      title: title,
+                      type: type,
+                      id: id,
+                    );
+                  },
+                );
               },
             ),
           ),

@@ -18,11 +18,7 @@ class FloatingButtonGroup extends StatelessWidget {
           FloatingActionButton(
             heroTag: "btn1",
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AddLicensePlateScreen()),
-              );
+              Navigator.pushNamed(context, '/addLicenseplate');
             },
             child: Icon(Icons.add, size: 36, color: tabBarBodyColor),
             backgroundColor: goldenSecondary,
@@ -31,10 +27,7 @@ class FloatingButtonGroup extends StatelessWidget {
           FloatingActionButton(
             heroTag: "btn2",
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ListItemScreen()),
-              );
+              Navigator.pushNamed(context, '/listItem');
             },
             child: Icon(Icons.view_list, size: 36, color: tabBarBodyColor),
             backgroundColor: goldenSecondary,

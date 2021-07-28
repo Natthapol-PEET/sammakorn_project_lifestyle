@@ -59,14 +59,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                 title: "Password",
                 desc: "********",
                 press: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return PasswordScreen();
-                      },
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/changePassword');
                 }),
             SizedBox(height: size.height * 0.02),
             ListItem(title: "Version", desc: "1.0"),

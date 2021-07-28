@@ -90,7 +90,7 @@ class PopupDialog {
     );
   }
 
-  Widget sha_dialod(BuildContext context, Map lists, Function pass) {
+  Widget resident_dialod(BuildContext context, Map lists, Function pass) {
     Size size = MediaQuery.of(context).size;
 
     showDialog(

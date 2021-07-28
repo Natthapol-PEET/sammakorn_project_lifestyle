@@ -6,13 +6,19 @@ import '../../../constance.dart';
 class LicensePlate extends StatelessWidget {
   final Widget licensePlateInvite;
   final Widget build_comingAndWalk;
-  final Widget build_hsaStamp;
+  final Widget build_resident_stamp;
+  final Widget build_resident_send_admin;
+  final Widget build_pms_show;
+  final Widget build_checkout;
 
   const LicensePlate({
     Key key,
     this.licensePlateInvite,
     this.build_comingAndWalk,
-    this.build_hsaStamp,
+    this.build_resident_stamp,
+    this.build_pms_show,
+    this.build_resident_send_admin,
+    this.build_checkout,
   }) : super(key: key);
 
   @override
@@ -28,76 +34,82 @@ class LicensePlate extends StatelessWidget {
     };
 
     return Container(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Text("License Plate",
-                    style: TextStyle(color: Colors.white)),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Text("Status", style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-          SizedBox(height: size.height * 0.02),
-          // ListItemField(
-          //   date: "8กฎ 8666",
-          //   license_plate: "Invite",
-          //   color: fededWhite1,
-          //   press: () {
-          //     _invite_dialog(context);
-          //   },
-          // ),
-          licensePlateInvite,
-          build_comingAndWalk,
-          build_hsaStamp,
-          // ListItemField(
-          //   date: "8กฎ 8666",
-          //   license_plate: "Coming in",
-          //   color: greenYellow,
-          //   press: () {
-          //     _walkin_comingin_dialog(context, 'visitor');
-          //   },
-          // ),
-          // ListItemField(
-          //   date: "8กฎ 8666",
-          //   license_plate: "Coming in",
-          //   color: greenYellow,
-          //   press: () {
-          //     _walkin_comingin_dialog(context, 'whitelist');
-          //   },
-          // ),
-          // ListItemField(
-          //   date: "8กฎ 8666",
-          //   license_plate: "Walk in",
-          //   color: greenYellow,
-          //   press: () {
-          //     _walkin_comingin_dialog(context, 'visitor');
-          //   },
-          // ),
-          // ListItemField(
-          //   date: "6อบ 3265",
-          //   license_plate: "HSA stamp",
-          //   color: fededWhite,
-          //   press: () {
-          //     _sha_dialod(context);
-          //   },
-          // ),
-          ListItemField(
-            date: "6อบ 3265",
-            license_plate: "PMS stamp",
-            color: fededWhite,
-            press: () {
-              show_dialog(context, lists);
-            },
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text("License Plate",
+                      style: TextStyle(color: Colors.white)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text("Status", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+            SizedBox(height: size.height * 0.02),
+            // ListItemField(
+            //   date: "8กฎ 8666",
+            //   license_plate: "Invite",
+            //   color: fededWhite1,
+            //   press: () {
+            //     _invite_dialog(context);
+            //   },
+            // ),
+            licensePlateInvite,
+            build_comingAndWalk,
+            build_resident_stamp,
+            build_resident_send_admin,
+            build_pms_show,
+            build_checkout,
+            // ListItemField(
+            //   date: "8กฎ 8666",
+            //   license_plate: "Coming in",
+            //   color: greenYellow,
+            //   press: () {
+            //     _walkin_comingin_dialog(context, 'visitor');
+            //   },
+            // ),
+            // ListItemField(
+            //   date: "8กฎ 8666",
+            //   license_plate: "Coming in",
+            //   color: greenYellow,
+            //   press: () {
+            //     _walkin_comingin_dialog(context, 'whitelist');
+            //   },
+            // ),
+            // ListItemField(
+            //   date: "8กฎ 8666",
+            //   license_plate: "Walk in",
+            //   color: greenYellow,
+            //   press: () {
+            //     _walkin_comingin_dialog(context, 'visitor');
+            //   },
+            // ),
+            // ListItemField(
+            //   date: "6อบ 3265",
+            //   license_plate: "HSA stamp",
+            //   color: fededWhite,
+            //   press: () {
+            //     _sha_dialod(context);
+            //   },
+            // ),
+            // --------------------------------------------------------------
+            // ListItemField(
+            //   date: "6อบ 3265",
+            //   license_plate: "PMS stamp",
+            //   color: fededWhite,
+            //   press: () {
+            //     show_dialog(context, lists);
+            //   },
+            // ),
+          ],
+        ),
       ),
     );
   }

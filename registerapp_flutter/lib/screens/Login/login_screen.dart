@@ -4,13 +4,12 @@ import 'package:registerapp_flutter/components/rounded_input_field.dart';
 import 'package:registerapp_flutter/components/rounded_password_field.dart';
 import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
-import 'package:registerapp_flutter/screens/Home/home_screen.dart';
 import 'package:registerapp_flutter/screens/Login/service/login.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:registerapp_flutter/service/fcm.dart';
 import '../../constance.dart';
 import 'components/backgroud.dart';
 import 'components/backicon.dart';
-import 'components/dropdown_item.dart';
 import 'components/hello_there.dart';
 import 'components/loginTitle.dart';
 import 'components/remember_forgot.dart';
@@ -24,20 +23,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  List home_ids = [];
-  List listItem = [];
-  String selectHome;
   final username = TextEditingController(text: "peet");
   final password = TextEditingController(text: "10042541");
 
   Auth auth = Auth();
   Home home = Home();
+  FCM fcm = FCM();
+
   Services services = Services();
 
   void initState() {
     super.initState();
 
-    getAllHome();
+    fcm.initFirebaseMessaging();
   }
 
   @override
@@ -87,15 +85,6 @@ class _LoginScreenState extends State<LoginScreen> {
             WelcomeText(),
             HelloThere(),
             SizedBox(height: size.height * 0.05),
-            DropdownItem(
-              listItem: listItem,
-              chosenValue: selectHome,
-              onChanged: (value) {
-                setState(() {
-                  selectHome = value;
-                });
-              },
-            ),
             SizedBox(height: size.height * 0.01),
             RoundedInputField(
               hintText: "Username",
@@ -110,24 +99,13 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundedButton(
               text: "LOGIN",
               press: () async {
-                var token = await services.login(
-                    username.text, password.text, selectHome);
+                var token = await services.login(username.text, password.text);
 
                 if (token["statusCode"] == 200) {
-                  int find_id = listItem
-                      .indexWhere((item) => item.startsWith(selectHome));
-                  home.updateHome(selectHome, home_ids[find_id].toString());
                   auth.updateToken(token["token"], token["id"].toString(),
                       token["username"]);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return HomeScreen();
-                      },
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/select_home');
                 } else {
                   Fluttertoast.showToast(
                     msg: token["token"],
@@ -141,21 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  getAllHome() async {
-    var data = await services.getAllHome();
-    var allHome = data[0], home_id = data[1];
-
-    if (allHome == -1) {
-      print("services error");
-    } else {
-      setState(() {
-        selectHome = allHome[0];
-        listItem = allHome;
-        home_ids = home_id;
-      });
-    }
   }
 
   @override
