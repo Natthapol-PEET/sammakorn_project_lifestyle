@@ -18,23 +18,24 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
 
-    async def connect(self, websocket: WebSocket, home_id, resident_id):
+    async def connect(self, websocket: WebSocket, home_id):
         await websocket.accept()
-        self.active_connections.append({
-            "home_id": home_id,
-            "resident_id": resident_id,
-            "websocket": websocket
-        })
+        self.active_connections.append(websocket)
+        # self.active_connections.append({
+        #     "home_id": home_id,
+        #     "resident_id": resident_id,
+        #     "websocket": websocket
+        # })
 
         print(self.active_connections)
 
     def disconnect(self, websocket: WebSocket):
-        # self.active_connections.remove(websocket)
-        data = next(
-            item for item in self.active_connections if item["websocket"] == websocket)
-        self.active_connections.remove(data)
+        self.active_connections.remove(websocket)
+        # data = next(
+        #     item for item in self.active_connections if item["websocket"] == websocket)
+        # self.active_connections.remove(data)
 
-        print(self.active_connections)
+        # print(self.active_connections)
 
     async def send_personal_message(self, message: str, websocket: WebSocket):
         await websocket.send_text(message)
@@ -47,9 +48,13 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@app.websocket("/ws/{home_id}/{resident_id}")
-async def websocket_endpoint(websocket: WebSocket, home_id: int, resident_id: int):
-    await manager.connect(websocket, home_id, resident_id)
+@app.websocket("/ws/{token}/{home_id}")
+async def websocket_endpoint(websocket: WebSocket, home_id: int):
+
+    await manager.connect(websocket, home_id)
+
+    
+
     try:
         while True:
             data = await websocket.receive_text()

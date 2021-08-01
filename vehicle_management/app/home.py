@@ -43,7 +43,8 @@ class LicensePlate:
                 v.license_plate,
                 CONCAT(v.firstname, '  ', v.lastname) AS fullname,
                 'visitor' AS type,
-                CONCAT(v.invite_date, 'T', TO_CHAR(v.create_datetime::TIME, 'HH:mm')) AS invite
+                CONCAT(v.invite_date, 'T', TO_CHAR(v.create_datetime::TIME, 'HH:mm')) AS invite,
+                'Invite' AS status
             FROM visitor AS v
             FULL OUTER JOIN (
                 SELECT *
@@ -316,6 +317,52 @@ class LicensePlate:
                 AND h.datetime_out is NULL
         '''
         return await db.fetch_all(query)
+
+
+    async def cancel_request_white_black(self, db, item):
+        if item.type == 'White List':
+            query = f"DELETE FROM whitelist WHERE whitelist_id = {item.id}"
+        else:
+            query = f"DELETE FROM blacklist WHERE blacklist_id = {item.id}"
+        result = await db.execute(query)
+        return {"message": f"{item.type} with id: {item.id} deleted successfully!"}
+
+
+    async def cancel_request_delete_white_black(self, db, item):
+        if item.type == 'White List':
+            query = f'''
+                UPDATE whitelist SET resident_remove_reason = NULL, 
+                    resident_remove_datetime = NULL 
+                WHERE whitelist_id = {item.id};
+            '''
+        else:
+            query = f'''
+                UPDATE blacklist SET resident_remove_reason = NULL, 
+                    resident_remove_datetime = NULL 
+                WHERE blacklist_id = {item.id};
+            '''
+        await db.execute(query)
+        return {"id": item.id}
+
+        
+
+
+    async def send_admin_delete_blackwhite(self, db, item):
+        if item.type == 'White List':
+            query = f'''
+                UPDATE whitelist SET resident_remove_reason = '{item.reason}', 
+                    resident_remove_datetime = CURRENT_TIMESTAMP 
+                WHERE whitelist_id = {item.id};
+            '''
+        else:
+            query = f'''
+                UPDATE blacklist SET resident_remove_reason = '{item.reason}', 
+                    resident_remove_datetime = CURRENT_TIMESTAMP 
+                WHERE blacklist_id = {item.id};
+            '''
+        await db.execute(query)
+        return {"id": item.id}
+
 
     async def checkout(self, db, item: HomeId):
         query = f'''

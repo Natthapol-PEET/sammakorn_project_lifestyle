@@ -8,23 +8,31 @@ class TitleTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20)),
-        color: tabBarColor,
-      ),
-      constraints: BoxConstraints.expand(height: 50),
-      child: TabBar(
-        labelColor: goldenSecondary,
-        unselectedLabelColor: Colors.grey,
-        indicatorColor: goldenSecondary,
-        automaticIndicatorColorAdjustment: false,
-        tabs: [
-          Tab(text: "License Plate"),
-          Tab(text: "History"),
-        ],
+    Size size = MediaQuery.of(context).size;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          color: darkgreen,
+        ),
+        constraints: BoxConstraints.expand(height: 50),
+        child: TabBar(
+          labelColor: goldenSecondary,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: goldenSecondary,
+          automaticIndicatorColorAdjustment: false,
+          indicatorWeight: 4,
+          labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          unselectedLabelStyle:
+              TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          tabs: [
+            Tab(text: "Whlite List"),
+            Tab(text: "Black List"),
+          ],
+        ),
       ),
     );
   }

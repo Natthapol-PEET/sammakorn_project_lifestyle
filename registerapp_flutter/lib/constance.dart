@@ -14,6 +14,14 @@ const dividerColor = Color(0xffF5F4EC);
 const backgrounditem = Color(0xff305250);
 const fededWhite = Color(0xff305250);
 const fededWhite1 = Color(0xff305300);
+const timelineColor =  Color(0xffF5F4EC);
+const inviteColor = Color(0xffB5C21D);
+const comingColor = Color(0xffF4AD43);
+const infrontColor = Color(0xffCBB989);
+const villColor = Color(0xff12976F);
+const approveColor = Color(0xff17CD4A);
+const disapproveColor = Color(0xffEA464C);
+
 
 
 // const String URL = "http://13.229.234.126:8080"; // server aws

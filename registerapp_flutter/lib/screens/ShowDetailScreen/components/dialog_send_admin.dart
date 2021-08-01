@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
+import '../../../constance.dart';
 
 class DialogSendAdmin extends StatelessWidget {
   final String id;
@@ -16,23 +17,23 @@ class DialogSendAdmin extends StatelessWidget {
     final reasonController = TextEditingController();
 
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: bgDialog,
       content: Stack(
-        overflow: Overflow.visible,
+        // overflow: Overflow.visible,
         children: [
-          Positioned(
-            right: -40.0,
-            top: -40.0,
-            child: InkResponse(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: CircleAvatar(
-                child: Icon(Icons.close),
-                backgroundColor: Colors.red,
-              ),
-            ),
-          ),
+          // Positioned(
+          //   right: -40.0,
+          //   top: -40.0,
+          //   child: InkResponse(
+          //     onTap: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //     child: CircleAvatar(
+          //       child: Icon(Icons.close),
+          //       backgroundColor: Colors.red,
+          //     ),
+          //   ),
+          // ),
           Form(
             key: _formKey,
             child: Column(
@@ -42,10 +43,10 @@ class DialogSendAdmin extends StatelessWidget {
                   padding: EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
-                      "ส่งคำขอเพื่อให้นิติสแตมป์",
+                      "Send request to juristic",
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -56,36 +57,65 @@ class DialogSendAdmin extends StatelessWidget {
                     controller: reasonController,
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,
+                    style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      labelText: 'เหตุผล *',
+                      labelText: 'Reason *',
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                     validator: (value) =>
                         value.isEmpty ? 'กรุณากรอกเหตุผล' : null,
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 30),
+                  padding: EdgeInsets.only(top: 20),
                   child: ConstrainedBox(
                     constraints:
                         BoxConstraints.tightFor(width: 300, height: 40),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.green,
+                          primary: goldenSecondary, shape: StadiumBorder()),
+                      child: Text(
+                        "Send",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
                       ),
-                      child: Text("ยืนยัน",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18)),
                       onPressed: () {
-                        
-
                         if (_formKey.currentState.validate()) {
                           services.send_admin_stamp(id, reasonController.text);
-                        Navigator.pushNamed(context, '/home');
+                          Navigator.pushNamed(context, '/home');
                         }
                       },
                     ),
                   ),
-                )
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints.tightFor(width: 300, height: 40),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: bgDialog,
+                        shape: StadiumBorder(),
+                        side: BorderSide(
+                          width: 0.5,
+                          color: goldenSecondary,
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: goldenSecondary,
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

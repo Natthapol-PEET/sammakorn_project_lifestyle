@@ -159,6 +159,26 @@ class Services {
     return response.statusCode;
   }
 
+  send_admin_delete_blackwhite(String type, String id, String reason) async {
+    Uri url = Uri.parse("${URL}/license_plate/send_admin_delete_blackwhite/");
+    var token_var = await auth.getToken();
+    String token = 'Bearer ${token_var[0]["TOKEN"]}';
+
+    var response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
+      body: jsonEncode(<String, String>{
+        "type": type,
+        "id": id,
+        "reason": reason,
+      }),
+    );
+    return response.statusCode;
+  }
+
   send_admin_delete(String type, String id, String reason) async {
     Uri url = Uri.parse("${URL}/license_plate/send_admin_delete/");
     var token_var = await auth.getToken();
@@ -296,5 +316,69 @@ class Services {
     } else {
       return [-1];
     }
+  }
+
+  getListItems() async {
+    Uri url = Uri.parse("${URL}/listItem_whitelist_blacklist/");
+
+    var token_var = await auth.getToken();
+    String token = 'Bearer ${token_var[0]["TOKEN"]}';
+    String resId = await auth.getResidentId();
+    String home_id = await home.getHomeId();
+
+    var response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
+      body: jsonEncode(
+          <String, String>{"home_id": home_id, "resident_id": resId}),
+    );
+
+    if (response.statusCode == 200) {
+      String body = utf8.decode(response.bodyBytes);
+      return json.decode(body);
+    } else {
+      return 301;
+    }
+  }
+
+  cancel_request_white_black(String type, String id) async {
+    Uri url = Uri.parse("${URL}/license_plate/cancel_request_white_black/");
+    var token_var = await auth.getToken();
+    String token = 'Bearer ${token_var[0]["TOKEN"]}';
+
+    var response = await http.delete(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
+      body: jsonEncode(<String, String>{
+        "type": type,
+        "id": id,
+      }),
+    );
+    return response.statusCode;
+  }
+
+  cancel_request_delete_white_black(String type, String id) async {
+    Uri url = Uri.parse("${URL}/license_plate/cancel_request_delete_white_black/");
+    var token_var = await auth.getToken();
+    String token = 'Bearer ${token_var[0]["TOKEN"]}';
+
+    var response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
+      body: jsonEncode(<String, String>{
+        "type": type,
+        "id": id,
+      }),
+    );
+    return response.statusCode;
   }
 }

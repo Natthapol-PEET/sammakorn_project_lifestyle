@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
 
+import '../../../constance.dart';
+
 class DialogShow extends StatelessWidget {
   final String key1;
   final String key2;
@@ -22,20 +24,22 @@ class DialogShow extends StatelessWidget {
     final reasonController = TextEditingController();
 
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: bgDialog,
       content: Stack(
         overflow: Overflow.visible,
         children: [
           Positioned(
-            right: -40.0,
-            top: -40.0,
+            // right: -40.0,
+            // top: -40.0,
+            top: -20,
+            right: -20,
             child: InkResponse(
               onTap: () {
                 Navigator.of(context).pop();
               },
               child: CircleAvatar(
-                child: Icon(Icons.close),
-                backgroundColor: Colors.red,
+                child: Icon(Icons.close, color: Color(0xffF5F4EC), size: 30),
+                backgroundColor: Colors.transparent,
               ),
             ),
           ),
@@ -43,15 +47,17 @@ class DialogShow extends StatelessWidget {
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+              children: [
+                Icon(Icons.question_answer_outlined,
+                    size: 80, color: goldenSecondary),
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
-                      "รายละเอียด",
+                      "Details",
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.black,
+                        color: goldenSecondary,
                       ),
                     ),
                   ),
@@ -60,22 +66,30 @@ class DialogShow extends StatelessWidget {
                   padding: EdgeInsets.all(8.0),
                   child: Row(
                     children: [
-                      Text("${key1}: "),
-                      Flexible(child: Text(value1)),
+                      Flexible(
+                        flex: 8,
+                        child: Center(
+                          child: Text(
+                            value1,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      // Flexible(child: Text(value1)),
                     ],
                   ),
                 ),
-                key2 == ''
-                    ? Container()
-                    : Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Text("${key2}: "),
-                            Flexible(child: Text(value2)),
-                          ],
-                        ),
-                      ),
+                // key2 == ''
+                //     ? Container()
+                //     : Padding(
+                //         padding: EdgeInsets.all(8.0),
+                //         child: Row(
+                //           children: [
+                //             Text("${key2}: "),
+                //             Flexible(child: Text(value2)),
+                //           ],
+                //         ),
+                //       ),
                 // Padding(
                 //   padding: EdgeInsets.all(8.0),
                 //   child: TextFormField(

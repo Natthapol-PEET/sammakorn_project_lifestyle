@@ -119,6 +119,18 @@ class AdminDelete(BaseModel):
 class ResidentId(BaseModel):
     resident_id: str
 
+
+class CancelRequest(BaseModel):
+    type: str
+    id: str
+
+
+class DeleteWhiteBlackWhite(BaseModel):
+    type: str
+    id: str
+    reason: str
+
+
 # class VisitorOUT(BaseModel):
 #     visitor_id: int
 #     firstname: str

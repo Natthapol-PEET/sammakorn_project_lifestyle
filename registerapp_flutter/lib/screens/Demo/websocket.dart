@@ -27,7 +27,7 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
     var data = await auth.getToken();
     String token = data[0]['TOKEN'];
 
-    channel = IOWebSocketChannel.connect(Uri.parse('${WS}/ws?token=${token}'));
+    channel = IOWebSocketChannel.connect(Uri.parse('${WS}/${token}/1'));
 
     try {
       channel.stream.listen((message) {
@@ -46,6 +46,6 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
   @override
   void dispose() {
     super.dispose();
-    channel.sink.close();
+    channel.sink.close(status.goingAway);
   }
 }

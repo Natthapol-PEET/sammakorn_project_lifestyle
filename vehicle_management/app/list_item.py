@@ -8,36 +8,37 @@ from datetime import date, datetime
 class ListItem:
     async def listItem_whitelist_blacklist(self, db, list_item: listItem_whitelist_blacklist):
         command = f'''
-            SELECT whitelist_id AS id, firstname, lastname, license_plate, 'whitelist' AS type 
+            SELECT whitelist_id AS id,
+					CONCAT(firstname, '  ', lastname) AS fullname,
+					license_plate,
+					'White List' AS type,
+					create_datetime AS resident_datetime,
+					CASE WHEN resident_add_reason IS NULL THEN '-' ELSE resident_add_reason END AS resident_add_reason,
+					admin_datetime,
+					admin_approve,
+					CASE WHEN admin_reason IS NULL THEN '-' ELSE admin_reason END AS admin_reason,
+					resident_remove_datetime,
+					CASE WHEN resident_remove_reason IS NULL THEN '-' ELSE resident_remove_reason END AS resident_remove_reason
             FROM whitelist
-            WHERE class_id = {list_item.resident_id}
-                AND home_id = {list_item.home_id}  
-                AND admin_approve = true
-            UNION
-            SELECT blacklist_id AS id, firstname, lastname, license_plate, 'blacklist' AS type 
+            WHERE class = 'resident'
+				-- AND class_id = {list_item.resident_id}
+                AND home_id = {list_item.home_id}
+			UNION
+			SELECT blacklist_id AS id,
+					CONCAT(firstname, '  ', lastname) AS fullname,
+					license_plate,
+					'Blacklist List' AS type,
+					create_datetime AS resident_datetime,
+					CASE WHEN resident_add_reason IS NULL THEN '-' ELSE resident_add_reason END AS resident_add_reason,
+					admin_datetime,
+					admin_approve,
+					CASE WHEN admin_reason IS NULL THEN '-' ELSE admin_reason END AS admin_reason,
+					resident_remove_datetime,
+					CASE WHEN resident_remove_reason IS NULL THEN '-' ELSE resident_remove_reason END AS resident_remove_reason
             FROM blacklist
-            WHERE class_id = {list_item.resident_id}
-                AND admin_approve = true
-            UNION
-            SELECT blacklist_id AS id, firstname, lastname, license_plate, 'blacklist wait approve' AS type 
-            FROM blacklist
-            WHERE class_id = {list_item.resident_id}
-                AND admin_approve is NULL
-            UNION
-            SELECT whitelist_id AS id, firstname, lastname, license_plate, 'whitelist wait approve' AS type 
-            FROM whitelist
-            WHERE class_id = {list_item.resident_id}
-                AND admin_approve is NULL
-            UNION
-            SELECT whitelist_id AS id, firstname, lastname, license_plate, 'whitelist reject' AS type 
-            FROM whitelist
-            WHERE class_id = {list_item.resident_id}
-                AND admin_approve = false
-            UNION
-            SELECT blacklist_id AS id, firstname, lastname, license_plate, 'blacklist reject' AS type 
-            FROM blacklist
-            WHERE class_id = {list_item.resident_id}
-                AND admin_approve = false
+            WHERE class = 'resident'
+				-- AND class_id = {list_item.resident_id}
+                AND home_id = {list_item.home_id}
         '''
         return await db.fetch_all(command)
 
@@ -56,7 +57,8 @@ class ListItem:
 class History:
     async def histoly_log(self, db, item: HomeId):
         command = f'''
-            -- Whitelist Coming in
+            SELECT *
+            FROM (-- Whitelist Coming in
             SELECT h.log_id, 
                 h.class AS type,
                 w.license_plate,
@@ -115,6 +117,7 @@ class History:
                 AND h.class = 'visitor'
                 AND v.home_id = {item.home_id}
                 AND h.datetime_out is not NULL
-				AND h.datetime_out < current_timestamp
+				AND h.datetime_out < current_timestamp ) data
+            ORDER BY datetime_out DESC
         '''
         return await db.fetch_all(command)

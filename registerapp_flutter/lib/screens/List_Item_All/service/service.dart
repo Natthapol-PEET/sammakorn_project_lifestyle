@@ -28,38 +28,41 @@ class Services {
 
     if (response.statusCode == 200) {
       String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      List blacklist = [];
-      List whitelist = [];
-      List whitelist_wait_approve = [];
-      List blacklist_wait_approve = [];
-      List whitelist_reject = [];
-      List blacklist_reject = [];
+      return json.decode(body);
 
-      for (var elem in lists) {
-        if (elem["type"] == "blacklist") {
-          blacklist.add(elem);
-        } else if (elem["type"] == "blacklist") {
-          whitelist.add(elem);
-        } else if (elem["type"] == "blacklist wait approve") {
-          blacklist_wait_approve.add(elem);
-        } else if (elem["type"] == "whitelist wait approve") {
-          whitelist_wait_approve.add(elem);
-        } else if (elem["type"] == "whitelist reject") {
-          whitelist_reject.add(elem);
-        } else if (elem["type"] == "blacklist reject") {
-          blacklist_reject.add(elem);
-        }
-      }
+      // var lists = json.decode(body);
+      // List blacklist = [];
+      // List whitelist = [];
+      // List whitelist_wait_approve = [];
+      // List blacklist_wait_approve = [];
+      // List whitelist_reject = [];
+      // List blacklist_reject = [];
 
-      return [
-        whitelist,
-        blacklist,
-        whitelist_wait_approve,
-        blacklist_wait_approve,
-        whitelist_reject,
-        blacklist_reject,
-      ];
+      // for (var elem in lists) {
+      //   if (elem["type"] == "blacklist") {
+      //     blacklist.add(elem);
+      //   } else if (elem["type"] == "blacklist") {
+      //     whitelist.add(elem);
+      //   } else if (elem["type"] == "blacklist wait approve") {
+      //     blacklist_wait_approve.add(elem);
+      //   } else if (elem["type"] == "whitelist wait approve") {
+      //     whitelist_wait_approve.add(elem);
+      //   } else if (elem["type"] == "whitelist reject") {
+      //     whitelist_reject.add(elem);
+      //   } else if (elem["type"] == "blacklist reject") {
+      //     blacklist_reject.add(elem);
+      //   }
+      // }
+
+      // return [
+      //   whitelist,
+      //   blacklist,
+      //   whitelist_wait_approve,
+      //   blacklist_wait_approve,
+      //   whitelist_reject,
+      //   blacklist_reject,
+      // ];
+
     } else {
       return 301;
     }

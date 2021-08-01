@@ -1,8 +1,6 @@
 from apis.api import api_app
 import uvicorn
-from time import sleep
 from fastapi import WebSocket, Depends, FastAPI, Query, WebSocket, status
-from typing import Optional
 from auth import AuthHandler
 from logout import Logout
 from login import Login
@@ -16,7 +14,10 @@ from fastapi import FastAPI, status, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from typing import List
+import json
+from ws.connection_manage import ConnectionManager
 
 from database import database as db
 from check_token import is_token_blacklisted as isTokenBlacklisted
@@ -61,8 +62,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     # allow_origins=[
-    #     "http://localhost:8000",
-    #     "http://127.0.0.1:8000"
+    #     "http://localhost:8080",
+    #     "http://127.0.0.1:8080",
+    #     "http://192.168.0.100:8080",
     # ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -294,6 +296,7 @@ async def send_admin_delete(item: AdminDelete, token=Depends(auth_handler.get_to
             status_code=401, detail='Signature has expired')
     return await licensePlate.send_admin_delete(db, item=item)
 
+
 @app.post('/license_plate/get_resident_send_admin/', tags=["Home"], status_code=200)
 async def get_resident_send_admin(item: HomeId, token=Depends(auth_handler.get_token), username=Depends(auth_handler.auth_wrapper)):
     if await isTokenBlacklisted(db, token):
@@ -308,6 +311,31 @@ async def resident_cancel_send_admin(item: HistoryLog, token=Depends(auth_handle
         raise HTTPException(
             status_code=401, detail='Signature has expired')
     return await licensePlate.resident_cancel_send_admin(db, item=item)
+
+from schemas import CancelRequest, DeleteWhiteBlackWhite
+
+@app.delete('/license_plate/cancel_request_white_black/', tags=["Home"], status_code=200)
+async def cancel_request_white_black(item: CancelRequest, token=Depends(auth_handler.get_token), username=Depends(auth_handler.auth_wrapper)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.cancel_request_white_black(db, item=item)
+
+
+@app.put('/license_plate/cancel_request_delete_white_black/', tags=["Home"], status_code=200)
+async def cancel_request_delete_white_black(item: CancelRequest, token=Depends(auth_handler.get_token), username=Depends(auth_handler.auth_wrapper)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.cancel_request_delete_white_black(db, item=item)
+
+
+@app.put('/license_plate/send_admin_delete_blackwhite/', tags=["Home"], status_code=200)
+async def send_admin_delete_blackwhite(item: DeleteWhiteBlackWhite, token=Depends(auth_handler.get_token), username=Depends(auth_handler.auth_wrapper)):
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(
+            status_code=401, detail='Signature has expired')
+    return await licensePlate.send_admin_delete_blackwhite(db, item=item)
 
 
 @app.post('/license_plate/pms_show_list/', tags=["Home"], status_code=200)
@@ -342,29 +370,33 @@ async def notifications(item: NotificationItem, token=Depends(auth_handler.get_t
 
 
 # ------------------------------ Websocket  --------------------------------
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, token: str):
+
+manager = ConnectionManager()
+
+@app.websocket("/ws/{token}/{apptype}/{home_id}")
+async def websocket_endpoint(websocket: WebSocket, token: str, apptype: str, home_id: int):
+
     status = auth_handler.auth_wrapper_socket(token)
 
     if status == 1001:
-        await websocket.accept()
-
-        cnt = 0
-        while True:
-            try:
-                cnt += 1
-                await websocket.send_text(f"Hello, From Server {cnt}")
-
+        await manager.connect(websocket, apptype, home_id)
+            
+        try:
+            while True:
                 data = await websocket.receive_text()
-                print(data)
-                break
-            except:
-                break
-    else:
-        await websocket.close()
+                data = json.loads(data)
+                # await manager.send_personal_message(f"You wrote: {data}", websocket)
+                await manager.broadcast(data['topic'], data['send_to'], data['home_id'])
+        except WebSocketDisconnect:
+            manager.disconnect(websocket, apptype)
+            # await manager.broadcast(f"Client #{home_id} left the chat")
+
+    elif status == 1008:
+        manager.disconnect(websocket)
+
+
 # ------------------------------ End Websocket  --------------------------------
 
-
 if __name__ == '__main__':
-    # uvicorn.run(app, host='0.0.0.0', port=8080, workers=True, debug=True)
-    uvicorn.run(app, host='0.0.0.0', port=8080, workers=True, access_log=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080,
+                workers=True, access_log=True, log_level="info")

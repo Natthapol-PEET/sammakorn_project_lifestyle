@@ -40,7 +40,7 @@ class NotificationDB {
     String homeId = await home.getHomeId();
 
     final String command =
-        "SELECT COUNT(id) AS count FROM Notification WHERE is_read = false AND home_id = ${homeId};";
+        "SELECT COUNT(id) AS count FROM Notification WHERE is_read = false AND home_id = ${homeId}";
     final row = await sqlite.queryDatabase(command);
     // print(row.toList());
     return row.toList()[0]['count'].toInt();
@@ -83,6 +83,8 @@ class NotificationDB {
     bool isHave = false;
 
     for (var elem in row.toList()) {
+      print(elem);
+
       if (elem['name'] == 'Notification') {
         isHave = true;
       }

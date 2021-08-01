@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../constance.dart';
+
 class CardTitle extends StatelessWidget {
   final Map arguments;
 
@@ -14,32 +16,38 @@ class CardTitle extends StatelessWidget {
 
     return Container(
       height: 100,
-      width: size.width * 0.95,
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(width: 4, color: Colors.green)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            color: Colors.black26,
-          )
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("ทะเบียนรถ ${arguments['license_plate']}",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          SizedBox(height: 3),
-          Text(arguments['fullname'],
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          arguments['status'] == null
-              ? Container()
-              : Text("ประเภท ${arguments['status']}",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
-        ],
+      width: size.width,
+      // margin: EdgeInsets.all(10),
+      color: goldenSecondary,
+      // decoration: BoxDecoration(
+      // border: Border(top: BorderSide(width: 4, color: Colors.green)),
+      // boxShadow: [
+      //   BoxShadow(
+      //     blurRadius: 10,
+      //     color: Colors.black26,
+      //   )
+      // ],
+      // ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 30),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("License Plate\t\t:\t\t${arguments['license_plate']}",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+            SizedBox(height: 3),
+            Text("Name\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t:\t\t${arguments['fullname']}",
+                style: TextStyle(fontSize: 16, color: Colors.white)),
+            arguments['status'] == null
+                ? Container()
+                : Text("Type\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t:\t\t${arguments['status']}",
+                    style: TextStyle(fontSize: 16, color: Colors.white))
+          ],
+        ),
       ),
     );
   }

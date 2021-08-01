@@ -9,12 +9,16 @@ import 'package:registerapp_flutter/service/push_notification.dart';
 import '../../constance.dart';
 import 'components/app_bar_action.dart';
 import 'components/app_bar_title.dart';
+import 'components/box_show_list.dart';
+import 'components/builder_history.dart';
+import 'components/button_select_group.dart';
 import 'components/dialog.dart';
 import 'components/floating_button_group.dart';
 import 'components/list_project.dart';
-import 'components/list_tab_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
+import 'components/timeline_blacklist_whitelist.dart';
+import 'function/selectIndex.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -33,14 +37,19 @@ class _HomeScreenState extends State<HomeScreen> {
   NotificationDB notifications = NotificationDB();
 
   String title = "";
-  int countAlert;
+  int countAlert = 0;
   List licensePlateInvite = [];
   List coming_walk = [];
   List resident_stamp_list = [];
   List resident_send_admin_stamp = [];
   List pms_list = [];
   List checkout_list = [];
+  List white_black_list = [];
   List history_list = [];
+
+  int selectIndex = 0;
+
+  BuildContext dialogContext;
 
   @override
   void initState() {
@@ -69,10 +78,16 @@ class _HomeScreenState extends State<HomeScreen> {
     pms_show();
     checkout();
 
+    get_white_black();
+
     getHistory();
+
+    Future.delayed(Duration.zero, () => showAlert());
+    Future.delayed(Duration(seconds: 3), () => Navigator.pop(dialogContext));
   }
 
   List allHome = [];
+
   getHomeSlide() async {
     var data = await services.getHome();
     // home_id = data[1];
@@ -124,42 +139,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    double bsize = 65.0;
-    double horsize = 12.0;
-
-    List<Color> selectColorButton = [
-      goldenSecondary,
-      Colors.white,
-      Colors.white,
-      Colors.white,
-      Colors.white,
-      Colors.white,
-    ];
-
-    List<Color> selectColorElem = [
-      Colors.white,
-      goldenSecondary,
-      goldenSecondary,
-      goldenSecondary,
-      goldenSecondary,
-      goldenSecondary,
-    ];
-
-    List icons = [
-      Icons.mobile_friendly,
-      Icons.airport_shuttle,
-      Icons.approval,
-      Icons.fact_check,
-      Icons.history,
-    ];
-
-    List<String> titleButton = [
-      'Invite',
-      'Coming in',
-      'Stamp',
-      'List Item',
-      'History',
-    ];
+    List<Color> selectColorButton = SelectIndexButton(selectIndex);
+    List<Color> selectColorElem = SelectIndexElem(selectIndex);
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -192,175 +173,59 @@ class _HomeScreenState extends State<HomeScreen> {
                 build_HomeSlide(context, allHome),
                 SizedBox(height: size.height * 0.03),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ConstrainedBox(
-                      constraints:
-                          BoxConstraints.tightFor(width: bsize, height: bsize),
-                      child: ElevatedButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.mobile_friendly,
-                                color: selectColorElem[0]),
-                            SizedBox(height: 5),
-                            Text(
-                              'Invite',
-                              style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                  color: selectColorElem[0]),
-                            ),
-                          ],
-                        ),
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          primary: selectColorButton[0],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: horsize),
-                    ConstrainedBox(
-                      constraints:
-                          BoxConstraints.tightFor(width: bsize, height: bsize),
-                      child: ElevatedButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.airport_shuttle,
-                                color: selectColorElem[1]),
-                            SizedBox(height: 5),
-                            Text(
-                              'Coming in',
-                              style: TextStyle(
-                                fontSize: 9,
-                                color: selectColorElem[1],
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          primary: selectColorButton[1],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: horsize),
-                    ConstrainedBox(
-                      constraints:
-                          BoxConstraints.tightFor(width: bsize, height: bsize),
-                      child: ElevatedButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.approval, color: selectColorElem[2]),
-                            SizedBox(height: 5),
-                            Text('Stamp',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                  color: selectColorElem[2],
-                                )),
-                          ],
-                        ),
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          primary: selectColorButton[2],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: horsize),
-                    ConstrainedBox(
-                      constraints:
-                          BoxConstraints.tightFor(width: bsize, height: bsize),
-                      child: ElevatedButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.fact_check, color: selectColorElem[3]),
-                            SizedBox(height: 5),
-                            Text(
-                              'List Item',
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: selectColorElem[3],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          primary: selectColorButton[3],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: horsize),
-                    ConstrainedBox(
-                      constraints:
-                          BoxConstraints.tightFor(width: bsize, height: bsize),
-                      child: ElevatedButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.history, color: selectColorElem[4]),
-                            SizedBox(height: 5),
-                            Text('History',
-                                style: TextStyle(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.bold,
-                                  color: selectColorElem[4],
-                                )),
-                          ],
-                        ),
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          primary: selectColorButton[4],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                ButtonSelectGroup(
+                  selectColorElem: selectColorElem,
+                  selectColorButton: selectColorButton,
+                  press1: () => setState(() => selectIndex = 0),
+                  press2: () => setState(() => selectIndex = 1),
+                  press3: () => setState(() => selectIndex = 2),
+                  press4: () => setState(() => selectIndex = 3),
+                  press5: () => setState(() => selectIndex = 4),
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Container(
-                    height: size.height * 0.68,
-                    decoration: BoxDecoration(
-                      color: darkgreen,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                    ),
+                if (selectIndex == 0) ...[
+                  BoxShowList(
+                    lists: licensePlateInvite,
+                    color: Color(0xffB5C21D),
+                    select: "Invite",
                   ),
-                ),
+                ],
+                if (selectIndex == 1) ...[
+                  BoxShowList(
+                    lists: coming_walk,
+                    color: Color(0xffF4AD43),
+                    select: "coming_walk",
+                  ),
+                ],
+                if (selectIndex == 2) ...[
+                  BoxShowList(
+                    lists: resident_stamp_list,
+                    color: Color(0xff12976F),
+                    select: "Resident stamp",
+                    resident_send_admin: resident_send_admin_stamp,
+                    selectRSA: "Wait Admin",
+                    pms_show: pms_list,
+                    selectPMS: "Admin done",
+                    checkout: checkout_list,
+                    selectCO: "Leaving",
+                  ),
+                ],
+                if (selectIndex == 3) ...[
+                  ListItemBlacklistWhitelist(
+                    lists: white_black_list,
+                    select: "List Item",
+                  ),
+                ],
+                if (selectIndex == 4) ...[
+                  BoxShowListHistory(
+                    lists: history_list,
+                    color: Colors.white,
+                    select: "history",
+                  ),
+                ],
+
                 // Center(
-                //   child: ListTabBar(
+                // child: ListTabBar(
                 //     build_licensePLateInvite:
                 //         build_licensePLateInvite(context, licensePlateInvite),
                 //     build_comingAndWalk:
@@ -391,170 +256,168 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => licensePlateInvite = data);
   }
 
-  Widget build_licensePLateInvite(BuildContext context, List lists) {
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          return ListItemField(
-            date: lists[index]['license_plate'],
-            license_plate: "Invite",
-            color: fededWhite1,
-            press: () {
-              // popupDialog.invite_dialog(context, licensePlateInvite[index], () {
-              //   var state = services.deleteInvite(
-              //       licensePlateInvite[index]['visitor_id'].toString());
-              //   state.then((v) => getLicenseInvite());
-              //   Navigator.pop(context);
-              // });
-
-              lists[index]['select'] = "Invite";
-              Navigator.pushNamed(context, '/show_detail',
-                  arguments: lists[index]);
-            },
-          );
-        });
-  }
+  // Widget build_licensePLateInvite(BuildContext context, List lists) {
+  //   return ListView.builder(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       shrinkWrap: true,
+  //       itemCount: lists.length,
+  //       itemBuilder: (context, index) {
+  //         return ListItemField(
+  //           date: lists[index]['license_plate'],
+  //           license_plate: "Invite",
+  //           color: fededWhite1,
+  //           press: () {
+  //             lists[index]['select'] = "Invite";
+  //             Navigator.pushNamed(context, '/show_detail',
+  //                 arguments: lists[index]);
+  //           },
+  //         );
+  //       });
+  // }
 
   coming_and_walk() async {
     var data = await services.coming_and_walk();
     setState(() => coming_walk = data);
   }
 
-  Widget build_comingAndWalk(BuildContext context, List lists) {
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          return ListItemField(
-            date: lists[index]['license_plate'],
-            license_plate: lists[index]['status'],
-            color: greenYellow,
-            press: () {
-              // popupDialog.walkin_comingin_dialog(context, coming_walk[index],
-              //     () {
-              //   var state = services
-              //       .resident_stamp(coming_walk[index]['log_id'].toString());
-              //   state.then((v) {
-              //     coming_and_walk();
-              //     get_resident_stamp();
-              //   });
-              //   Navigator.pop(context);
-              // });
+  // Widget build_comingAndWalk(BuildContext context, List lists) {
+  //   return ListView.builder(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       shrinkWrap: true,
+  //       itemCount: lists.length,
+  //       itemBuilder: (context, index) {
+  //         return ListItemField(
+  //           date: lists[index]['license_plate'],
+  //           license_plate: lists[index]['status'],
+  //           color: greenYellow,
+  //           press: () {
+  //             // popupDialog.walkin_comingin_dialog(context, coming_walk[index],
+  //             //     () {
+  //             //   var state = services
+  //             //       .resident_stamp(coming_walk[index]['log_id'].toString());
+  //             //   state.then((v) {
+  //             //     coming_and_walk();
+  //             //     get_resident_stamp();
+  //             //   });
+  //             //   Navigator.pop(context);
+  //             // });
 
-              lists[index]['select'] = "coming_walk";
-              Navigator.pushNamed(context, '/show_detail',
-                  arguments: lists[index]);
-            },
-          );
-        });
-  }
+  //             lists[index]['select'] = "coming_walk";
+  //             Navigator.pushNamed(context, '/show_detail',
+  //                 arguments: lists[index]);
+  //           },
+  //         );
+  //       });
+  // }
 
   get_resident_stamp() async {
     var data = await services.get_resident_stamp();
     setState(() => resident_stamp_list = data);
   }
 
-  Widget build_resident_stamp(BuildContext context, List lists) {
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          return ListItemField(
-              date: lists[index]['license_plate'],
-              license_plate: "Resident stamp",
-              color: fededWhite,
-              press: () {
-                // popupDialog.resident_dialod(context, resident_stamp_list[index], () {
-                //   var state = services.send_admin_stamp(
-                //       resident_stamp_list[index]['log_id'].toString());
-                //   state.then((v) {
-                //     get_resident_stamp();
-                //     // PMS stamp
-                //   });
-                //   Navigator.pop(context);
-                // });
+  // Widget build_resident_stamp(BuildContext context, List lists) {
+  //   return ListView.builder(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       shrinkWrap: true,
+  //       itemCount: lists.length,
+  //       itemBuilder: (context, index) {
+  //         return ListItemField(
+  //             date: lists[index]['license_plate'],
+  //             license_plate: "Resident stamp",
+  //             color: fededWhite,
+  //             press: () {
+  //               // popupDialog.resident_dialod(context, resident_stamp_list[index], () {
+  //               //   var state = services.send_admin_stamp(
+  //               //       resident_stamp_list[index]['log_id'].toString());
+  //               //   state.then((v) {
+  //               //     get_resident_stamp();
+  //               //     // PMS stamp
+  //               //   });
+  //               //   Navigator.pop(context);
+  //               // });
 
-                lists[index]['select'] = "Resident stamp";
-                Navigator.pushNamed(context, '/show_detail',
-                    arguments: lists[index]);
-              });
-        });
-  }
+  //               lists[index]['select'] = "Resident stamp";
+  //               Navigator.pushNamed(context, '/show_detail',
+  //                   arguments: lists[index]);
+  //             });
+  //       });
+  // }
 
   resident_send_admin() async {
     var data = await services.get_resident_send_admin();
     setState(() => resident_send_admin_stamp = data);
   }
 
-  Widget build_resident_send_admin(BuildContext context, List lists) {
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          return ListItemField(
-            date: lists[index]['license_plate'],
-            license_plate: "Wait Admin",
-            color: fededWhite,
-            press: () {
-              lists[index]['select'] = "send to admin";
-              Navigator.pushNamed(context, '/show_detail',
-                  arguments: lists[index]);
-            },
-          );
-        });
-  }
+  // Widget build_resident_send_admin(BuildContext context, List lists) {
+  //   return ListView.builder(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       shrinkWrap: true,
+  //       itemCount: lists.length,
+  //       itemBuilder: (context, index) {
+  //         return ListItemField(
+  //           date: lists[index]['license_plate'],
+  //           license_plate: "Wait Admin",
+  //           color: fededWhite,
+  //           press: () {
+  //             lists[index]['select'] = "send to admin";
+  //             Navigator.pushNamed(context, '/show_detail',
+  //                 arguments: lists[index]);
+  //           },
+  //         );
+  //       });
+  // }
 
   pms_show() async {
     var data = await services.pms_show();
     setState(() => pms_list = data);
   }
 
-  Widget build_pms_show(BuildContext context, List lists) {
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          return ListItemField(
-            date: lists[index]['license_plate'],
-            license_plate: "Admin done",
-            color: fededWhite,
-            press: () {
-              lists[index]['select'] = "Admin done";
-              Navigator.pushNamed(context, '/show_detail',
-                  arguments: lists[index]);
-            },
-          );
-        });
-  }
+  // Widget build_pms_show(BuildContext context, List lists) {
+  //   return ListView.builder(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       shrinkWrap: true,
+  //       itemCount: lists.length,
+  //       itemBuilder: (context, index) {
+  //         return ListItemField(
+  //           date: lists[index]['license_plate'],
+  //           license_plate: "Admin done",
+  //           color: fededWhite,
+  //           press: () {
+  //             lists[index]['select'] = "Admin done";
+  //             Navigator.pushNamed(context, '/show_detail',
+  //                 arguments: lists[index]);
+  //           },
+  //         );
+  //       });
+  // }
 
   checkout() async {
     var data = await services.checkout();
     setState(() => checkout_list = data);
   }
 
-  Widget build_checkout(BuildContext context, List lists) {
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          return ListItemField(
-            date: lists[index]['license_plate'],
-            license_plate: "Leaving",
-            color: fededWhite,
-            press: () {
-              lists[index]['select'] = "Leaving";
-              Navigator.pushNamed(context, '/show_detail',
-                  arguments: lists[index]);
-            },
-          );
-        });
+  // Widget build_checkout(BuildContext context, List lists) {
+  //   return ListView.builder(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       shrinkWrap: true,
+  //       itemCount: lists.length,
+  //       itemBuilder: (context, index) {
+  //         return ListItemField(
+  //           date: lists[index]['license_plate'],
+  //           license_plate: "Leaving",
+  //           color: fededWhite,
+  //           press: () {
+  //             lists[index]['select'] = "Leaving";
+  //             Navigator.pushNamed(context, '/show_detail',
+  //                 arguments: lists[index]);
+  //           },
+  //         );
+  //       });
+  // }
+
+  get_white_black() async {
+    var data = await services.getListItems();
+    setState(() => white_black_list = data);
   }
 
   getHistory() async {
@@ -582,6 +445,40 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushNamed(context, '/show_detail',
                   arguments: lists[index]);
             },
+          );
+        });
+  }
+
+  void showAlert() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          dialogContext = context;
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              height: 150,
+              padding: EdgeInsets.fromLTRB(100, 50, 100, 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.black54,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Loading ...',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
           );
         });
   }

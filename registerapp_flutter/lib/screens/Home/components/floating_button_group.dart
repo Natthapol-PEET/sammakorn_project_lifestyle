@@ -24,14 +24,14 @@ class FloatingButtonGroup extends StatelessWidget {
             backgroundColor: goldenSecondary,
           ),
           SizedBox(height: 10),
-          FloatingActionButton(
-            heroTag: "btn2",
-            onPressed: () {
-              Navigator.pushNamed(context, '/listItem');
-            },
-            child: Icon(Icons.view_list, size: 36, color: tabBarBodyColor),
-            backgroundColor: goldenSecondary,
-          )
+          // FloatingActionButton(
+          //   heroTag: "btn2",
+          //   onPressed: () {
+          //     Navigator.pushNamed(context, '/listItem');
+          //   },
+          //   child: Icon(Icons.view_list, size: 36, color: tabBarBodyColor),
+          //   backgroundColor: goldenSecondary,
+          // ),
         ],
       ),
     );

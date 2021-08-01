@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/screens/Home/components/popup_body.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
 import '../../constance.dart';
 import 'components/bottom_nav_bar.dart';
 import 'components/card_list_timeline.dart';
 import 'components/card_title.dart';
 import 'components/dialog_cancel.dart';
+import 'components/dialog_cancel_request.dart';
 import 'components/dialog_delete.dart';
 import 'components/dialog_send_admin.dart';
 import 'components/dialog_show.dart';
 import 'components/dialog_stamp.dart';
+import 'components/dialoog_delete_whiteblack.dart';
 import 'model/TimelineItem.dart';
 
 class ShowDetailScreen extends StatefulWidget {
@@ -31,6 +32,8 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
   List<bool> isEnableList = [];
   List<Function> pass = [];
 
+  bool disNavButton = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,74 +43,106 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
   Widget build(BuildContext context) {
     Map arguments = ModalRoute.of(context).settings.arguments as Map;
     getCardItems(arguments);
-    Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
-          title: Text('Timeline'),
+          title: Text('Timeline', style: TextStyle(color: goldenSecondary)),
           centerTitle: true,
           backgroundColor: darkgreen),
       body: SingleChildScrollView(
         child: Column(
           children: [
             CardTitle(arguments: arguments),
-            build_timeline(),
+            build_timeline(context, itemcard),
           ],
         ),
       ),
-      bottomNavigationBar: arguments['select'] == 'Admin done' ||
-              arguments['select'] == 'Leaving' ||
-              arguments['select'] == 'history'
-          ? null
-          : BottomNavBar(
-              titleButton: titleButton,
-              iconButton: iconButton,
-              pass: () {
-                if (arguments['select'] == 'Invite') {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DialogDelete(
-                          id: arguments['visitor_id'].toString());
-                    },
-                  );
-                } else if (arguments['select'] == 'coming_walk') {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DialogStamp(id: arguments['log_id'].toString());
-                    },
-                  );
-                } else if (arguments['select'] == 'Resident stamp') {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DialogSendAdmin(
-                          id: arguments['log_id'].toString());
-                    },
-                  );
-                } else if (arguments['select'] == 'send to admin') {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DialogCancel(id: arguments['log_id'].toString());
-                    },
-                  );
-                }
-              },
-            ),
+      bottomNavigationBar:
+          // arguments['select'] == 'Admin done' ||
+          // arguments['select'] == 'Leaving' ||
+          // arguments['select'] == 'history' ||
+          // titleButton == "Admin disapprove" ||
+          disNavButton
+              // || arguments['select'] == "blacklist and whitelist"
+              ? null
+              : BottomNavBar(
+                  titleButton: titleButton,
+                  iconButton: iconButton,
+                  pass: () {
+                    if (arguments['select'] == 'Invite') {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogDelete(
+                              id: arguments['visitor_id'].toString());
+                        },
+                      );
+                    } else if (arguments['select'] == 'coming_walk') {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogStamp(
+                              id: arguments['log_id'].toString());
+                        },
+                      );
+                    } else if (arguments['select'] == 'Resident stamp') {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogSendAdmin(
+                              id: arguments['log_id'].toString());
+                        },
+                      );
+                    } else if (arguments['select'] == 'Wait Admin') {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogCancel(
+                              id: arguments['log_id'].toString());
+                        },
+                      );
+                    } else if (arguments['select'] ==
+                            "blacklist and whitelist" &&
+                        titleButton == "Cancel Request") {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogCancelRequest(
+                            resident_remove_reason: arguments['resident_remove_reason'],
+                            type: arguments['type'],
+                            id: arguments['id'].toString(),
+                          );
+                        },
+                      );
+                    } else if (arguments['select'] ==
+                            "blacklist and whitelist" &&
+                        arguments['admin_approve'] == true) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogSendDeleteWhiteBlack(
+                            type: arguments['type'],
+                            id: arguments['id'].toString(),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
       backgroundColor: darkgreen200,
     );
   }
 
-  ListView build_timeline() {
+  ListView build_timeline(context, lists) {
+    Size size = MediaQuery.of(context).size;
+
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: itemcard.length,
+      itemCount: lists.length,
       itemBuilder: (context, index) {
         return CardListTimeline(
-          itemcard: itemcard,
+          itemcard: lists,
           index: index,
           isEnable: isEnableList[index],
           pass: pass[index],
@@ -120,11 +155,11 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
     List items = [];
 
     if (arguments.containsKey('invite') && arguments['invite'] != null) {
-      items.add(TimeLineItem(
-          'ลูกบ้านลงทะเบียน', arguments['invite'], Icons.how_to_reg));
+      items.add(TimeLineItem('Invite', arguments['invite']));
 
       setState(() {
-        titleButton = 'ลบรายการ';
+        disNavButton = false;
+        titleButton = 'Delete';
         iconButton = Icons.delete;
         isEnableList.add(false);
         pass.add(null);
@@ -132,11 +167,11 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
     }
 
     if (arguments.containsKey('datetime_in')) {
-      items.add(TimeLineItem('ผู้เข้าพบมาถึงป้อม รปภ.',
-          arguments['datetime_in'], Icons.arrow_downward));
+      items.add(TimeLineItem(arguments['status'], arguments['datetime_in']));
 
       setState(() {
-        titleButton = 'สแสมป์ให้ผู้เข้าพบ';
+        disNavButton = false;
+        titleButton = 'Stamp for visitor';
         iconButton = Icons.approval;
         isEnableList.add(false);
         pass.add(null);
@@ -144,23 +179,24 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
     }
 
     if (arguments.containsKey('resident_stamp')) {
-      items.add(TimeLineItem('ลูกบ้านสแตมป์ยอมรับ', arguments['resident_stamp'],
-          Icons.verified_user));
+      items.add(TimeLineItem('Villagers Stamp', arguments['resident_stamp']));
 
       setState(() {
-        titleButton = 'ส่งคำขอเพื่อให้นิติสแตมป์';
-        iconButton = Icons.approval;
+        disNavButton = false;
+        titleButton = 'Send request to juristic';
+        iconButton = Icons.send;
         isEnableList.add(false);
         pass.add(null);
       });
     }
 
     if (arguments.containsKey('resident_send_admin')) {
-      items.add(TimeLineItem('ส่งคำขอถึงนิติบุลคล',
-          arguments['resident_send_admin'], Icons.verified_user));
+      items.add(TimeLineItem(
+          'Send request to juristic', arguments['resident_send_admin']));
 
       setState(() {
-        titleButton = 'ยกเลิกคำขอ';
+        disNavButton = false;
+        titleButton = 'Cancel Request';
         iconButton = Icons.cancel;
         isEnableList.add(true);
         pass.add(() => showDialog(
@@ -168,20 +204,19 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
               builder: (BuildContext context) {
                 return DialogShow(
                   key1: "resident_reason",
-                  value1: arguments['resident_reason'].toString(),
-                  key2: "",
-                  value2: "",
+                  value1: arguments['resident_reason'],
                 );
               },
             ));
       });
     }
 
-    if (arguments.containsKey('admin_datetime')) {
-      items.add(TimeLineItem('นิติบุลคลดำเนินการแล้ว',
-          arguments['admin_datetime'], Icons.verified_user));
+    if (arguments.containsKey('admin_datetime') &&
+        arguments['select'] != "blacklist and whitelist") {
+      items.add(TimeLineItem('Juristic done', arguments['admin_datetime']));
 
       setState(() {
+        disNavButton = true;
         isEnableList.add(true);
         pass.add(() => showDialog(
               context: context,
@@ -190,21 +225,107 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
                   key1: "admin_approve",
                   value1: arguments['admin_approve'] ? 'true' : 'false',
                   key2: "admin_reason",
-                  value2: arguments['admin_reason'].toString(),
+                  value2: arguments['admin_reason'],
                 );
               },
             ));
       });
     }
 
+    // Leave the project
     if (arguments.containsKey('datetime_out')) {
-      items.add(TimeLineItem(
-          'ออกจากโครงการแล้ว', arguments['datetime_out'], Icons.verified_user));
+      items.add(TimeLineItem('Leave the project', arguments['datetime_out']));
 
       setState(() {
+        disNavButton = true;
         isEnableList.add(false);
         pass.add(null);
       });
+    }
+
+    // List Item || Blacklist || Whitelist
+    if (arguments.containsKey('resident_add_reason')) {
+      if (arguments['type'] == 'White List') {
+        items.add(
+            TimeLineItem('Sing whitelist', arguments['resident_datetime']));
+      } else {
+        items.add(
+            TimeLineItem('Sing blacklist', arguments['resident_datetime']));
+      }
+
+      setState(() {
+        disNavButton = false;
+        titleButton = 'Cancel Request';
+        iconButton = Icons.cancel;
+        isEnableList.add(true);
+        pass.add(() => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return DialogShow(
+                  key1: "resident_add_reason",
+                  value1: arguments['resident_add_reason'],
+                );
+              },
+            ));
+      });
+
+      // admin approve or disapprove whitelist and blacklist
+      if (arguments['select'] == 'blacklist and whitelist') {
+        if (arguments['admin_approve'] != null) {
+          if (arguments['admin_approve'] == true) {
+            items.add(
+                TimeLineItem('Admin approve', arguments['admin_datetime']));
+
+            setState(() {
+              disNavButton = false;
+              titleButton = "Delete ${arguments['type']}";
+              iconButton = Icons.delete;
+              isEnableList.add(true);
+              pass.add(() => showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return DialogShow(
+                        key1: "admin_reason",
+                        value1: arguments['admin_reason'],
+                      );
+                    },
+                  ));
+            });
+          } else {
+            items.add(
+                TimeLineItem('Admin disapprove', arguments['admin_datetime']));
+
+            setState(() {
+              disNavButton = true;
+              titleButton = "Admin disapprove";
+              isEnableList.add(false);
+              pass.add(null);
+            });
+          }
+
+          // remove whitelist and blacklist -> send to juristic
+          if (arguments['resident_remove_reason'] != '-') {
+            items.add(TimeLineItem(
+                'Send to juristic', arguments['resident_remove_datetime']));
+
+            setState(() {
+              disNavButton = false;
+              titleButton = "Cancel Request";
+              iconButton = Icons.cancel;
+              isEnableList.add(true);
+              pass.add(() => showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return DialogShow(
+                        key1: "resident_remove_reason",
+                        value1: arguments['resident_remove_reason'],
+                      );
+                    },
+                  ));
+            });
+          }
+        }
+      }
     }
 
     setState(() => itemcard = items);
