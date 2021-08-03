@@ -630,11 +630,13 @@ async def guardhouse_checkin(item: GuardhouseCheckin, username=Depends(auth_hand
     class
     , class_id
     , datetime_in
+    , create_datetime
     
 ) VALUES (
     \'{item.classname}\' -- class_id character varying NULLABLE
     , {item.class_id}
     , \'{item.datetime_in}\' -- datetime_in timestamp without time zone NULLABLE
+    , current_timestamp
     
 )
         """
