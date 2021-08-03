@@ -178,6 +178,56 @@ class DeleteWhiteBlackWhite(BaseModel):
 #     license_plate: str
 #     timestamp: datetime
 
+class ResidentHomeIn(BaseModel):
+    resident_id: int
+    home_id: int
+
+
+class HomeIn(BaseModel):
+    home_name: str
+    home_number: str
+
+
+class GuardhouseCheckin(BaseModel):
+    classname: str
+    class_id: int
+    datetime_in: str
+
+
+class GuardhouseCheckout(BaseModel):
+    datetime_out: str
+    log_id: int
+
+
+class GuardhouseAddvisitor(BaseModel):
+    id_number: int
+    # home_id : int
+    firstname: str
+    lastname: str
+    home_number: str
+    username: str
+    datetime_in: str
+
+
+class Adminstamp(BaseModel):
+    admin_approve: bool
+    log_id: int
+    admin_reason: str
+    admin_datetime: str
+
+
+class ApproveBlacklist(BaseModel):
+    admin_approve: bool
+    blacklist_id: int
+    admin_reason: str
+    admin_datetime: str
+
+
+class ApproveWhitelist(BaseModel):
+    admin_approve: bool
+    whitelist_id: int
+    admin_reason: str
+    admin_datetime: str
 
 # -------------------------------- End Website ------------------------
 
