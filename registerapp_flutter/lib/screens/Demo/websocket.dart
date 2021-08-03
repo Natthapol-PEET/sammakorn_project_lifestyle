@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/data/auth.dart';
+import 'package:registerapp_flutter/data/home.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import '../../constance.dart';
@@ -13,6 +14,7 @@ class WebSocketScreen extends StatefulWidget {
 
 class _WebSocketScreenState extends State<WebSocketScreen> {
   Auth auth = Auth();
+  Home home = Home();
 
   var channel;
 
@@ -26,8 +28,9 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
   void socket() async {
     var data = await auth.getToken();
     String token = data[0]['TOKEN'];
+    String homeId = await home.getHomeId();
 
-    channel = IOWebSocketChannel.connect(Uri.parse('${WS}/${token}/1'));
+    channel = IOWebSocketChannel.connect(Uri.parse('${WS}/${token}/app/${homeId}'));
 
     try {
       channel.stream.listen((message) {

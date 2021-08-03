@@ -20,7 +20,7 @@ class FCM {
     );
     // print('User granted permission: ${settings.authorizationStatus}');
     String token = await messaging.getToken();
-    print(token);
+    // print(token);
     auth.updateDeviceToken(token);
 
     return messaging;

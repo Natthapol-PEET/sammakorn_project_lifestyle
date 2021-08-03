@@ -1,10 +1,13 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:registerapp_flutter/data/auth.dart';
+import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/data/notification.dart';
 import '../../constance.dart';
 import 'components/body.dart';
 import 'components/list_notification.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key key}) : super(key: key);
@@ -15,14 +18,22 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   NotificationDB notifications = NotificationDB();
+  Home home = Home();
+  Auth auth = Auth();
   List lists = [];
   String descTime = "";
+
+  // socket variable
+  IOWebSocketChannel channel;
 
   @override
   void initState() {
     super.initState();
 
     getNotification();
+
+    // realtime update data
+    socket();
   }
 
   @override
@@ -65,11 +76,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
       int second = now.second - dt.second;
 
       if (minute == 0) {
-        text = '${second} วินาทีที่แล้ว';
-      } else if (hour == 0) {
-        text = '${minute} นาทีที่แล้ว';
+        text = '${second} seconds ago';
+      } else if (minute == 1) {
+        text = '${minute} min ago';
+      } else if (minute > 1) {
+        text = '${minute} mins ago';
+      } else if (hour == 1) {
+        text = '${hour} hour ago';
       } else {
-        text = '${hour} ชั่วโมงที่แล้ว';
+        text = '${hour} hours ago';
       }
 
       dataMap = {
@@ -113,5 +128,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 Navigator.pop(context);
               });
         });
+  }
+
+  socket() async {
+    var data = await auth.getToken();
+    String token = data[0]['TOKEN'];
+    String homeId = await home.getHomeId();
+
+    channel = IOWebSocketChannel.connect(
+        Uri.parse('${WS}/ws/${token}/app/${homeId}'));
+
+    try {
+      channel.stream.listen((msg) {
+        if (msg == "ALERT_MESSAGE") {
+          // ทุกครั้งที่มีแจ้งเตือนเข้ามา [topic ALERT_MESSAGE] {web -> app}
+          Future.delayed(Duration(milliseconds: 500), () => getNotification());
+        }
+      });
+    } catch (e) {}
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    channel.sink.close(status.goingAway);
   }
 }

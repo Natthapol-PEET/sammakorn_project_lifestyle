@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
-import 'package:registerapp_flutter/screens/Password/password_screen.dart';
 import '../../constance.dart';
 import 'components/app_bar_title.dart';
 import 'components/list_item.dart';

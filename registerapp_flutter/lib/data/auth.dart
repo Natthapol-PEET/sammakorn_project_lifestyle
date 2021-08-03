@@ -15,7 +15,7 @@ class Auth {
     final String command =
         "INSERT INTO Auth (TOKEN, ID_RES, Username, device_token) values ('-1', 0, 'NULL', 'device_token')";
     var row = await sqlite.insertDatabase(command);
-    print("insertToken: ${row}");
+    // print("insertToken: ${row}");
   }
 
   checkDBAuth() async {
@@ -62,7 +62,7 @@ class Auth {
   void updateDeviceToken(String token) async {
     final String command = "UPDATE Auth SET device_token = '${token}';";
     final row = await sqlite.updateDatabase(command);
-    print("UPDATE Auth ${row}");
+    // print("UPDATE Auth ${row}");
   }
 
   getDeviceToken() async {
@@ -81,12 +81,12 @@ class Auth {
     final String command =
         "UPDATE Auth SET TOKEN = '${token}', ID_RES = ${id}, Username = '${Username}';";
     final row = await sqlite.updateDatabase(command);
-    print("UPDATE Auth ${row}");
+    // print("UPDATE Auth ${row}");
   }
 
   void deleteToken() async {
     final String command = "DROP TABLE Auth";
     final row = await sqlite.deleteDatabase(command);
-    print("DROP TABLE Auth ${row}");
+    // print("DROP TABLE Auth ${row}");
   }
 }

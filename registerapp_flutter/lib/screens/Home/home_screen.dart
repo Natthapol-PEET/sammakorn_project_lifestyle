@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/components/list_item_field_container.dart';
+import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/data/notification.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
@@ -19,6 +20,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'components/timeline_blacklist_whitelist.dart';
 import 'function/selectIndex.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -28,9 +31,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Home home = Home();
+  Auth auth = Auth();
   PopupDialog popupDialog = PopupDialog();
   Services services = Services();
-  Home home = Home();
   PushNotification pushNotification = PushNotification();
   FCM fcm = FCM();
   FirebaseMessaging messaging;
@@ -46,10 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
   List checkout_list = [];
   List white_black_list = [];
   List history_list = [];
+  List allHome = [];
 
+  // menu variable
   int selectIndex = 0;
 
+  // loading dialog variable
   BuildContext dialogContext;
+
+  // socket variable
+  IOWebSocketChannel channel;
 
   @override
   void initState() {
@@ -60,79 +70,45 @@ class _HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.portraitDown,
     ]);
 
+    // Project of homeId
     getHomeSlide();
 
+    // ทุกครั้งที่มีแจ้งเตือนเข้ามา [topic ALERT_MESSAGE]
     getCountAlert();
+
+    // title screen
     getHome();
 
-    Future.delayed(Duration(milliseconds: 500), () => getLicenseInvite());
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //   getLicenseInvite();
-    // });
-
-    coming_and_walk();
-    get_resident_stamp();
-
-    Future.delayed(Duration(milliseconds: 500), () => resident_send_admin());
-
-    pms_show();
-    checkout();
-
-    get_white_black();
-
+    // List Item -> history
     getHistory();
 
-    Future.delayed(Duration.zero, () => showAlert());
+    // ทุกครั้งที่มีรถ coming in (not walk in) [topic COMING_IN]
+    Future.delayed(Duration(milliseconds: 500), () => getLicenseInvite());
+    coming_and_walk();
+
+    // resident stamp -> load new screen
+    get_resident_stamp();
+
+    // multiclient (application) [RESIDENT_SEND_STAMP] {app -> app}
+    // [RESIDENT_SEND_STAMP] {web -> app}
+    Future.delayed(Duration(milliseconds: 500), () => resident_send_admin());
+
+    // admin operation -> all status
+    pms_show();
+
+    // PMS -> checkout || resident stamp -> checkout
+    // [CHECKOUT] {web -> app}
+    checkout();
+
+    // whitelist and blacklist -> all status
+    get_white_black();
+
+    // loading dialog
+    Future.delayed(Duration.zero, () => showLoading());
     Future.delayed(Duration(seconds: 3), () => Navigator.pop(dialogContext));
-  }
 
-  List allHome = [];
-
-  getHomeSlide() async {
-    var data = await services.getHome();
-    // home_id = data[1];
-
-    if (data[0] == -1) {
-      print("services error");
-    } else {
-      setState(() {
-        allHome = data[0];
-      });
-    }
-  }
-
-  Widget build_HomeSlide(BuildContext context, List lists) {
-    Size size = MediaQuery.of(context).size;
-
-    return SizedBox(
-      height: size.height * 0.15,
-      child: ListView.builder(
-          // physics: ClampingScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          // shrinkWrap: true,
-          itemCount: lists.length,
-          itemBuilder: (context, index) {
-            return ListProject(
-              title: lists[index],
-              index: index,
-            );
-            // return ListItemField(
-            //   date: lists[index]['datetime_in'].split('T')[0],
-            //   license_plate: lists[index]['license_plate'],
-            //   color: fededWhite,
-            //   press: () {
-            //     lists[index]['select'] = "history";
-            //     Navigator.pushNamed(context, '/show_detail',
-            //         arguments: lists[index]);
-            //   },
-            // );
-          }),
-    );
-  }
-
-  getCountAlert() async {
-    int count = await notifications.getCountNotification();
-    setState(() => countAlert = count);
+    // realtime update data
+    socket();
   }
 
   @override
@@ -148,7 +124,11 @@ class _HomeScreenState extends State<HomeScreen> {
           resizeToAvoidBottomInset: false,
           backgroundColor: darkgreen200,
           appBar: AppBar(
-            title: AppBarTitle(title: title),
+            title: AppBarTitle(
+                title: title,
+                press: () async {
+                  Navigator.pushNamed(context, '/logout');
+                }),
             backgroundColor: darkgreen,
             automaticallyImplyLeading: false,
             actions: [
@@ -172,7 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: size.height * 0.03),
                 build_HomeSlide(context, allHome),
                 SizedBox(height: size.height * 0.03),
-
                 ButtonSelectGroup(
                   selectColorElem: selectColorElem,
                   selectColorButton: selectColorButton,
@@ -182,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   press4: () => setState(() => selectIndex = 3),
                   press5: () => setState(() => selectIndex = 4),
                 ),
-
                 if (selectIndex == 0) ...[
                   BoxShowList(
                     lists: licensePlateInvite,
@@ -223,26 +201,43 @@ class _HomeScreenState extends State<HomeScreen> {
                     select: "history",
                   ),
                 ],
-
-                // Center(
-                // child: ListTabBar(
-                //     build_licensePLateInvite:
-                //         build_licensePLateInvite(context, licensePlateInvite),
-                //     build_comingAndWalk:
-                //         build_comingAndWalk(context, coming_walk),
-                //     build_resident_stamp:
-                //         build_resident_stamp(context, resident_stamp_list),
-                //     build_resident_send_admin: build_resident_send_admin(
-                //         context, resident_send_admin_stamp),
-                //     build_pms_show: build_pms_show(context, pms_list),
-                //     build_checkout: build_checkout(context, checkout_list),
-                //     history: build_History(context, history_list),
-                //   ),
-                // ),
               ],
             ),
           ),
           floatingActionButton: FloatingButtonGroup()),
+    );
+  }
+
+  getCountAlert() async {
+    int count = await notifications.getCountNotification();
+    setState(() => countAlert = count);
+  }
+
+  getHomeSlide() async {
+    var data = await services.getHome();
+    if (data[0] == -1) {
+      // print("services error");
+    } else {
+      setState(() {
+        allHome = data[0];
+      });
+    }
+  }
+
+  Widget build_HomeSlide(BuildContext context, List lists) {
+    Size size = MediaQuery.of(context).size;
+
+    return SizedBox(
+      height: size.height * 0.15,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: lists.length,
+          itemBuilder: (context, index) {
+            return ListProject(
+              title: lists[index],
+              index: index,
+            );
+          }),
     );
   }
 
@@ -256,164 +251,30 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => licensePlateInvite = data);
   }
 
-  // Widget build_licensePLateInvite(BuildContext context, List lists) {
-  //   return ListView.builder(
-  //       physics: NeverScrollableScrollPhysics(),
-  //       shrinkWrap: true,
-  //       itemCount: lists.length,
-  //       itemBuilder: (context, index) {
-  //         return ListItemField(
-  //           date: lists[index]['license_plate'],
-  //           license_plate: "Invite",
-  //           color: fededWhite1,
-  //           press: () {
-  //             lists[index]['select'] = "Invite";
-  //             Navigator.pushNamed(context, '/show_detail',
-  //                 arguments: lists[index]);
-  //           },
-  //         );
-  //       });
-  // }
-
   coming_and_walk() async {
     var data = await services.coming_and_walk();
     setState(() => coming_walk = data);
   }
-
-  // Widget build_comingAndWalk(BuildContext context, List lists) {
-  //   return ListView.builder(
-  //       physics: NeverScrollableScrollPhysics(),
-  //       shrinkWrap: true,
-  //       itemCount: lists.length,
-  //       itemBuilder: (context, index) {
-  //         return ListItemField(
-  //           date: lists[index]['license_plate'],
-  //           license_plate: lists[index]['status'],
-  //           color: greenYellow,
-  //           press: () {
-  //             // popupDialog.walkin_comingin_dialog(context, coming_walk[index],
-  //             //     () {
-  //             //   var state = services
-  //             //       .resident_stamp(coming_walk[index]['log_id'].toString());
-  //             //   state.then((v) {
-  //             //     coming_and_walk();
-  //             //     get_resident_stamp();
-  //             //   });
-  //             //   Navigator.pop(context);
-  //             // });
-
-  //             lists[index]['select'] = "coming_walk";
-  //             Navigator.pushNamed(context, '/show_detail',
-  //                 arguments: lists[index]);
-  //           },
-  //         );
-  //       });
-  // }
 
   get_resident_stamp() async {
     var data = await services.get_resident_stamp();
     setState(() => resident_stamp_list = data);
   }
 
-  // Widget build_resident_stamp(BuildContext context, List lists) {
-  //   return ListView.builder(
-  //       physics: NeverScrollableScrollPhysics(),
-  //       shrinkWrap: true,
-  //       itemCount: lists.length,
-  //       itemBuilder: (context, index) {
-  //         return ListItemField(
-  //             date: lists[index]['license_plate'],
-  //             license_plate: "Resident stamp",
-  //             color: fededWhite,
-  //             press: () {
-  //               // popupDialog.resident_dialod(context, resident_stamp_list[index], () {
-  //               //   var state = services.send_admin_stamp(
-  //               //       resident_stamp_list[index]['log_id'].toString());
-  //               //   state.then((v) {
-  //               //     get_resident_stamp();
-  //               //     // PMS stamp
-  //               //   });
-  //               //   Navigator.pop(context);
-  //               // });
-
-  //               lists[index]['select'] = "Resident stamp";
-  //               Navigator.pushNamed(context, '/show_detail',
-  //                   arguments: lists[index]);
-  //             });
-  //       });
-  // }
-
   resident_send_admin() async {
     var data = await services.get_resident_send_admin();
     setState(() => resident_send_admin_stamp = data);
   }
-
-  // Widget build_resident_send_admin(BuildContext context, List lists) {
-  //   return ListView.builder(
-  //       physics: NeverScrollableScrollPhysics(),
-  //       shrinkWrap: true,
-  //       itemCount: lists.length,
-  //       itemBuilder: (context, index) {
-  //         return ListItemField(
-  //           date: lists[index]['license_plate'],
-  //           license_plate: "Wait Admin",
-  //           color: fededWhite,
-  //           press: () {
-  //             lists[index]['select'] = "send to admin";
-  //             Navigator.pushNamed(context, '/show_detail',
-  //                 arguments: lists[index]);
-  //           },
-  //         );
-  //       });
-  // }
 
   pms_show() async {
     var data = await services.pms_show();
     setState(() => pms_list = data);
   }
 
-  // Widget build_pms_show(BuildContext context, List lists) {
-  //   return ListView.builder(
-  //       physics: NeverScrollableScrollPhysics(),
-  //       shrinkWrap: true,
-  //       itemCount: lists.length,
-  //       itemBuilder: (context, index) {
-  //         return ListItemField(
-  //           date: lists[index]['license_plate'],
-  //           license_plate: "Admin done",
-  //           color: fededWhite,
-  //           press: () {
-  //             lists[index]['select'] = "Admin done";
-  //             Navigator.pushNamed(context, '/show_detail',
-  //                 arguments: lists[index]);
-  //           },
-  //         );
-  //       });
-  // }
-
   checkout() async {
     var data = await services.checkout();
     setState(() => checkout_list = data);
   }
-
-  // Widget build_checkout(BuildContext context, List lists) {
-  //   return ListView.builder(
-  //       physics: NeverScrollableScrollPhysics(),
-  //       shrinkWrap: true,
-  //       itemCount: lists.length,
-  //       itemBuilder: (context, index) {
-  //         return ListItemField(
-  //           date: lists[index]['license_plate'],
-  //           license_plate: "Leaving",
-  //           color: fededWhite,
-  //           press: () {
-  //             lists[index]['select'] = "Leaving";
-  //             Navigator.pushNamed(context, '/show_detail',
-  //                 arguments: lists[index]);
-  //           },
-  //         );
-  //       });
-  // }
 
   get_white_black() async {
     var data = await services.getListItems();
@@ -431,11 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
         shrinkWrap: true,
         itemCount: lists.length,
         itemBuilder: (context, index) {
-          // return ListItemField(
-          //   date: lists[index]['datetime_in'],
-          //   license_plate: lists[index]['license_plate'],
-          //   color: fededWhite,
-          // );
           return ListItemField(
             date: lists[index]['datetime_in'].split('T')[0],
             license_plate: lists[index]['license_plate'],
@@ -449,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  void showAlert() {
+  showLoading() {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -483,14 +339,69 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
+  socket() async {
+    var data = await auth.getToken();
+    String token = data[0]['TOKEN'];
+    String homeId = await home.getHomeId();
+
+    channel = IOWebSocketChannel.connect(
+        Uri.parse('${WS}/ws/${token}/app/${homeId}'));
+
+    // String msg = '''
+    //     {
+    //         "topic": "ADMIN_APPROVE",
+    //         "send_to": "app",
+    //         "home_id": ${homeId}
+    //     }
+    // ''';
+
+    // try {
+    //   channel.sink.add(msg);
+    // } catch (e) {}
+
+    try {
+      // -------------------- refresh components -----------------------
+      channel.stream.listen((msg) {
+        if (msg == "ALERT_MESSAGE") {
+          // ทุกครั้งที่มีแจ้งเตือนเข้ามา [topic ALERT_MESSAGE] {web -> app}
+          Future.delayed(Duration(milliseconds: 500), () => getCountAlert());
+        } else if (msg == "COMING_WALK_IN") {
+          // ทุกครั้งที่มีรถ coming in and walk in [topic COMING_WALK_IN] {web -> app}
+          Future.delayed(Duration(milliseconds: 500), () => getLicenseInvite());
+          Future.delayed(Duration(milliseconds: 500), () => coming_and_walk());
+        } else if (msg == "RESIDENT_STAMP") {
+          // multiclient (application) [topic RESIDENT_STAMP] {app -> app}
+          get_resident_stamp();
+        } else if (msg == "RESIDENT_SEND_STAMP") {
+          // multiclient (application) [RESIDENT_SEND_STAMP] {app -> app}
+          // [RESIDENT_SEND_STAMP] {web -> app}
+          resident_send_admin();
+        } else if (msg == "ADMIN_OPERATION") {
+          // Admin operation -> all status [topic ADMIN_OPERATION]  {web -> app}
+          pms_show();
+        } else if (msg == "CHECKOUT") {
+          // PMS -> checkout || resident stamp -> checkout
+          // [CHECKOUT] {web -> app}
+          checkout();
+        } else if (msg == "ADMIN_OP_BLACKWHITE") {
+          // Admin operation whitelist and blacklist (application) [ADMIN_OP_BLACKWHITE]
+          get_white_black();
+        }
+      });
+    } catch (e) {}
+  }
+
   @override
   dispose() {
+    super.dispose();
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    super.dispose();
+
+    channel.sink.close(status.goingAway);
   }
 }

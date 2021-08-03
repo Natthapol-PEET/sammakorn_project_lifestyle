@@ -13,7 +13,7 @@ class Home {
     final String command =
         "INSERT INTO HomeData (home, home_id) values ('home', 0)";
     var row = await sqlite.insertDatabase(command);
-    print("insertHome: ${row}");
+    // print("insertHome: ${row}");
   }
 
   checkDBHome() async {
@@ -70,12 +70,12 @@ class Home {
     final String command =
         "UPDATE HomeData SET home = '${home}', home_id = ${home_id};";
     final row = await sqlite.updateDatabase(command);
-    print("UPDATE HomeData ${row}");
+    // print("UPDATE HomeData ${row}");
   }
 
   void deleteHome() async {
     final String command = "DROP TABLE HomeData";
     final row = await sqlite.deleteDatabase(command);
-    print("DROP TABLE HomeData ${row}");
+    // print("DROP TABLE HomeData ${row}");
   }
 }

@@ -376,6 +376,14 @@ manager = ConnectionManager()
 @app.websocket("/ws/{token}/{apptype}/{home_id}")
 async def websocket_endpoint(websocket: WebSocket, token: str, apptype: str, home_id: int):
 
+    '''
+        {
+            "topic": "admin approve",
+            "send_to": "app",
+            "home_id": 0
+        }
+    '''
+
     status = auth_handler.auth_wrapper_socket(token)
 
     if status == 1001:
@@ -384,9 +392,16 @@ async def websocket_endpoint(websocket: WebSocket, token: str, apptype: str, hom
         try:
             while True:
                 data = await websocket.receive_text()
+                # Convert data to dict
                 data = json.loads(data)
+                # Convert dict to string 
+                # data_str = json.dumps(data)
+                print(data)
+
+                # await websocket.send_text(data['topic'])
+
                 # await manager.send_personal_message(f"You wrote: {data}", websocket)
-                await manager.broadcast(data['topic'], data['send_to'], data['home_id'])
+                await manager.broadcast(websocket, data['topic'], data['send_to'], data['home_id'])
         except WebSocketDisconnect:
             manager.disconnect(websocket, apptype)
             # await manager.broadcast(f"Client #{home_id} left the chat")

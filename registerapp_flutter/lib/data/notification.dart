@@ -54,26 +54,26 @@ class NotificationDB {
         '''INSERT INTO Notification (class, title, description, time, is_read, home_id) 
         VALUES ('${Class}', '${title}', '${description}', '${now}', false, ${homeId})''';
     var row = await sqlite.insertDatabase(command);
-    print("insert Notification: ${row}");
+    // print("insert Notification: ${row}");
   }
 
   updateNotification() async {
     final String command =
         "UPDATE Notification SET is_read = true WHERE is_read = false";
     final row = await sqlite.updateDatabase(command);
-    print("UPDATE Notification ${row}");
+    // print("UPDATE Notification ${row}");
   }
 
   deleteNotification(int id) async {
     final String command = "DELETE FROM Notification WHERE id = ${id}";
     final row = await sqlite.deleteDatabase(command);
-    print("id ${id} : ${row}");
+    // print("id ${id} : ${row}");
   }
 
   dropNotification() async {
     final String command = "DROP TABLE Notification";
     final row = await sqlite.deleteDatabase(command);
-    print("DROP TABLE Notification ${row}");
+    // print("DROP TABLE Notification ${row}");
   }
 
   checkDBNotification() async {
@@ -83,7 +83,7 @@ class NotificationDB {
     bool isHave = false;
 
     for (var elem in row.toList()) {
-      print(elem);
+      // print(elem);
 
       if (elem['name'] == 'Notification') {
         isHave = true;

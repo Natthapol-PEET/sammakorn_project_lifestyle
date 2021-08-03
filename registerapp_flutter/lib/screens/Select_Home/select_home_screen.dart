@@ -31,7 +31,7 @@ class _SelectHomeScreenState extends State<SelectHomeScreen> {
     var allHome = data[0], home_id = data[1];
 
     if (allHome == -1) {
-      print("services error");
+      // print("services error");
     } else {
       setState(() {
         selectHome = allHome[0];

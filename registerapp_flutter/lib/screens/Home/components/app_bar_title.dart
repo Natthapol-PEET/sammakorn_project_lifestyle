@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/screens/logout/logout_screen.dart';
 import '../../../constance.dart';
 
 class AppBarTitle extends StatelessWidget {
+  final Function press;
   final String title;
 
   const AppBarTitle({
     Key key,
     @required this.title,
+    @required this.press,
   }) : super(key: key);
 
   @override
@@ -15,9 +16,7 @@ class AppBarTitle extends StatelessWidget {
     return Row(
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/logout');
-          },
+          onTap: press,
           child: CircleAvatar(
             backgroundImage: AssetImage('assets/images/Rectangle 2878.png'),
           ),
