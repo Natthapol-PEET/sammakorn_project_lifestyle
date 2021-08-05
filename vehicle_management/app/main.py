@@ -636,7 +636,7 @@ async def guardhouse_checkin(item: GuardhouseCheckin, username=Depends(auth_hand
     \'{item.classname}\' -- class_id character varying NULLABLE
     , {item.class_id}
     , \'{item.datetime_in}\' -- datetime_in timestamp without time zone NULLABLE
-    , current_timestamp
+    , datetime.now()
     
 )
         """
@@ -708,7 +708,7 @@ ORDER BY g.guard_id
     , \'{date}\' -- invite_date date NULLABLE
     , \'guard\'
     , \'{(data2[0]['guard_id'])}\'
-    , current_timestamp
+    , datetime.now()
 )
         """
         data3 = await db.fetch_all(query3)
@@ -733,7 +733,7 @@ ORDER BY v.visitor_id
     \'visitor\' -- class_id character varying NULLABLE
     , {(data4[0]['visitor_id'])}
     , \'{item.datetime_in}\' -- datetime_in timestamp without time zone NULLABLE
-    ,now()
+    ,datetime.now()
     
 )
 """
