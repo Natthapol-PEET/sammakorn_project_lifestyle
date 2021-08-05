@@ -705,7 +705,7 @@ ORDER BY g.guard_id
     , \'{item.lastname}\' -- lastname character varying NULLABLE
     , \' \'
     , \'{item.id_number}\'  -- license_plate character varying NULLABLE
-    , DATE(\'{date}\') -- invite_date date NULLABLE
+    , \'{date}\' -- invite_date date NULLABLE
     , \'guard\'
     , \'{(data2[0]['guard_id'])}\'
     , current_timestamp
