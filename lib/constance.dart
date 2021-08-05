@@ -23,9 +23,8 @@ const approveColor = Color(0xff17CD4A);
 const disapproveColor = Color(0xffEA464C);
 
 
-// const String URL = "http://13.229.234.126:8080"; // server aws
-// const String URL = "http://192.168.0.100:8080";     // local
-// const String WS = "ws://192.168.0.100:8080";
+const String URL = "http://192.168.0.100:8080/app_api";     // local
+const String WS = "ws://192.168.0.100:8080";
 
-const String URL = "http://13.229.234.126:8080";     // server aws
-const String WS = "ws://13.229.234.126:8080";
+// const String URL = "http://13.229.234.126:8080";     // server aws
+// const String WS = "ws://13.229.234.126:8080";

@@ -17,7 +17,7 @@ class SocketManager {
     String homeId = await home.getHomeId();
 
     channel = IOWebSocketChannel.connect(
-        Uri.parse('${WS}/ws/${token}/app/${homeId}'));
+        Uri.parse('${WS}/ws/${token}/app/${homeId}/temporary'));
 
     String msg = '''
         {

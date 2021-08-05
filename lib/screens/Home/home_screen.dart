@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registerapp_flutter/components/list_item_field_container.dart';
@@ -6,6 +8,7 @@ import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/data/notification.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
+import 'package:registerapp_flutter/service/device_id.dart';
 import 'package:registerapp_flutter/service/fcm.dart';
 import 'package:registerapp_flutter/service/push_notification.dart';
 import '../../constance.dart';
@@ -224,21 +227,12 @@ class _HomeScreenState extends State<HomeScreen> {
     String token = data[0]['TOKEN'];
     String homeId = await home.getHomeId();
 
-    // String msg = '''
-    //     {
-    //         "topic": "ADMIN_APPROVE",
-    //         "send_to": "app",
-    //         "home_id": ${homeId}
-    //     }
-    // ''';
-
-    // try {
-    //   channel.sink.add(msg);
-    // } catch (e) {}
+    String deviceId = await Device().getId();
 
     try {
       channel = IOWebSocketChannel.connect(
-          Uri.parse('${WS}/ws/${token}/app/${homeId}'));
+          Uri.parse('${WS}/ws/${token}/app/${homeId}/${deviceId}'));
+
       // -------------------- refresh components -----------------------
       channel.stream.listen((msg) {
         print(msg);
