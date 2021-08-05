@@ -1,8 +1,10 @@
-from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException
-from schemas import LoginDetails, LoginResident
-from models import resident_account, admin_account, guard_account
-from auth import AuthHandler
+from fastapi.encoders import jsonable_encoder
+
+from data.schemas import LoginDetails, LoginResident
+from data.models import resident_account, admin_account, guard_account
+from auth.auth import AuthHandler
+
 from datetime import datetime
 
 auth_handler = AuthHandler()

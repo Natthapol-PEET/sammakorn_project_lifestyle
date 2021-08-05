@@ -1,5 +1,5 @@
-from models import notes
-from schemas import NoteIn
+from data.models import notes
+from data.schemas import NoteIn
 
 
 async def read_notes(db, skip: int = 0, take: int = 20):

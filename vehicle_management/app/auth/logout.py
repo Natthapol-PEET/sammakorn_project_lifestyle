@@ -1,6 +1,7 @@
 from fastapi.encoders import jsonable_encoder
-from models import blacklist_token, resident_account
-from schemas import ResidentId
+
+from data.models import blacklist_token
+from data.schemas import ResidentId
 
 
 class Logout:

@@ -1,8 +1,5 @@
-from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
-from models import visitor, blacklist, whitelist
-from schemas import listItem_whitelist_blacklist, deleteBlackWhite, HomeId
-from datetime import date, datetime
+from data.schemas import listItem_whitelist_blacklist, deleteBlackWhite, HomeId
+from datetime import  datetime
 
 
 class ListItem:
@@ -85,7 +82,7 @@ class History:
                 AND h.class = 'whitelist'
                 AND w.home_id = {item.home_id}
                 AND h.datetime_out is not NULL
-				AND h.datetime_out < current_timestamp
+				AND h.datetime_out < '{datetime.now()}'
             UNION
             SELECT h.log_id, 
                 h.class AS type,
@@ -117,7 +114,7 @@ class History:
                 AND h.class = 'visitor'
                 AND v.home_id = {item.home_id}
                 AND h.datetime_out is not NULL
-				AND h.datetime_out < current_timestamp ) data
+				AND h.datetime_out < '{datetime.now()}') data
             ORDER BY datetime_out DESC
         '''
         return await db.fetch_all(command)

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Table, Integer, String, Boolean, \
-    Date, Time, DateTime, TIMESTAMP, ForeignKey
+    Date, DateTime, ForeignKey
 from sqlalchemy import MetaData, create_engine
-from database import DATABASE_URL
+from data.database import DATABASE_URL
 
 
 metadata = MetaData()

@@ -1,31 +1,62 @@
 from fastapi import  WebSocket
-from typing import List
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections_app: List[WebSocket] = []
-        self.active_connections_web: List[WebSocket] = []
+        self.active_connections_app = []
+        self.active_connections_web = []
 
-    async def connect(self, websocket: WebSocket, apptype, home_id):
+
+    def isDuplicate(self, deviceId):
+        # find deviceId in list
+        for item in self.active_connections_app:
+            if item["deviceId"] == deviceId:
+                return item
+            else:
+                return []
+
+    async def connect(self, websocket: WebSocket, apptype, home_id, deviceId):
         await websocket.accept()
 
         if apptype == 'app':
-            self.active_connections_app.append({
-            "home_id": home_id,
-            "websocket": websocket,
-            })
+            if deviceId == 'temporary':
+                self.active_connections_app.append({
+                    "deviceId": deviceId,
+                    "home_id": home_id,
+                    "websocket": websocket,
+                })
+            else:
+                data = self.isDuplicate(deviceId)
+
+                if data is not None:
+                    # find index in list
+                    index = self.active_connections_app.index(data)
+                    # update websocket in data
+                    data['websocket'] = websocket
+                    # update data in list
+                    self.active_connections_app[index] = data
+                    
+                else:
+                    # append
+                    self.active_connections_app.append({
+                        "deviceId": deviceId,
+                        "home_id": home_id,
+                        "websocket": websocket,
+                    })
+
         elif apptype == 'web':
             self.active_connections_web.append(websocket)
 
         print(self.active_connections_app)
 
 
-    def disconnect(self, websocket: WebSocket, apptype):
+    async def disconnect(self, websocket: WebSocket, apptype):
         if apptype == 'app':
             data = next(item for item in self.active_connections_app if item["websocket"] == websocket)
             self.active_connections_app.remove(data)
         elif apptype == 'web':
             self.active_connections_web.remove(websocket)
+
+        await websocket.close()
 
         print(self.active_connections_app)
 

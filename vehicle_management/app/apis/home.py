@@ -1,9 +1,8 @@
-from datetime import datetime
-from models import home, resident_home
-from schemas import HomeIn, ResidentHomeIn, HomeId, VisitorId, HistoryLog, \
+from data.schemas import HomeIn, ResidentHomeIn, HomeId, VisitorId, HistoryLog, \
     ResidentId, SendToAdmin, AdminDelete
-from fastapi.encoders import jsonable_encoder
+from data.models import home, resident_home
 
+from datetime import datetime
 
 class Home:
     async def Add_Home(self, db, Home: HomeIn):
@@ -43,7 +42,7 @@ class LicensePlate:
                 v.license_plate,
                 CONCAT(v.firstname, '  ', v.lastname) AS fullname,
                 'visitor' AS type,
-                CONCAT(v.invite_date, 'T', TO_CHAR(v.create_datetime::TIME, 'HH:mm')) AS invite,
+                CONCAT(v.invite_date, 'T', CAST(v.create_datetime::timestamp as time)) AS invite,
                 'Invite' AS status
             FROM visitor AS v
             FULL OUTER JOIN (
@@ -68,7 +67,7 @@ class LicensePlate:
                     v.license_plate,
                     h.class AS type,
                     CONCAT(v.firstname, '  ', v.lastname) AS fullname,
-                    CONCAT(v.invite_date, 'T', TO_CHAR(h.create_datetime::TIME, 'HH:mm')) AS invite,
+                    CONCAT(v.invite_date, 'T', CAST(v.create_datetime::timestamp as time)) AS invite,
 					h.datetime_in,
                     CASE
 						WHEN v.id_card is NULL THEN 'Coming in'
@@ -103,7 +102,7 @@ class LicensePlate:
         return await db.fetch_all(query)
 
     async def resident_stamp(self, db, item: HistoryLog):
-        query = f"UPDATE history_log SET resident_stamp = CURRENT_TIMESTAMP WHERE log_id = {item.log_id}"
+        query = f"UPDATE history_log SET resident_stamp = '{datetime.now()}' WHERE log_id = {item.log_id}"
         await db.execute(query)
         return {"id": item.log_id}
 
@@ -132,7 +131,7 @@ class LicensePlate:
                 AND w.home_id = {item.home_id}
                 AND h.resident_send_admin is NULL
                 AND h.datetime_out is NULL
-                AND TO_CHAR(h.resident_stamp::DATE, 'yyyy-dd-mm') = TO_CHAR(current_timestamp::DATE, 'yyyy-dd-mm')
+                AND TO_CHAR(h.resident_stamp::DATE, 'yyyy-dd-mm') = TO_CHAR('{datetime.now()}'::DATE, 'yyyy-dd-mm')
             UNION
             -- visitor Coming in OR Walk in
             SELECT h.log_id, 
@@ -144,7 +143,7 @@ class LicensePlate:
 					WHEN v.id_card is not NULL THEN 'Walk in'
 					ELSE ''
                  END AS status, 
-				CONCAT(v.invite_date, 'T', TO_CHAR(h.create_datetime::TIME, 'HH:mm')) AS invite,
+				CONCAT(v.invite_date, 'T', CAST(v.create_datetime::timestamp as time)) AS invite,
 				h.datetime_in,
                 h.resident_stamp,
                 (	
@@ -160,14 +159,14 @@ class LicensePlate:
                 AND v.home_id = {item.home_id}
                 AND h.resident_send_admin is NULL
                 AND h.datetime_out is NULL
-                AND TO_CHAR(h.resident_stamp::DATE, 'yyyy-dd-mm') = TO_CHAR(current_timestamp::DATE, 'yyyy-dd-mm')
+                AND TO_CHAR(h.resident_stamp::DATE, 'yyyy-dd-mm') = TO_CHAR('{datetime.now()}'::DATE, 'yyyy-dd-mm')
         '''
         return await db.fetch_all(query)
 
     async def send_admin_stamp(self, db, item: SendToAdmin):
         query = f'''
             UPDATE history_log 
-                SET resident_send_admin = CURRENT_TIMESTAMP,
+                SET resident_send_admin = '{datetime.now()}',
                     resident_reason = '{item.reason}'
             WHERE log_id = {item.log_id}'''
         last_record_id = await db.execute(query)
@@ -179,7 +178,7 @@ class LicensePlate:
         if item.type == 'blacklist' or item.type == 'whitelist':
             query = f'''
                 UPDATE {item.type} 
-                    SET resident_remove_datetime = CURRENT_TIMESTAMP,
+                    SET resident_remove_datetime = '{datetime.now()}',
                         resident_remove_reason = '{item.reason}'
                 WHERE {item.type}_id = {item.id}'''
             last_record_id = await db.execute(query)
@@ -224,7 +223,7 @@ class LicensePlate:
 					WHEN v.id_card is not NULL THEN 'Walk in'
 					ELSE ''
                  END AS status, 
-				CONCAT(v.invite_date, 'T', TO_CHAR(h.create_datetime::TIME, 'HH:mm')) AS invite,
+				CONCAT(v.invite_date, 'T', CAST(v.create_datetime::timestamp as time)) AS invite,
 				h.datetime_in,
 				h.resident_stamp,
 				h.resident_send_admin,
@@ -293,7 +292,7 @@ class LicensePlate:
 					WHEN v.id_card is not NULL THEN 'Walk in'
 					ELSE ''
                  END AS status, 
-				CONCAT(v.invite_date, 'T', TO_CHAR(h.create_datetime::TIME, 'HH:mm')) AS invite,
+				CONCAT(v.invite_date, 'T', CAST(v.create_datetime::timestamp as time)) AS invite,
 				h.datetime_in,
 				h.resident_stamp,
 				h.resident_send_admin,
@@ -351,13 +350,13 @@ class LicensePlate:
         if item.type == 'White List':
             query = f'''
                 UPDATE whitelist SET resident_remove_reason = '{item.reason}', 
-                    resident_remove_datetime = CURRENT_TIMESTAMP 
+                    resident_remove_datetime = '{datetime.now()}' 
                 WHERE whitelist_id = {item.id};
             '''
         else:
             query = f'''
                 UPDATE blacklist SET resident_remove_reason = '{item.reason}', 
-                    resident_remove_datetime = CURRENT_TIMESTAMP 
+                    resident_remove_datetime = '{datetime.now()}' 
                 WHERE blacklist_id = {item.id};
             '''
         await db.execute(query)
@@ -393,7 +392,7 @@ class LicensePlate:
                 AND h.class = 'whitelist'
                 AND w.home_id = {item.home_id}
                 AND h.datetime_out is not NULL
-                AND TO_CHAR(h.datetime_out::DATE, 'yyyy-dd-mm') = TO_CHAR(current_timestamp::DATE, 'yyyy-dd-mm')
+                AND TO_CHAR(h.datetime_out::DATE, 'yyyy-dd-mm') = TO_CHAR('{datetime.now()}'::DATE, 'yyyy-dd-mm')
             UNION
             SELECT h.log_id, 
                 h.class AS type,
@@ -404,7 +403,7 @@ class LicensePlate:
 					WHEN v.id_card is not NULL THEN 'Walk in'
 					ELSE ''
                  END AS status, 
-				CONCAT(v.invite_date, 'T', TO_CHAR(h.create_datetime::TIME, 'HH:mm')) AS invite,
+				CONCAT(v.invite_date, 'T', CAST(v.create_datetime::timestamp as time)) AS invite,
 				h.datetime_in,
 				h.resident_stamp,
 				h.resident_send_admin,
@@ -425,12 +424,8 @@ class LicensePlate:
                 AND h.class = 'visitor'
                 AND v.home_id = {item.home_id}
                 AND h.datetime_out is not NULL
-                AND TO_CHAR(h.datetime_out::DATE, 'yyyy-dd-mm') = TO_CHAR(current_timestamp::DATE, 'yyyy-dd-mm')
+                AND TO_CHAR(h.datetime_out::DATE, 'yyyy-dd-mm') = TO_CHAR('{datetime.now()}'::DATE, 'yyyy-dd-mm')
         '''
 
         return await db.fetch_all(query)
 
-
-
-
-# TO_CHAR(h.datetime_in::DATE, 'yyyy-mm-dd') = TO_CHAR(CURRENT_DATE::DATE, 'yyyy-mm-dd')

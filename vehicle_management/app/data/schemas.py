@@ -1,7 +1,5 @@
-from sqlalchemy.sql.functions import user
 from pydantic import BaseModel
-from datetime import date, time, datetime
-from typing import List, Optional, Union
+from typing import Optional
 
 # ------------------------------------- Authentication  ---------------------------
 
