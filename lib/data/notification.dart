@@ -38,9 +38,11 @@ class NotificationDB {
 
   getCountNotification() async {
     String homeId = await home.getHomeId();
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
     final String command =
-        "SELECT COUNT(id) AS count FROM Notification WHERE is_read = false AND home_id = ${homeId}";
+        "SELECT COUNT(id) AS count FROM Notification WHERE is_read = false AND home_id = ${homeId} AND time >= '${formattedDate} 00:00:00'";
     final row = await sqlite.queryDatabase(command);
     // print(row.toList());
     return row.toList()[0]['count'].toInt();
