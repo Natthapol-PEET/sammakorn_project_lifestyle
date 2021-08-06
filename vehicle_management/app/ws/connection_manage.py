@@ -60,19 +60,19 @@ class ConnectionManager:
     #     await websocket.send_text(message)
 
 
-    async def broadcast(self, websocket, message: str, send_to, home_id):
+    def broadcast(self, websocket, message: str, send_to, home_id):
         if send_to == 'app':
             for connection in self.active_connections_app:
                 if connection['home_id'] == home_id and connection['websocket'] != websocket:
                     try:
-                        await connection['websocket'].send_text(message)
+                        connection['websocket'].send_text(message)
                     except:
                         self.remove_connection_app(connection['websocket'])
         elif send_to == 'web':
             for connection in self.active_connections_web:
                 if connection != websocket:
                     try:
-                        await connection.send_text(message)
+                        connection.send_text(message)
                     except:
                         self.remove_connection_web(websocket)
 
