@@ -550,7 +550,7 @@ async def blacklist(username=Depends(auth_handler.auth_wrapper), token=Depends(a
 
         data = await db.fetch_all(query)
         data = jsonable_encoder(data)
-
+#
         return data
 
 # ------------------------------ End Web Application  --------------------------------
