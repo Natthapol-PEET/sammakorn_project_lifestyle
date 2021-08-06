@@ -1,0 +1,54 @@
+
+TOPIC [web -> web]
+COMING_WALK_IN		ทุกครั้งที่มีรถ coming in and walk in
+CHECKOUT		ทุกครั้งที่รถออกจากโครงการ
+ADMIN_OPERATION		admin approve and disapprove [resident send stamp]
+ADMIN_ACCEPT_WHITELIST	ทุกครั้งที่มีการ approve หรือ disapprove whitelist
+ADMIN_ACCEPT_BLACKLIST	ทุกครั้งที่มีการ approve หรือ disapprove blacklist
+
+
+TOPIC [app -> web]
+[*] INVITE_VISITOR		
+[*] RESIDENT_STAMP		update stamp visitor
+[*] RESIDENT_REQUEST_STAMP	update requset stamp to admin
+[*] RESIDENT_REQUEST_WHITELIST	update request whitelist to admin
+[*] RESIDENT_REQUEST_BLACKLIST	update request blacklist to admin
+
+
+TOPIC [app -> app]
+[*] RESIDENT_STAMP		update stamp visitor
+[*] RESIDENT_SEND_STAMP		update send stamp to admin
+[*] RESIDENT_REQUEST_WHITEBLACK
+
+TOPIC [web -> app]
+[*] ALERT_MESSAGE		ทุกครั้งที่มีแจ้งเตือน fcm เข้ามา
+[*] COMING_WALK_IN		ทุกครั้งที่มีรถ coming in and walk in
+[*] ADMIN_OPERATION		admin approve and disapprove [resident send stamp]
+[*] CHECKOUT			ทุกครั้งที่รถออกจากโครงการ
+[*] ADMIN_OP_BLACKWHITE		ทุกครั้งที่มีการ approve หรือ disapprove blacklist whitelist
+
+
+docker build -t fastapi-service .
+
+docker run -it --rm -p 8080:8000 --name vms-service -d fastapi-service
+docker run -p 8080:8000 fastapi-service
+
+
+
+[{'home_id': 1, 'websocket': <starlette.websockets.WebSocket object at 0x7f313e326850>}, 
+{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313e2b8250>}, 
+{'home_id': 1, 'websocket': <starlette.websockets.WebSocket object at 0x7f313eca2af0>}, 
+{'home_id': 1, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c1d4cd0>}, 
+{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c400c70>}, 
+{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c377ac0>}, 
+{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313cd30fd0>}, 
+{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c2fd610>}, 
+{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313cc03040>}]
+
+
+
+
+
+
+
+
