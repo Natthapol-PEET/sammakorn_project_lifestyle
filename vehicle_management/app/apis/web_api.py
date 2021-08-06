@@ -370,7 +370,6 @@ async def guardhouse_checkin(item: GuardhouseAddvisitor, username=Depends(auth_h
                             """
         data = await db.fetch_all(query)
         data = jsonable_encoder(data)
-        print(data[0]['home_id'])
 
         query2 = f"""SELECT g.guard_id
                     FROM public.guard_account g
