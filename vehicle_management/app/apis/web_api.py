@@ -2,8 +2,8 @@ from fastapi import FastAPI,  Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from data.schemas import RegisterDetails, LoginDetails, ResidentId, \
-        GuardhouseCheckin, GuardhouseAddvisitor, GuardhouseCheckout, \
-        Adminstamp, ApproveBlacklist, ApproveWhitelist
+    GuardhouseCheckin, GuardhouseAddvisitor, GuardhouseCheckout, \
+    Adminstamp, ApproveBlacklist, ApproveWhitelist
 
 from data.database import database as db
 
@@ -44,6 +44,7 @@ async def register_guard(auth_details: RegisterDetails):
 
 # ------------------------------------- Login ---------------------------
 
+
 @web_api.post('/login_admin/', tags=["Login"], status_code=200)
 async def login_admin(auth_details: LoginDetails):
     return await login.login_admin(db, auth_details=auth_details)
@@ -56,12 +57,16 @@ async def login_guard(auth_details: LoginDetails):
 # ------------------------------------- End Login ---------------------------
 
 # ------------------------------------- End Logout ---------------------------
+
+
 @web_api.post("/logout/", tags=["Logout"], status_code=200)
 async def logout(item: ResidentId, token=Depends(auth_handler.get_token)):
     return await Logout().logout(db, token=token, item=item)
 # ------------------------------------- End Logout ---------------------------
 
 # ------------------------------ Web Application  --------------------------------
+
+
 @web_api.get("/visitorlist_log", status_code=200)
 async def visitorlist_log(username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
     x = datetime.now()
@@ -322,7 +327,7 @@ async def guardhouse_checkin(item: GuardhouseCheckin, username=Depends(auth_hand
                     \'{item.classname}\' -- class_id character varying NULLABLE
                     , {item.class_id}
                     , \'{item.datetime_in}\' -- datetime_in timestamp without time zone NULLABLE
-                    , datetime.now()
+                    , {datetime.now()}
                 ) """
         data = await db.fetch_all(query)
         data = jsonable_encoder(data)
@@ -391,7 +396,7 @@ async def guardhouse_checkin(item: GuardhouseAddvisitor, username=Depends(auth_h
                         , \'{date}\' -- invite_date date NULLABLE
                         , \'guard\'
                         , \'{(data2[0]['guard_id'])}\'
-                        , datetime.now()
+                        , {datetime.now()}
                     )
                             """
         data3 = await db.fetch_all(query3)
@@ -416,7 +421,7 @@ async def guardhouse_checkin(item: GuardhouseAddvisitor, username=Depends(auth_h
                         \'visitor\' -- class_id character varying NULLABLE
                         , {(data4[0]['visitor_id'])}
                         , \'{item.datetime_in}\' -- datetime_in timestamp without time zone NULLABLE
-                        ,datetime.now()
+                        ,{datetime.now()}
                         
                     )
                     """
