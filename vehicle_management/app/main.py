@@ -87,7 +87,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str, apptype: str, hom
                 # data_str = json.dumps(data)
                 print(data)
                 # await manager.send_personal_message(f"You wrote: {data}", websocket)
-                manager.broadcast(websocket, data['topic'], data['send_to'], data['home_id'])
+                await manager.broadcast(websocket, data['topic'], data['send_to'], data['home_id'])
         except WebSocketDisconnect:
             await manager.disconnect(websocket, apptype)
 
