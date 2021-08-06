@@ -313,7 +313,9 @@ async def history_blacklist(username=Depends(auth_handler.auth_wrapper), token=D
 
 @web_api.post('/guardhouse_checkin', status_code=200)
 async def guardhouse_checkin(item: GuardhouseCheckin, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
-
+    x = datetime.now()
+    date = f"{x.year}-{x.month}-{x.day}"
+    xdatetime = f"{x.year}-{x.month}-{x.day} {x.hour}:{x.minute}:{x.second}.{x.microsecond}"
     if await isTokenBlacklisted(db, token):
         raise HTTPException(status_code=401, detail='Invalid token')
     else:
@@ -327,7 +329,7 @@ async def guardhouse_checkin(item: GuardhouseCheckin, username=Depends(auth_hand
                     \'{item.classname}\' -- class_id character varying NULLABLE
                     , {item.class_id}
                     , \'{item.datetime_in}\' -- datetime_in timestamp without time zone NULLABLE
-                    , {datetime.now()}
+                    , \'{xdatetime}\'
                 ) """
         data = await db.fetch_all(query)
         data = jsonable_encoder(data)
@@ -356,6 +358,8 @@ async def guardhouse_checkout(item: GuardhouseCheckout, username=Depends(auth_ha
 async def guardhouse_checkin(item: GuardhouseAddvisitor, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
     x = datetime.now()
     date = f"{x.year}-{x.month}-{x.day}"
+    xdatetime = f"{x.year}-{x.month}-{x.day} {x.hour}:{x.minute}:{x.second}.{x.microsecond}"
+    # print(xdatetime)
     if await isTokenBlacklisted(db, token):
         raise HTTPException(status_code=401, detail='Invalid token')
     else:
@@ -396,7 +400,7 @@ async def guardhouse_checkin(item: GuardhouseAddvisitor, username=Depends(auth_h
                         , \'{date}\' -- invite_date date NULLABLE
                         , \'guard\'
                         , \'{(data2[0]['guard_id'])}\'
-                        , {datetime.now()}
+                        , \'{xdatetime}\'
                     )
                             """
         data3 = await db.fetch_all(query3)
@@ -421,7 +425,7 @@ async def guardhouse_checkin(item: GuardhouseAddvisitor, username=Depends(auth_h
                         \'visitor\' -- class_id character varying NULLABLE
                         , {(data4[0]['visitor_id'])}
                         , \'{item.datetime_in}\' -- datetime_in timestamp without time zone NULLABLE
-                        ,{datetime.now()}
+                        ,\'{xdatetime}\'
                         
                     )
                     """
