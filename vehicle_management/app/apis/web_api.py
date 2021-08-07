@@ -3,7 +3,8 @@ from fastapi.encoders import jsonable_encoder
 
 from data.schemas import RegisterDetails, LoginDetails, ResidentId, \
     GuardhouseCheckin, GuardhouseAddvisitor, GuardhouseCheckout, \
-    Adminstamp, ApproveBlacklist, ApproveWhitelist
+    Adminstamp, ApproveBlacklist, ApproveWhitelist, startDateendDate,  \
+    DeleteWhitelist, DeleteBlacklist, DeclineDeleteWhitelist, DeclineDeleteBlacklist
 
 from data.database import database as db
 
@@ -200,6 +201,7 @@ async def history_visitorlist(username=Depends(auth_handler.auth_wrapper), token
     datep = f"{dayp.year}-{dayp.month}-{dayp.day}"
     dayhis = x - timedelta(days=5)
     datehis = f"{dayhis.year}-{dayhis.month}-{dayhis.day}"
+    print(datep)
     if await isTokenBlacklisted(db, token):
         raise HTTPException(status_code=401, detail='Invalid token')
     else:
@@ -223,6 +225,47 @@ async def history_visitorlist(username=Depends(auth_handler.auth_wrapper), token
                     LEFT JOIN  public.home h on v.home_id = h.home_id
                     LEFT JOIN public.history_log hl  on hl.class = 'visitor' AND hl.class_id = v.visitor_id
                     WHERE v.invite_date > \'{datehis}\' and v.invite_date < \'{datep}\'
+                    --WHERE invite_date = now()
+                    ORDER BY v.visitor_id  """
+
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+
+        return data
+
+
+@web_api.post("/history_visitorlist_date", status_code=200)
+async def history_visitorlist_date(item: startDateendDate, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    x = datetime.now()
+    date = f"{x.year}-{x.month}-{x.day}"
+    dayp = x + timedelta(days=1)
+    datep = f"{dayp.year}-{dayp.month}-{dayp.day}"
+    dayhis = x - timedelta(days=5)
+    datehis = f"{dayhis.year}-{dayhis.month}-{dayhis.day}"
+    print(datep)
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""SELECT v.visitor_id
+                        , v.license_plate
+                        , v.firstname
+                        , v.lastname
+                        , v.home_id 
+                        , h.home_number
+                        , v.id_card
+                        , v.invite_date
+                        , hl.datetime_in
+                        , hl.datetime_out
+                        , hl.resident_stamp
+                        , hl.admin_approve
+                        , hl.class_id
+                        , hl.resident_send_admin
+                        , hl.class
+                        , hl.log_id
+                    FROM   public.visitor v
+                    LEFT JOIN  public.home h on v.home_id = h.home_id
+                    LEFT JOIN public.history_log hl  on hl.class = 'visitor' AND hl.class_id = v.visitor_id
+                    WHERE v.invite_date > \'{item.datestart}\' and v.invite_date <= \'{item.dateend} 23:59\'
                     --WHERE invite_date = now()
                     ORDER BY v.visitor_id  """
 
@@ -272,6 +315,46 @@ async def history_whitelist(username=Depends(auth_handler.auth_wrapper), token=D
         return data
 
 
+@web_api.post("/history_whitelist_date", status_code=200)
+async def history_whitelist_date(item: startDateendDate, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    x = datetime.now()
+    date = f"{x.year}-{x.month}-{x.day}"
+    dayp = x + timedelta(days=1)
+    datep = f"{dayp.year}-{dayp.month}-{dayp.day}"
+    dayhis = x - timedelta(days=5)
+    datehis = f"{dayhis.year}-{dayhis.month}-{dayhis.day}"
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""SELECT w.whitelist_id ,
+                        w.home_id ,
+                        h.home_number ,
+                        w.class ,
+                        w.class_id ,
+                        w.firstname ,
+                        w.lastname ,
+                        w.license_plate ,
+                        w.create_datetime ,
+                        hl.datetime_in ,
+                        hl.datetime_out ,
+                        hl.resident_stamp ,
+                        hl.admin_approve ,
+                        hl.class_id ,
+                        hl.resident_send_admin
+                        , hl.class
+                        , hl.log_id
+                    FROM public.whitelist w
+                    LEFT JOIN public.home h on w.home_id = h.home_id
+                    LEFT JOIN public.history_log hl on hl.class = 'whitelist' AND hl.class_id = w.whitelist_id and hl.datetime_in > \'{item.datestart}\'  and hl.datetime_in <= \'{item.dateend}\'
+                    --WHERE hl.datetime_in > '2021-07-14'  and hl.datetime_in < '2021-07-15'
+                    ORDER BY w.whitelist_id """
+
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+
+        return data
+
+
 @web_api.get("/history_blacklist", status_code=200)
 async def history_blacklist(username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
     x = datetime.now()
@@ -303,6 +386,45 @@ async def history_blacklist(username=Depends(auth_handler.auth_wrapper), token=D
                 FROM public.blacklist b
                 LEFT JOIN  public.home h on b.home_id = h.home_id
                 LEFT JOIN public.history_log hl on hl.class = 'blacklist' AND hl.class_id = b.blacklist_id and hl.datetime_in > \'{datehis}\'  and hl.datetime_in < \'{datep}\'
+                ORDER BY b.blacklist_id """
+
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+
+        return data
+
+
+@web_api.post("/history_blacklist_date", status_code=200)
+async def history_blacklist_date(item: startDateendDate, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    x = datetime.now()
+    date = f"{x.year}-{x.month}-{x.day}"
+    dayp = x + timedelta(days=1)
+    datep = f"{dayp.year}-{dayp.month}-{dayp.day}"
+    dayhis = x - timedelta(days=5)
+    datehis = f"{dayhis.year}-{dayhis.month}-{dayhis.day}"
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""SELECT b.blacklist_id
+                    , b.home_id
+                    , h.home_number
+                    , b.class
+                    , b.class_id
+                    , b.firstname
+                    , b.lastname
+                    , b.license_plate
+                    , b.create_datetime
+                    , hl.datetime_in ,
+                    hl.datetime_out ,
+                    hl.resident_stamp ,
+                    hl.admin_approve ,
+                    hl.class_id ,
+                    hl.resident_send_admin
+                    , hl.class
+                    , hl.log_id
+                FROM public.blacklist b
+                LEFT JOIN  public.home h on b.home_id = h.home_id
+                LEFT JOIN public.history_log hl on hl.class = 'blacklist' AND hl.class_id = b.blacklist_id and hl.datetime_in > \'{item.datestart}\'  and hl.datetime_in <= \'{item.dateend}\'
                 ORDER BY b.blacklist_id """
 
         data = await db.fetch_all(query)
@@ -554,6 +676,82 @@ async def blacklist(username=Depends(auth_handler.auth_wrapper), token=Depends(a
         data = await db.fetch_all(query)
         data = jsonable_encoder(data)
 #
+        return data
+
+
+@web_api.delete('/delete_whitelist', status_code=200)
+async def delete_whitelist(item: DeleteWhitelist, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""DELETE FROM
+--ONLY
+public.whitelist
+WHERE public.whitelist.whitelist_id = {item.whitelist_id}
+        """
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+        # print(data[0]['class'])
+
+        return data
+
+
+@web_api.delete('/delete_blacklist', status_code=200)
+async def delete_blacklist(item: DeleteBlacklist, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""DELETE FROM
+--ONLY
+public.blacklist
+WHERE public.blacklist.blacklist_id = {item.blacklist_id}
+        """
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+        # print(data[0]['class'])
+
+        return data
+
+
+@web_api.put('/decline_delete_whitelist', status_code=200)
+async def decline_delete_whitelist(item: DeclineDeleteWhitelist, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""UPDATE public.whitelist
+                    SET 
+                         admin_decline_reason = \'{item.admin_decline_reason}\'
+                        ,admin_decline_datetime = \'{item.admin_decline_datetime}\'
+                        ,resident_remove_reason = null
+                    WHERE public.whitelist.whitelist_id = {item.whitelist_id}
+        """
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+        # print(data[0]['class'])
+
+        return data
+
+
+@web_api.put('/decline_delete_blacklist', status_code=200)
+async def decline_delete_blacklist(item: DeclineDeleteBlacklist, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""UPDATE public.blacklist
+                    SET 
+                        admin_decline_reason = \'{item.admin_decline_reason}\' 
+                        , admin_decline_datetime = \'{item.admin_decline_datetime}\'
+                        ,resident_remove_reason = null
+                    WHERE public.blacklist.blacklist_id = {item.blacklist_id} """
+
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+        # print(data[0]['class'])
+
         return data
 
 # ------------------------------ End Web Application  --------------------------------
