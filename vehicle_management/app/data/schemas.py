@@ -186,6 +186,11 @@ class HomeIn(BaseModel):
     home_number: str
 
 
+class startDateendDate(BaseModel):
+    datestart: str
+    dateend: str
+
+
 class GuardhouseCheckin(BaseModel):
     classname: str
     class_id: int
@@ -226,6 +231,26 @@ class ApproveWhitelist(BaseModel):
     whitelist_id: int
     admin_reason: str
     admin_datetime: str
+
+
+class DeleteWhitelist(BaseModel):
+    whitelist_id: int
+
+
+class DeleteBlacklist(BaseModel):
+    blacklist_id: int
+
+
+class DeclineDeleteWhitelist(BaseModel):
+    admin_decline_reason: str
+    admin_decline_datetime: str
+    whitelist_id: int
+
+
+class DeclineDeleteBlacklist(BaseModel):
+    admin_decline_reason: str
+    admin_decline_datetime: str
+    blacklist_id: int
 
 # -------------------------------- End Website ------------------------
 
