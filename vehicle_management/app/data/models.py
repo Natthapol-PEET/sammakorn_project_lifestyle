@@ -83,6 +83,8 @@ blacklist = Table(
     Column("admin_reason", String),
     Column("resident_remove_reason", String),
     Column("resident_remove_datetime", DateTime),
+    Column("admin_decline_remove_reason", String),
+    Column("admin_decline_remove_datetime", DateTime),
     Column("license_plate", String),
     Column("create_datetime", DateTime),
 )
@@ -102,6 +104,8 @@ whitelist = Table(
     Column("admin_reason", String),
     Column("resident_remove_reason", String),
     Column("resident_remove_datetime", DateTime),
+    Column("admin_decline_remove_reason", String),
+    Column("admin_decline_remove_datetime", DateTime),
     Column("license_plate", String),
     Column("create_datetime", DateTime),
 )
