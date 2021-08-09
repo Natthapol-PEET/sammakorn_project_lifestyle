@@ -24,4 +24,4 @@ uvicorn main:app --host 0.0.0.0 --port 8080 --reload
 
 docker build -t fastapi-service .
 
-docker run -it -d --name fastapi-service -p 8080:8080 fastapi-service
+docker run -it -d --rm --name fastapi-service -p 8080:8080 fastapi-service
