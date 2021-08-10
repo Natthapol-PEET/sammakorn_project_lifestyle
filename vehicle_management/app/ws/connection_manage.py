@@ -33,12 +33,14 @@ class ConnectionManager:
 
                 if data is not None:
                     # find index in list
-                    index = self.active_connections_app.index(data)
-                    # update websocket in data
-                    data['websocket'] = websocket
-                    # update data in list
-                    self.active_connections_app[index] = data
-                    
+                    try:
+                        index = self.active_connections_app.index(data)
+                        # update websocket in data
+                        data['websocket'] = websocket
+                        # update data in list
+                        self.active_connections_app[index] = data
+                    except:
+                        pass
                 else:
                     # append
                     self.add_connection_app(websocket, deviceId, home_id)
