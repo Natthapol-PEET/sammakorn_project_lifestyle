@@ -86,5 +86,7 @@ class ConnectionManager:
 
 
     def remove_connection_app(self, websocket):
-        data = next(item for item in self.active_connections_app if item["websocket"] == websocket)
-        self.active_connections_app.remove(data)
+        try:
+            data = next(item for item in self.active_connections_app if item["websocket"] == websocket)
+            self.active_connections_app.remove(data)
+        except: pass
