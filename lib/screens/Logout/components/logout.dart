@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/screens/Welcome/welcome_screen.dart';
 import '../../../constance.dart';
 import '../service/logout.dart';
 
@@ -15,8 +14,7 @@ class LogoutButton extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () {
-          _logout();
-          Navigator.pushNamed(context, '/');
+          _logout(context);
         },
         child: Container(
           width: size.width * 0.9,
@@ -34,8 +32,12 @@ class LogoutButton extends StatelessWidget {
     );
   }
 
-  _logout() {
+  _logout(context) {
     Services services = Services();
-    services.logout();
+    var res = services.logout();
+
+    res.then((v) {
+      Navigator.pushNamed(context, '/');
+    });
   }
 }

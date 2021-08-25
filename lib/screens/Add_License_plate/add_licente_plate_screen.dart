@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/service/service.dart';
 import 'package:registerapp_flutter/screens/Home/home_screen.dart';
+import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
 import 'package:registerapp_flutter/service/socket.dart';
 import '../../constance.dart';
 import 'components/button_group.dart';
@@ -10,8 +11,8 @@ import 'components/date_input.dart';
 import 'components/dropdown_item.dart';
 import 'components/rount_input_field.dart';
 import 'package:intl/intl.dart';
-
 import 'components/rount_input_large.dart';
+import 'models/screenArg.dart';
 
 class AddLicensePlateScreen extends StatefulWidget {
   const AddLicensePlateScreen({Key key}) : super(key: key);
@@ -103,7 +104,21 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                         licenseplate.text,
                         DateFormat('yyyy-MM-dd').format(dateTime));
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      _move_to_home(context);
+                      // _move_to_home(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ShowQrcodeScreen(
+                              data: ScreenArguments(
+                            licenseplate.text,
+                            DateFormat('yyyy-MM-dd').format(dateTime),
+                            firstname.text,
+                            lastname.text,
+                            false,
+                          )),
+                        ),
+                      );
+
                       // socket update web
                       socket.send_message('INVITE_VISITOR', 'web');
                     } else {
@@ -175,14 +190,7 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
   }
 
   _move_to_home(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return HomeScreen();
-        },
-      ),
-    );
+    Navigator.pushNamed(context, '/home');
   }
 
   _show_error_toast(String msg) {

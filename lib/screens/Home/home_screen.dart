@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registerapp_flutter/components/list_item_field_container.dart';
@@ -26,6 +24,7 @@ import 'components/timeline_blacklist_whitelist.dart';
 import 'function/selectIndex.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
+import 'dart:math';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -113,6 +112,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // realtime update data
     socket();
+
+    var rng = new Random();
+    for (var i = 0; i < 10; i++) {
+      print(rng.nextInt(4000000000));   // 10 point
+    }
   }
 
   @override
@@ -226,7 +230,6 @@ class _HomeScreenState extends State<HomeScreen> {
     var data = await auth.getToken();
     String token = data[0]['TOKEN'];
     String homeId = await home.getHomeId();
-
     String deviceId = await Device().getId();
 
     try {

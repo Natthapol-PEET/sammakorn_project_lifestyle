@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:registerapp_flutter/screens/Add_License_plate/models/screenArg.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
+import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
 import 'package:registerapp_flutter/service/socket.dart';
 import '../../constance.dart';
 import 'components/bottom_nav_bar.dart';
@@ -153,8 +155,6 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
   }
 
   ListView build_timeline(context, lists) {
-    Size size = MediaQuery.of(context).size;
-
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -180,8 +180,22 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
         disNavButton = false;
         titleButton = 'Delete';
         iconButton = Icons.delete;
-        isEnableList.add(false);
-        pass.add(null);
+        isEnableList.add(true);
+        pass.add(() => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ShowQrcodeScreen(
+                      data: ScreenArguments(
+                    arguments['license_plate'],
+                    arguments['invite'].split('T')[0],
+                    arguments['fullname'].split('  ')[0],
+                    arguments['fullname'].split('  ')[1],
+                    true,
+                  )),
+                ),
+              )
+            });
       });
     }
 

@@ -8,6 +8,7 @@ import 'package:registerapp_flutter/screens/Password/password_screen.dart';
 import 'package:registerapp_flutter/screens/Register/register_screen.dart';
 import 'package:registerapp_flutter/screens/Select_Home/select_home_screen.dart';
 import 'package:registerapp_flutter/screens/ShowDetailScreen/show_detail.dart';
+import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
 import 'package:registerapp_flutter/screens/Welcome/welcome_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -83,6 +84,7 @@ class MyApp extends StatelessWidget {
       // home: NotificationLocal(),
 
       initialRoute: '/',
+      // initialRoute: '/show_qrcode',
       routes: {
         '/': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
