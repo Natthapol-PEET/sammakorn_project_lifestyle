@@ -30,8 +30,8 @@ TOPIC [web -> app]
 
 docker build -t fastapi-service .
 
-docker run -it --rm -p 8080:8000 --name vms-service -d fastapi-service
-docker run -p 8080:8000 fastapi-service
+docker run -it --rm -p 8080:8080 --name vms-service -d fastapi-service
+docker run -p 8080:8080 fastapi-service
 
 
 
