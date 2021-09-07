@@ -1,8 +1,12 @@
-import uvicorn
+from apis.qr_api import qr_api
+from apis.web_api import web_api
+from apis.app_api import app_api
 
+import uvicorn
 from fastapi import FastAPI, HTTPException, Depends, \
-    WebSocket, WebSocketDisconnect
+    WebSocket, WebSocketDisconnect, Header
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 
 from data.database import database as db
 from data.schemas import NotificationItem
@@ -16,9 +20,6 @@ auth_handler = AuthHandler()
 notification = Notification()
 manager = ConnectionManager()
 
-from apis.app_api import app_api
-from apis.web_api import web_api
-
 
 tags_metadata = [
     {"name": "Notification", "description": ""}
@@ -30,7 +31,7 @@ app = FastAPI(
 
 app.mount('/app_api', app_api)
 app.mount('/web_api', web_api)
-
+app.mount('/qr_api', qr_api)
 
 app.add_middleware(
     CORSMiddleware,
@@ -65,6 +66,14 @@ async def notifications(item: NotificationItem, token=Depends(auth_handler.get_t
             status_code=401, detail='Signature has expired')
     return await notification.send_notification(db, item=item)
 
+
+@app.post('/notification_pi/', tags=["Notification"], status_code=200)
+async def notification_pi(item: NotificationItem, user_agent: Optional[str] = Header(None)):
+    if user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
+        return await notification.send_notification(db, item=item)
+    else:
+        raise HTTPException(status_code=401, detail='Invalid token')
+
 # ------------------------------ End Notification  --------------------------------
 
 
@@ -73,19 +82,24 @@ async def notifications(item: NotificationItem, token=Depends(auth_handler.get_t
 @app.websocket("/ws/{token}/{apptype}/{home_id}/{deviceId}")
 async def websocket_endpoint(websocket: WebSocket, token: str, apptype: str, home_id: int, deviceId: str):
 
-    status = auth_handler.auth_wrapper_socket(token)
+    # Raspberry Pi Client
+    if apptype == "PI" and token == "ogjvmodvmmaevjdvEVdsVOAERBMSDV0SFKD":
+        status = 1001
+        apptype = apptype.lower()
+    else:
+        # Web and App Client
+        status = auth_handler.auth_wrapper_socket(token)
 
     if status == 1001:
         await manager.connect(websocket, apptype, home_id, deviceId)
-            
+
         try:
             while True:
                 data = await websocket.receive_text()
                 # Convert data to dict
                 data = json.loads(data)
-                # Convert dict to string 
+                # Convert dict to string
                 # data_str = json.dumps(data)
-                print(data)
                 # await manager.send_personal_message(f"You wrote: {data}", websocket)
                 await manager.broadcast(websocket, data['topic'], data['send_to'], data['home_id'])
         except WebSocketDisconnect:

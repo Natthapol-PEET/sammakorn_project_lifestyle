@@ -12,12 +12,12 @@ class API:
         # check whitelist UNION blacklist
         command = f'''
            SELECT type FROM (
-                SELECT *, 'blacklist' AS type FROM blacklist
+                SELECT 'blacklist' AS type FROM blacklist
                 WHERE home_id = {invite.home_id} 
                     AND license_plate = '{invite.license_plate.strip().replace(' ', '')}'
                     AND admin_approve is not NULL
                 UNION
-                SELECT *, 'whitelist' AS type FROM whitelist
+                SELECT 'whitelist' AS type FROM whitelist
                 WHERE home_id = {invite.home_id} 
                     AND license_plate = '{invite.license_plate.strip().replace(' ', '')}'
                     AND admin_approve is not NULL
@@ -40,8 +40,8 @@ class API:
             if visitor_id == 0:
                 # insert visitor
                 command = f'''
-                        INSERT INTO visitor (home_id, class, class_id, firstname, lastname, license_plate, invite_date, create_datetime)
-	                        VALUES ({invite.home_id}, '{invite.Class}', {invite.class_id}, '{invite.firstname}', '{invite.lastname}', '{invite.license_plate.strip().replace(' ', '')}', '{invite.invite_date}', '{datetime.now()}')
+                        INSERT INTO visitor (home_id, class, class_id, firstname, lastname, license_plate, invite_date, create_datetime, qr_gen_id)
+	                        VALUES ({invite.home_id}, '{invite.Class}', {invite.class_id}, '{invite.firstname}', '{invite.lastname}', '{invite.license_plate.strip().replace(' ', '')}', '{invite.invite_date}', '{datetime.now()}', '{invite.qrGenId}')
                     '''
                 await db.execute(command)
                 return 201
@@ -63,8 +63,8 @@ class API:
                 if result is not None:
                     # insert visitor
                     command = f'''
-                        INSERT INTO visitor (home_id, class, class_id, firstname, lastname, license_plate, invite_date, create_datetime)
-	                        VALUES ({invite.home_id}, '{invite.Class}', {invite.class_id}, '{invite.firstname}', '{invite.lastname}', '{invite.license_plate.strip().replace(' ', '')}', '{invite.invite_date}', '{datetime.now()}')
+                        INSERT INTO visitor (home_id, class, class_id, firstname, lastname, license_plate, invite_date, create_datetime, qr_gen_id)
+	                        VALUES ({invite.home_id}, '{invite.Class}', {invite.class_id}, '{invite.firstname}', '{invite.lastname}', '{invite.license_plate.strip().replace(' ', '')}', '{invite.invite_date}', '{datetime.now()}', '{invite.qrGenId}')
                     '''
                     await db.execute(command)
                     return 201
@@ -79,10 +79,10 @@ class API:
         # check whitelist UNION blacklist
         command = f'''
            SELECT type FROM (
-                SELECT *, 'blacklist' AS type FROM blacklist
+                SELECT 'blacklist' AS type FROM blacklist
                 WHERE home_id = {register.home_id} and license_plate = '{register.license_plate.strip().replace(' ', '')}'
                 UNION
-                SELECT *, 'whitelist' AS type FROM whitelist
+                SELECT 'whitelist' AS type FROM whitelist
                 WHERE home_id = {register.home_id} and license_plate = '{register.license_plate.strip().replace(' ', '')}'
             ) wb
         '''
@@ -90,8 +90,8 @@ class API:
 
         if result is None:
             command = f'''
-                INSERT INTO whitelist (home_id, class, class_id, firstname, lastname, license_plate, create_datetime, resident_add_reason)
-                    VALUES ({register.home_id}, '{register.Class}', {register.id}, '{register.firstname}', '{register.lastname}', '{register.license_plate.strip().replace(' ', '')}','{datetime.now()}', '{register.reason_resident}');
+                INSERT INTO whitelist (home_id, class, class_id, firstname, lastname, license_plate, create_datetime, resident_add_reason, qr_gen_id)
+                    VALUES ({register.home_id}, '{register.Class}', {register.id}, '{register.firstname}', '{register.lastname}', '{register.license_plate.strip().replace(' ', '')}','{datetime.now()}', '{register.reason_resident}', '{register.qrGenId}');
             '''
             await db.execute(command)
             return 201

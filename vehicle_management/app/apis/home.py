@@ -43,7 +43,8 @@ class LicensePlate:
                 CONCAT(v.firstname, '  ', v.lastname) AS fullname,
                 'visitor' AS type,
                 CONCAT(v.invite_date, 'T', CAST(v.create_datetime::timestamp as time)) AS invite,
-                'Invite' AS status
+                'Invite' AS status,
+                qr_gen_id
             FROM visitor AS v
             FULL OUTER JOIN (
                 SELECT *
@@ -73,7 +74,8 @@ class LicensePlate:
 						WHEN v.id_card is NULL THEN 'Coming in'
 						WHEN v.id_card is not NULL THEN 'Walk in'
 					ELSE ''
-                 	END AS status
+                 	END AS status,
+                    v.qr_gen_id
                 FROM history_log AS h
                 LEFT JOIN visitor AS v
                 ON h.class_id = v.visitor_id
@@ -89,7 +91,8 @@ class LicensePlate:
                     CONCAT(w.firstname, '  ', w.lastname) AS fullname,
                     NULL AS invite,
 					h.datetime_in,
-                    'Coming in' AS status
+                    'Coming in' AS status,
+                    NULL
                 FROM history_log AS h
                 LEFT JOIN whitelist AS w
                 ON h.class_id = w.whitelist_id
@@ -122,7 +125,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                NULL AS qr_gen_id
             FROM history_log AS h
             LEFT JOIN whitelist AS w
             ON h.class_id = w.whitelist_id
@@ -150,7 +154,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                qr_gen_id
             FROM history_log AS h
             LEFT JOIN visitor AS v
             ON h.class_id = v.visitor_id
@@ -202,7 +207,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                NULL AS qr_gen_id
             FROM history_log AS h
             LEFT JOIN whitelist AS w
             ON h.class_id = w.whitelist_id
@@ -232,7 +238,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                qr_gen_id
             FROM history_log AS h
             LEFT JOIN visitor AS v
             ON h.class_id = v.visitor_id
@@ -271,7 +278,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                NULL AS qr_gen_id
             FROM history_log AS h
             LEFT JOIN whitelist AS w
             ON h.class_id = w.whitelist_id
@@ -304,7 +312,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                qr_gen_id
             FROM history_log AS h
             LEFT JOIN visitor AS v
             ON h.class_id = v.visitor_id
@@ -384,7 +393,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                NULL AS qr_gen_id
             FROM history_log AS h
             LEFT JOIN whitelist AS w
             ON h.class_id = w.whitelist_id
@@ -416,7 +426,8 @@ class LicensePlate:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                qr_gen_id
             FROM history_log AS h
             LEFT JOIN visitor AS v
             ON h.class_id = v.visitor_id

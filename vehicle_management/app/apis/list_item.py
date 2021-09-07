@@ -15,7 +15,8 @@ class ListItem:
 					admin_approve,
 					CASE WHEN admin_reason IS NULL THEN '-' ELSE admin_reason END AS admin_reason,
 					resident_remove_datetime,
-					CASE WHEN resident_remove_reason IS NULL THEN '-' ELSE resident_remove_reason END AS resident_remove_reason
+					CASE WHEN resident_remove_reason IS NULL THEN '-' ELSE resident_remove_reason END AS resident_remove_reason,
+                    qr_gen_id
             FROM whitelist
             WHERE class = 'resident'
 				-- AND class_id = {list_item.resident_id}
@@ -31,7 +32,8 @@ class ListItem:
 					admin_approve,
 					CASE WHEN admin_reason IS NULL THEN '-' ELSE admin_reason END AS admin_reason,
 					resident_remove_datetime,
-					CASE WHEN resident_remove_reason IS NULL THEN '-' ELSE resident_remove_reason END AS resident_remove_reason
+					CASE WHEN resident_remove_reason IS NULL THEN '-' ELSE resident_remove_reason END AS resident_remove_reason,
+                    NULL
             FROM blacklist
             WHERE class = 'resident'
 				-- AND class_id = {list_item.resident_id}
@@ -74,7 +76,8 @@ class History:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                NULL AS qr_gen_id
             FROM history_log AS h
             LEFT JOIN whitelist AS w
             ON h.class_id = w.whitelist_id
@@ -106,7 +109,8 @@ class History:
                     SELECT stamp_count
                     FROM home
                     WHERE home_id = {item.home_id}
-                ) AS stamp_count
+                ) AS stamp_count,
+                v.qr_gen_id
             FROM history_log AS h
             LEFT JOIN visitor AS v
             ON h.class_id = v.visitor_id

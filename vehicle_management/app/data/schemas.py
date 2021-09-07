@@ -58,6 +58,7 @@ class VisitorIN(BaseModel):
     license_plate: str
     id_card: str
     invite_date: str
+    qrGenId: str
 
 
 # insert whitelist
@@ -69,6 +70,7 @@ class WhitelistIN(BaseModel):
     home_id: str
     license_plate: str
     reason_resident: str
+    qrGenId: str
 
 
 class BlacklistIN(BaseModel):
@@ -262,3 +264,7 @@ class ResidentHomeIn(BaseModel):
 class HomeIn(BaseModel):
     home_name: str
     home_number: str
+
+
+class QRCode(BaseModel):
+    qrGenId: str

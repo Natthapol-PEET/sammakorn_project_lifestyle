@@ -65,6 +65,7 @@ visitor = Table(
     Column("license_plate", String),
     Column("id_card", String),
     Column("invite_date", Date),
+    Column("qr_gen_id", String),
     Column("create_datetime", DateTime),
 )
 
@@ -107,6 +108,7 @@ whitelist = Table(
     Column("admin_decline_remove_reason", String),
     Column("admin_decline_remove_datetime", DateTime),
     Column("license_plate", String),
+    Column("qr_gen_id", String),
     Column("create_datetime", DateTime),
 )
 
