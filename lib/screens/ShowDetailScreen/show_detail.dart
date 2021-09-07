@@ -187,10 +187,12 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
                 MaterialPageRoute(
                   builder: (context) => ShowQrcodeScreen(
                       data: ScreenArguments(
+                    "Visitor",
                     arguments['license_plate'],
                     arguments['invite'].split('T')[0],
                     arguments['fullname'].split('  ')[0],
                     arguments['fullname'].split('  ')[1],
+                    arguments['qr_gen_id'],
                     true,
                   )),
                 ),
@@ -260,7 +262,7 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
               builder: (BuildContext context) {
                 return DialogShow(
                   key1: "admin_approve",
-                  value1: arguments['admin_approve'] ? 'true' : 'false',
+                  value1: arguments['admin_approve'] ? 'Stamp' : 'No stamp',
                   key2: "admin_reason",
                   value2: arguments['admin_reason'],
                 );
@@ -320,6 +322,45 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
               titleButton = "Delete ${arguments['type']}";
               iconButton = Icons.delete;
               isEnableList.add(true);
+
+              // go to qr-code screen
+              pass.add(() => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShowQrcodeScreen(
+                            data: ScreenArguments(
+                          "Whitelist",
+                          arguments['license_plate'],
+                          arguments['resident_datetime'].split('T')[0],
+                          arguments['fullname'].split('  ')[0],
+                          arguments['fullname'].split('  ')[1],
+                          arguments['qr_gen_id'],
+                          true,
+                        )),
+                      ),
+                    )
+                  });
+
+              // popup reason
+              // pass.add(() => showDialog(
+              //       context: context,
+              //       builder: (BuildContext context) {
+              //         return DialogShow(
+              //           key1: "admin_reason",
+              //           value1: arguments['admin_reason'],
+              //         );
+              //       },
+              //     ));
+            });
+          } else {
+            items.add(
+                TimeLineItem('Admin disapprove', arguments['admin_datetime']));
+
+            setState(() {
+              disNavButton = true;
+              titleButton = "Admin disapprove";
+              isEnableList.add(true);
               pass.add(() => showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -329,16 +370,6 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
                       );
                     },
                   ));
-            });
-          } else {
-            items.add(
-                TimeLineItem('Admin disapprove', arguments['admin_datetime']));
-
-            setState(() {
-              disNavButton = true;
-              titleButton = "Admin disapprove";
-              isEnableList.add(false);
-              pass.add(null);
             });
           }
 

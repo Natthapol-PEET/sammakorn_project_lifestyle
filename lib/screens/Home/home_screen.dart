@@ -112,11 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // realtime update data
     socket();
-
-    var rng = new Random();
-    for (var i = 0; i < 10; i++) {
-      print(rng.nextInt(4000000000));   // 10 point
-    }
   }
 
   @override

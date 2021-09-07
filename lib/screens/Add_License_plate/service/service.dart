@@ -9,7 +9,7 @@ class Services {
   Home home = Home();
 
   invite_visitor(String firstname, String lastname, String license_plate,
-      String invite_date) async {
+      String invite_date, String qrGenId) async {
     Uri url = Uri.parse("${URL}/invite/visitor/");
     var token_var = await auth.getToken();
     String token = 'Bearer ${token_var[0]["TOKEN"]}';
@@ -28,11 +28,11 @@ class Services {
         "class_id": id,
         "firstname": firstname,
         "lastname": lastname,
-        // "homename": homename,
         "home_id": home_id,
         "license_plate": license_plate,
         "id_card": "",
         "invite_date": invite_date,
+        "qrGenId": qrGenId,
       }),
     );
 
@@ -45,8 +45,8 @@ class Services {
     }
   }
 
-  register_whitelist(
-      String firstname, String lastname, String license_plate, String reason) async {
+  register_whitelist(String firstname, String lastname, String license_plate,
+      String reason, String qrGenId) async {
     Uri url = Uri.parse("${URL}/register/whitelist/");
     var token_var = await auth.getToken();
     String token = 'Bearer ${token_var[0]["TOKEN"]}';
@@ -68,6 +68,7 @@ class Services {
         "home_id": home_id,
         "license_plate": license_plate,
         "reason_resident": reason,
+        "qrGenId": qrGenId,
       }),
     );
 
@@ -80,8 +81,8 @@ class Services {
     }
   }
 
-  register_blacklist(
-      String firstname, String lastname, String license_plate, String reason) async {
+  register_blacklist(String firstname, String lastname, String license_plate,
+      String reason) async {
     Uri url = Uri.parse("${URL}/register/blacklist/");
     var token_var = await auth.getToken();
     String token = 'Bearer ${token_var[0]["TOKEN"]}';

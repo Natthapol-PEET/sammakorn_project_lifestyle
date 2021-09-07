@@ -1,8 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/service/service.dart';
-import 'package:registerapp_flutter/screens/Home/home_screen.dart';
 import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
 import 'package:registerapp_flutter/service/socket.dart';
 import '../../constance.dart';
@@ -32,6 +33,9 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
   Services services = Services();
   Home home = Home();
   var socket = SocketManager();
+
+  // random number
+  var rng = Random();
 
   void initState() {
     super.initState();
@@ -98,24 +102,31 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                     lastname.text.isNotEmpty &&
                     licenseplate.text.isNotEmpty) {
                   if (classValue == 'visitor') {
+                    // random number
+                    String qrGenId =
+                        rng.nextInt(4000000000).toString(); // 10 point
+
                     String res_text = await services.invite_visitor(
                         firstname.text,
                         lastname.text,
                         licenseplate.text,
-                        DateFormat('yyyy-MM-dd').format(dateTime));
+                        DateFormat('yyyy-MM-dd').format(dateTime),
+                        "V${qrGenId}");
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      // _move_to_home(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ShowQrcodeScreen(
-                              data: ScreenArguments(
-                            licenseplate.text,
-                            DateFormat('yyyy-MM-dd').format(dateTime),
-                            firstname.text,
-                            lastname.text,
-                            false,
-                          )),
+                            data: ScreenArguments(
+                              "Visitor",
+                              licenseplate.text,
+                              DateFormat('yyyy-MM-dd').format(dateTime),
+                              firstname.text,
+                              lastname.text,
+                              "V${qrGenId}",
+                              false,
+                            ),
+                          ),
                         ),
                       );
 
@@ -126,13 +137,20 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                     }
                   } else if (classValue == 'whitelist' &&
                       reason.text.isNotEmpty) {
+                    // random number
+                    String qrGenId =
+                        rng.nextInt(4000000000).toString(); // 10 point
+
                     String res_text = await services.register_whitelist(
-                        firstname.text,
-                        lastname.text,
-                        licenseplate.text,
-                        reason.text);
+                      firstname.text,
+                      lastname.text,
+                      licenseplate.text,
+                      reason.text,
+                      "W${qrGenId}",
+                    );
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      _move_to_home(context);
+                      Navigator.pushNamed(context, '/home');
+
                       // socket update web
                       socket.send_message('RESIDENT_REQUEST_WHITELIST', 'web');
                     } else {
@@ -146,7 +164,8 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                         licenseplate.text,
                         reason.text);
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      _move_to_home(context);
+                      Navigator.pushNamed(context, '/home');
+
                       // socket update web
                       socket.send_message('RESIDENT_REQUEST_BLACKLIST', 'web');
                     } else {
@@ -187,10 +206,6 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
         dateTime = chooseDateTime;
       });
     }
-  }
-
-  _move_to_home(BuildContext context) {
-    Navigator.pushNamed(context, '/home');
   }
 
   _show_error_toast(String msg) {

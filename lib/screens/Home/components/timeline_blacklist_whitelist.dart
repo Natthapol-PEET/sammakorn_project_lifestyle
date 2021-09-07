@@ -63,7 +63,7 @@ class ListItemBlacklistWhitelist extends StatelessWidget {
                   arguments: lists[index]);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Container(
                 height: 65,
                 width: size.width,

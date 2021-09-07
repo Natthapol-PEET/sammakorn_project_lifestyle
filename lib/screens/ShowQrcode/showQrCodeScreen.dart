@@ -20,7 +20,7 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
   //Create an instance of ScreenshotController
   ScreenshotController screenshotController = ScreenshotController();
 
-  String licensePlate, date, fnmae, lname;
+  String licensePlate, date, fnmae, lname, type;
   bool isScreenshot = false;
 
   @override
@@ -31,6 +31,7 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
     date = widget.data.date;
     fnmae = widget.data.firstname;
     lname = widget.data.lastname;
+    type = widget.data.type;
   }
 
   @override
@@ -77,7 +78,7 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: QrImage(
-                        data: licensePlate,
+                        data: widget.data.qrGenId,
                         size: 230,
                         backgroundColor: Colors.white,
                         version: QrVersions.auto,
@@ -137,7 +138,7 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
                       SizedBox(height: 20),
                       SubTitle(
                         subTitle: "Type",
-                        desc: "Visitor",
+                        desc: type,
                       ),
                       SubTitle(
                         subTitle: "Date",

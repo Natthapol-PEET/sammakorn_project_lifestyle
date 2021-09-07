@@ -14,7 +14,7 @@ const dividerColor = Color(0xffF5F4EC);
 const backgrounditem = Color(0xff305250);
 const fededWhite = Color(0xff305250);
 const fededWhite1 = Color(0xff305300);
-const timelineColor =  Color(0xffF5F4EC);
+const timelineColor = Color(0xffF5F4EC);
 const inviteColor = Color(0xffB5C21D);
 const comingColor = Color(0xffF4AD43);
 const infrontColor = Color(0xffCBB989);
@@ -22,9 +22,9 @@ const villColor = Color(0xff12976F);
 const approveColor = Color(0xff17CD4A);
 const disapproveColor = Color(0xffEA464C);
 
+const host = "192.168.43.160";
+String URL = "http://${host}:8080/app_api"; // local
+String WS = "ws://${host}:8080";
 
-// const String URL = "http://192.168.0.100:8080/app_api";     // local
-// const String WS = "ws://192.168.0.100:8080";
-
-const String URL = "http://13.229.234.126:8080/app_api";     // server aws
-const String WS = "ws://13.229.234.126:8080";
+// const String URL = "http://13.229.234.126:8080/app_api";     // server aws
+// const String WS = "ws://13.229.234.126:8080";
