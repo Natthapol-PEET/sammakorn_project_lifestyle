@@ -22,9 +22,9 @@ const villColor = Color(0xff12976F);
 const approveColor = Color(0xff17CD4A);
 const disapproveColor = Color(0xffEA464C);
 
-const host = "192.168.43.160";
-String URL = "http://${host}:8080/app_api"; // local
-String WS = "ws://${host}:8080";
+// const host = "192.168.0.122";
+// String URL = "http://${host}:8080/app_api"; // local
+// String WS = "ws://${host}:8080";
 
-// const String URL = "http://13.229.234.126:8080/app_api";     // server aws
-// const String WS = "ws://13.229.234.126:8080";
+const String URL = "http://13.229.234.126:8080/app_api";     // server aws
+const String WS = "ws://13.229.234.126:8080";
