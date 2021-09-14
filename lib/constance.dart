@@ -22,7 +22,7 @@ const villColor = Color(0xff12976F);
 const approveColor = Color(0xff17CD4A);
 const disapproveColor = Color(0xffEA464C);
 
-// const host = "192.168.0.122";
+// String host = "192.168.43.160";
 // String URL = "http://${host}:8080/app_api"; // local
 // String WS = "ws://${host}:8080";
 
