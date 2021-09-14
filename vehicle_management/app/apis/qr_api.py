@@ -25,7 +25,7 @@ auth_handler = AuthHandler()
 async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), token=Depends(auth_handler.get_token)):
     if comming.qrGenId == "":
         return {"isInvite": False}
-        
+
     if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff" or user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
         # search
         if comming.qrGenId[0] == "V":
@@ -62,7 +62,7 @@ async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), tok
                         # หมด session
                         return {"isInvite": False}
                     # ข้อมูลนี้ได้ถูกเพิ่มไปแล้ว
-                    return {"isInvite": True, "data": item}
+                    return {"isInvite": False, "data": item}
 
                 else:       # V not coming in and W
                     # insert data success
@@ -101,8 +101,8 @@ async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), tok
 
 
 @qr_api.post('/checkout/', tags=["checkOut"], status_code=200)
-async def checkout(checkout: QRCode, user_agent: Optional[str] = Header(None)):
-    if user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
+async def checkout(checkout: QRCode, user_agent: Optional[str] = Header(None), token=Depends(auth_handler.get_token)):
+    if user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff" or token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
         if checkout.qrGenId[0] == "V":
             query = f'''SELECT *
 					FROM (
@@ -162,7 +162,7 @@ async def checkout(checkout: QRCode, user_agent: Optional[str] = Header(None)):
                             return {"msg": "payment", "day": day, "time": hour, "data": data}
                         # ไม่เกินเวลาที่นิติกำหนด
                         else:
-                            updateTimeoutProject(data['log_id'])
+                            await updateTimeoutProject(data['log_id'])
                             return {
                                 "msg": "Pass",
                                 "data": data,
@@ -170,7 +170,7 @@ async def checkout(checkout: QRCode, user_agent: Optional[str] = Header(None)):
 
                 # ไม่เกินเวลา
                 else:
-                    updateTimeoutProject(data['log_id'])
+                    await updateTimeoutProject(data['log_id'])
                     return {
                         "msg": "Pass",
                         "data": data,
@@ -194,7 +194,7 @@ async def updateTimeoutProject(log_id):
                 SET  datetime_out = '{xdatetime}'
                 WHERE history_log.log_id = log_id;'''
     data = await db.fetch_all(query)
-    data = jsonable_encoder(data)
+    # data = jsonable_encoder(data)
 
 
 def calDayTime(seconds_input):
