@@ -102,15 +102,15 @@ class API:
     async def register_blacklist(self, db, register: BlacklistIN, username):
         # check whitelist UNION blacklist
         command = f'''
-           SELECT type FROM (
-                SELECT *, 'blacklist' AS type FROM blacklist
+                SELECT 'whitelist' AS type FROM whitelist
                 WHERE home_id = {register.home_id} and license_plate = '{register.license_plate.strip().replace(' ', '')}'
                 UNION
-                SELECT *, 'whitelist' AS type FROM whitelist
+                SELECT 'blacklist' AS type FROM blacklist
                 WHERE home_id = {register.home_id} and license_plate = '{register.license_plate.strip().replace(' ', '')}'
-            ) wb
         '''
         result = jsonable_encoder(await db.fetch_one(command))
+
+        print(result)
 
         if result is None:
             command = f'''
