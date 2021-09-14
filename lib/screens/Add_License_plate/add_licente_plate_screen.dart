@@ -103,8 +103,8 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                     licenseplate.text.isNotEmpty) {
                   if (classValue == 'visitor') {
                     // random number
-                    String qrGenId =
-                        rng.nextInt(4000000000).toString(); // 10 point
+                    // String qrGenId = rng.nextInt(9).toString(); // 10 point
+                    String qrGenId = getRandomNumber();
 
                     String res_text = await services.invite_visitor(
                         firstname.text,
@@ -138,8 +138,8 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                   } else if (classValue == 'whitelist' &&
                       reason.text.isNotEmpty) {
                     // random number
-                    String qrGenId =
-                        rng.nextInt(4000000000).toString(); // 10 point
+                    // String qrGenId = rng.nextInt(9).toString(); // 10 point
+                    String qrGenId = getRandomNumber();
 
                     String res_text = await services.register_whitelist(
                       firstname.text,
@@ -183,6 +183,31 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
         ),
       ),
     );
+  }
+
+  getRandomNumber() {
+    Random random = Random();
+    List<int> numberList = [];
+    String numberString = "";
+
+    while (numberList.length < 20) {
+      int length = numberList.length;
+      int random_number = random.nextInt(9);
+
+      if (length == 0) {
+        numberList.add(random_number);
+      } else {
+        if (numberList[length - 1] != random_number) {
+          numberList.add(random_number);
+        }
+      }
+    }
+
+    for (int i = 0; i < numberList.length; i++) {
+      numberString += numberList[i].toString();
+    }
+
+    return numberString;
   }
 
   Future chooseDate() async {
