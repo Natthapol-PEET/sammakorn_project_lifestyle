@@ -10,20 +10,23 @@ from data.schemas import QRCode
 from data.database import database as db
 
 from datetime import datetime, timedelta
-import json
+from auth.auth import AuthHandler
 
 tags_metadata = [
     {"name": "checkIn", "description": ""},
     {"name": "checkOut", "description": ""},
-
 ]
 
 qr_api = FastAPI(openapi_tags=tags_metadata)
+auth_handler = AuthHandler()
 
 
 @qr_api.post('/coming/', tags=["checkIn"], status_code=200)
-async def comming(comming: QRCode, user_agent: Optional[str] = Header(None)):
-    if user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
+async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), token=Depends(auth_handler.get_token)):
+    if comming.qrGenId == "":
+        return {"isInvite": False}
+        
+    if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff" or user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
         # search
         if comming.qrGenId[0] == "V":
             # query = f"SELECT 'visitor' AS type, visitor_id AS class_id, * FROM visitor WHERE qr_gen_id = '{comming.qrGenId}';"

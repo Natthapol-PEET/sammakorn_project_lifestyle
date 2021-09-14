@@ -68,8 +68,8 @@ async def notifications(item: NotificationItem, token=Depends(auth_handler.get_t
 
 
 @app.post('/notification_pi/', tags=["Notification"], status_code=200)
-async def notification_pi(item: NotificationItem, user_agent: Optional[str] = Header(None)):
-    if user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
+async def notification_pi(item: NotificationItem, user_agent: Optional[str] = Header(None), token=Depends(auth_handler.get_token)):
+    if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
         return await notification.send_notification(db, item=item)
     else:
         raise HTTPException(status_code=401, detail='Invalid token')
