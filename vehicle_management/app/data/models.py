@@ -159,6 +159,24 @@ resident_car = Table(
 )
 
 
+walkin = Table(
+    "walkin",
+    metadata,
+    Column("walkin_id", Integer, primary_key=True, index=True),
+    Column("firstname", String),
+    Column("lastname", String),
+    Column("id_card", String),
+    Column("gender", String),
+    Column("address", String(255)),
+    Column("license_plate", String),
+    Column("goto_home_address", String),
+    Column("datetime_in", DateTime),
+    Column("datetime_out", DateTime),
+    Column("path_image", String),
+    Column("qr_gen_id", String),
+)
+
+
 engine = create_engine(
     DATABASE_URL, pool_size=3, max_overflow=0
 )

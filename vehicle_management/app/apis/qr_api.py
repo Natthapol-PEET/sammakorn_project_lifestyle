@@ -198,9 +198,7 @@ async def updateTimeoutProject(log_id):
 
 
 def calDayTime(seconds_input):
-
     conversion = timedelta(seconds=int(seconds_input))
-
     listTime = str(conversion).split(', ')
 
     if len(listTime) == 1:

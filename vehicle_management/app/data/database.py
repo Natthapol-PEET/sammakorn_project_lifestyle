@@ -1,7 +1,7 @@
 from databases import Database
 
 # host_server = "db"
-host_server = "13.212.77.199"
+host_server = "54.255.225.178"
 db_server_port = "5432"
 database_name = "vehicle_management"
 db_username = "lifestyle"

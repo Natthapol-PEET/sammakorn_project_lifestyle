@@ -268,3 +268,15 @@ class HomeIn(BaseModel):
 
 class QRCode(BaseModel):
     qrGenId: str
+
+
+class WalkInRegister(BaseModel):
+    firstname: str
+    lastname: str
+    id_card: str
+    gender: str
+    address: str
+    license_plate: str
+    goto_home_address: str
+    qrGenId: str
+    imageBase64: str
