@@ -26,5 +26,5 @@ const disapproveColor = Color(0xffEA464C);
 // String URL = "http://${host}:8080/app_api"; // local
 // String WS = "ws://${host}:8080";
 
-const String URL = "http://13.212.77.199:8080/app_api"; // server aws
-const String WS = "ws://13.212.77.199:8080";
+const String URL = "http://54.255.225.178:8080/app_api"; // server aws
+const String WS = "ws://54.255.225.178:8080";
