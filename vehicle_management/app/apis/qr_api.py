@@ -22,14 +22,20 @@ auth_handler = AuthHandler()
 
 
 @qr_api.post('/coming/', tags=["checkIn"], status_code=200)
-async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), token=Depends(auth_handler.get_token)):
+async def comming(comming: QRCode, token=Depends(auth_handler.get_token)):
+    #  user_agent: Optional[str] = Header(None),
+    '''
+        fullname: str
+        licensePlate: str
+        homeNumber: str
+    '''
+
     if comming.qrGenId == "":
         return {"isInvite": False}
 
-    if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff" or user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
+    if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
         # search
         if comming.qrGenId[0] == "V":
-            # query = f"SELECT 'visitor' AS type, visitor_id AS class_id, * FROM visitor WHERE qr_gen_id = '{comming.qrGenId}';"
             query = f'''
                 SELECT 'visitor' AS type, visitor_id AS class_ids, *
                     FROM visitor AS v
@@ -38,7 +44,6 @@ async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), tok
                     WHERE qr_gen_id = '{comming.qrGenId}';
             '''
         else:
-            # query = f"SELECT 'whitelist' AS type, whitelist_id AS class_ids, * FROM whitelist WHERE qr_gen_id = '{comming.qrGenId}';"
             query = f'''
                 SELECT 'whitelist' AS type, whitelist_id AS class_ids, *
                     FROM whitelist AS w
@@ -49,6 +54,7 @@ async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), tok
 
         item = jsonable_encoder(await db.fetch_one(query))
 
+        # มีข้อมูล
         if item is not None:
             # เข้าไปหรือยัง
             if comming.qrGenId[0] == "V":
@@ -101,8 +107,8 @@ async def comming(comming: QRCode, user_agent: Optional[str] = Header(None), tok
 
 
 @qr_api.post('/checkout/', tags=["checkOut"], status_code=200)
-async def checkout(checkout: QRCode, user_agent: Optional[str] = Header(None), token=Depends(auth_handler.get_token)):
-    if user_agent == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff" or token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
+async def checkout(checkout: QRCode, token=Depends(auth_handler.get_token)):
+    if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
         if checkout.qrGenId[0] == "V":
             query = f'''SELECT *
 					FROM (
