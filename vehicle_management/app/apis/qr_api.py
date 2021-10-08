@@ -4,12 +4,10 @@ from typing import Optional, List
 from fastapi import FastAPI, HTTPException, Depends, \
     WebSocket, WebSocketDisconnect
 
-from sqlalchemy.sql.expression import true
-
 from data.schemas import QRCode
 from data.database import database as db
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from auth.auth import AuthHandler
 
 tags_metadata = [
@@ -36,12 +34,16 @@ async def comming(comming: QRCode, token=Depends(auth_handler.get_token)):
     if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
         # search
         if comming.qrGenId[0] == "V":
+            today = date.today()
+            d = today.strftime("%Y-%m-%d")
+
             query = f'''
                 SELECT 'visitor' AS type, visitor_id AS class_ids, *
                     FROM visitor AS v
                     LEFT JOIN home AS h
                     ON v.home_id = h.home_id
-                    WHERE qr_gen_id = '{comming.qrGenId}';
+                    WHERE qr_gen_id = '{comming.qrGenId}'
+                        AND invite_date = '{d}';
             '''
         else:
             query = f'''
@@ -198,7 +200,7 @@ async def updateTimeoutProject(log_id):
     xdatetime = f"{x.year}-{x.month}-{x.day} {x.hour}:{x.minute}:{x.second}.{x.microsecond}"
     query = f'''UPDATE history_log
                 SET  datetime_out = '{xdatetime}'
-                WHERE history_log.log_id = log_id;'''
+                WHERE history_log.log_id = {log_id};'''
     data = await db.fetch_all(query)
     # data = jsonable_encoder(data)
 
