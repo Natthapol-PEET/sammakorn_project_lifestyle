@@ -1,4 +1,24 @@
 
+# MQTT Broker
+Username: user1@vms.com
+Password: passwd-vms
+clientId: guard-web-1, juristic-web-1, resident-<device id>
+
+TOPIC [app -> web]
+[*] INVITE_VISITOR		topic: app-to-web/INVITE_VISITOR
+[*] RESIDENT_STAMP		topic: app-to-web/RESIDENT_STAMP
+[*] RESIDENT_REQUEST_STAMP	topic: app-to-web/RESIDENT_REQUEST_STAMP
+[*] RESIDENT_REQUEST_WHITELIST	topic: app-to-web/RESIDENT_REQUEST_WHITELIST
+[*] RESIDENT_REQUEST_BLACKLIST	topic: app-to-web/RESIDENT_REQUEST_BLACKLIST
+
+TOPIC [web -> app]
+[*] COMING_WALK_IN		topic: web-to-app/COMING_WALK_IN
+[*] CHECKOUT			topic: web-to-app/CHECKOUT
+[*] ADMIN_OPERATION		topic: web-to-app/ADMIN_OPERATION
+[*] ADMIN_ACCEPT_WHITELIST	topic: web-to-app/ADMIN_ACCEPT_WHITELIST
+[*] ADMIN_ACCEPT_BLACKLIST	topic: web-to-app/ADMIN_ACCEPT_BLACKLIST
+
+
 TOPIC [web -> web]
 COMING_WALK_IN		ทุกครั้งที่มีรถ coming in and walk in
 CHECKOUT		ทุกครั้งที่รถออกจากโครงการ
@@ -32,23 +52,5 @@ docker build -t fastapi-service .
 
 docker run -it --rm -p 8080:8080 --name vms-service -d fastapi-service
 docker run -p 8080:8080 fastapi-service
-
-
-
-[{'home_id': 1, 'websocket': <starlette.websockets.WebSocket object at 0x7f313e326850>}, 
-{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313e2b8250>}, 
-{'home_id': 1, 'websocket': <starlette.websockets.WebSocket object at 0x7f313eca2af0>}, 
-{'home_id': 1, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c1d4cd0>}, 
-{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c400c70>}, 
-{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c377ac0>}, 
-{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313cd30fd0>}, 
-{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313c2fd610>}, 
-{'home_id': 4, 'websocket': <starlette.websockets.WebSocket object at 0x7f313cc03040>}]
-
-
-
-
-
-
 
 

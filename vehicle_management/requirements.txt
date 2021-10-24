@@ -14,3 +14,8 @@ starlette==0.13.6
 uvicorn==0.13.3
 pyfcm
 websockets
+
+Pillow
+
+opencv-python
+numpy

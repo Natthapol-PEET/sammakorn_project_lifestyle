@@ -1,13 +1,21 @@
 from fastapi import FastAPI, Depends, status, HTTPException
+from fastapi.datastructures import UploadFile
 from fastapi.encoders import jsonable_encoder
+from utils.face_detection import faceDetectionAndRotate
+from utils.scan_document import scanDocument
 
+from data.schemas import CropImage, CropImageResponse
 from data.database import database as db
 from data.schemas import WalkInRegister
 
 from auth.auth import AuthHandler
 
 from datetime import datetime
-from base64 import b64decode
+import base64
+import io
+import numpy as np
+from PIL import Image
+import cv2
 
 tags_metadata = [
     {"name": "Home Number", "description": ""},
@@ -16,6 +24,58 @@ tags_metadata = [
 
 auth_handler = AuthHandler()
 walkin_api = FastAPI(openapi_tags=tags_metadata)
+
+@walkin_api.post("/croping_cardimage/", response_model=CropImageResponse, status_code=201)
+async def crop_card_image(data: CropImage):
+    # try:
+    base64_string = data.imageBase64
+    base64_string = base64_string.replace("data:image/jpeg;base64,", "")
+    base64_decoded = base64.b64decode(base64_string)
+    image = Image.open(io.BytesIO(base64_decoded))
+    image_np = np.array(image)
+    img = image_np
+
+    # cv2.imwrite("origin.jpg", img)
+    im1 = image.save("origin.jpg")
+
+    img = cv2.imread("origin.jpg")
+
+    flip = scanDocument(img)
+
+    if flip is not None:
+        img = faceDetectionAndRotate(flip)
+
+        # rotate = cv2.rotate(flip, cv2.ROTATE_180)  # Rotate Image
+        # rotate = cv2.rotate(flip, cv2.ROTATE_90_CLOCKWISE)  # Rotate Image
+        rotate = cv2.rotate(flip, cv2.ROTATE_90_COUNTERCLOCKWISE)  # Rotate Image
+
+        resize = cv2.resize(flip, (800, 500))
+
+        retval, buffer = cv2.imencode('.jpg', resize)
+        jpg_as_text = base64.b64encode(buffer)
+
+        imageBase64 = str(jpg_as_text).replace("b\'", "")
+        imageBase64 = imageBase64.replace("'", "")
+        # f = open("demofile3.txt", "w")
+        # f.write(str(base64.b64encode(resize)))
+        # f.close()
+
+        print("Work ...")
+
+        return {
+            "cropImageBase64": "data:image/jpeg;base64," + imageBase64,
+            "classCardImage": "card",
+        }
+    # except:
+
+    # raise HTTPException(
+    #             status_code=412, detail='image is not card')
+
+    print("Work ... 2")
+    return {
+        "cropImageBase64": "None",
+        "classCardImage": "None",
+    }
 
 
 @walkin_api.get('/get_home_number', tags=['Home Number'], status_code=status.HTTP_200_OK)

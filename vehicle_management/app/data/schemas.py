@@ -280,3 +280,11 @@ class WalkInRegister(BaseModel):
     goto_home_address: str
     qrGenId: str
     imageBase64: str
+
+
+class CropImage(BaseModel):
+    imageBase64: str
+
+class CropImageResponse(BaseModel):
+    cropImageBase64: str
+    classCardImage: str
