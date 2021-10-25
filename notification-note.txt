@@ -1,22 +1,40 @@
 
 # MQTT Broker
+Broker: 54.255.225.178
+Port: 1883
 Username: user1@vms.com
 Password: passwd-vms
 clientId: guard-web-1, juristic-web-1, resident-<device id>
 
 TOPIC [app -> web]
-[*] INVITE_VISITOR		topic: app-to-web/INVITE_VISITOR
-[*] RESIDENT_STAMP		topic: app-to-web/RESIDENT_STAMP
-[*] RESIDENT_REQUEST_STAMP	topic: app-to-web/RESIDENT_REQUEST_STAMP
-[*] RESIDENT_REQUEST_WHITELIST	topic: app-to-web/RESIDENT_REQUEST_WHITELIST
-[*] RESIDENT_REQUEST_BLACKLIST	topic: app-to-web/RESIDENT_REQUEST_BLACKLIST
+TOPIC app-to-web
+Payload: 
+	[*] INVITE_VISITOR		
+	[*] RESIDENT_STAMP		
+	[*] RESIDENT_REQUEST_STAMP	
+	[*] RESIDENT_REQUEST_WHITELIST	
+	[*] RESIDENT_REQUEST_BLACKLIST	
 
 TOPIC [web -> app]
-[*] COMING_WALK_IN		topic: web-to-app/COMING_WALK_IN
-[*] CHECKOUT			topic: web-to-app/CHECKOUT
-[*] ADMIN_OPERATION		topic: web-to-app/ADMIN_OPERATION
-[*] ADMIN_ACCEPT_WHITELIST	topic: web-to-app/ADMIN_ACCEPT_WHITELIST
-[*] ADMIN_ACCEPT_BLACKLIST	topic: web-to-app/ADMIN_ACCEPT_BLACKLIST
+TOPIC web-to-app/<home-id>
+Payload: 
+	[*] COMING_WALK_IN
+	[*] CHECKOUT
+	[*] ADMIN_OPERATION
+	[*] ADMIN_ACCEPT_WHITELIST
+	[*] ADMIN_ACCEPT_BLACKLIST
+
+TOPIC [pi -> app]
+TOPIC: pi-to-app/<home-id>
+Payload: 
+	[*] COMING_WALK_IN
+	[*] CHECKOUT
+
+TOPIC [pi -> web]
+TOPIC: pi-to-web
+Payload
+	[*] COMING_WALK_IN
+	[*] CHECKOUT
 
 
 TOPIC [web -> web]
@@ -48,9 +66,35 @@ TOPIC [web -> app]
 [*] ADMIN_OP_BLACKWHITE		ทุกครั้งที่มีการ approve หรือ disapprove blacklist whitelist
 
 
+show_detail.dart	95
+[] dialog_cancel_request.dart	106
+[*] dialog_send_admin.dart		91
+[*] dialoog_delete_whiteblack.dart	94
+[rm] notification_screen.dart	138
+[*] add_licente_plate_screen.dart	132, 153, 168
+[*] dialog_delete.dart		108
+
+
+################################ Register ################################
+
+1.Register Resident
+http://54.255.225.178:8080/app_api/docs#/Register/register_resident_register_resident__post
+
+2. Add Home
+http://54.255.225.178:8080/app_api/docs#/Home/Add_Home_home__post
+
+3. Math Resident with Home
+http://54.255.225.178:8080/app_api/docs#/Resident%20Home/Add_Resident_Home_resident_home__post
+
+
 docker build -t fastapi-service .
 
 docker run -it --rm -p 8080:8080 --name vms-service -d fastapi-service
 docker run -p 8080:8080 fastapi-service
+
+
+
+$ docker run -d --name emqx -p 1883:1883 -p 8081:8081 -p 8083:8083 -p 8883:8883 -p 8084:8084 -p 18083:18083 emqx/emqx:v4.3.8
+
 
 
