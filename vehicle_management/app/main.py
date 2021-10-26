@@ -1,7 +1,6 @@
 from apis.qr_api import qr_api
 from apis.web_api import web_api
 from apis.app_api import app_api
-from apis.walkin_api import walkin_api
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Depends, \
@@ -36,7 +35,7 @@ app = FastAPI(
 app.mount('/app_api', app_api)
 app.mount('/web_api', web_api)
 app.mount('/qr_api', qr_api)
-app.mount('/walkin_api', walkin_api)
+# app.mount('/walkin_api', walkin_api)
 
 app.add_middleware(
     CORSMiddleware,
