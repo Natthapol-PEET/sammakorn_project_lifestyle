@@ -99,6 +99,10 @@ async def comming(comming: QRCode, token=Depends(auth_handler.get_token)):
                     data = await db.fetch_all(query)
                     data = jsonable_encoder(data)
 
+                    return {"isInvite": True, "data": item}
+                else:
+                    return {"isInvite": False, "data": item}
+
             return {"isInvite": True, "data": item}
         else:
             # ลูกบ้านไม่ได้ invite

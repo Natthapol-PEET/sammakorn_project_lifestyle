@@ -24,6 +24,12 @@ class Logout:
         if await self.is_token_blacklisted(db, token):
             return {'result': True}
         else:
-            query = f"UPDATE resident_account SET is_login = False WHERE resident_id = {item.resident_id}"
+            query = f'''
+                    UPDATE resident_account 
+                        SET device_token = NULL, 
+                            device_id = NULL, 
+                            is_login = False 
+                        WHERE resident_id = {item.resident_id}
+                '''
             await db.execute(query)
             return await self.add_blacklist_token(db, token)

@@ -19,3 +19,5 @@ Pillow
 
 opencv-python
 numpy
+
+fastapi-mqtt

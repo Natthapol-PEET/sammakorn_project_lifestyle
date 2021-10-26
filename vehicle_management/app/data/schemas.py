@@ -21,6 +21,7 @@ class LoginResident(BaseModel):
     username: str
     password: str
     device_token: str
+    deviceId: str
 
 
 class distTest(BaseModel):
@@ -288,3 +289,7 @@ class CropImage(BaseModel):
 class CropImageResponse(BaseModel):
     cropImageBase64: str
     classCardImage: str
+
+class PayloadFromPi(BaseModel):
+    topic: str
+    payload: str

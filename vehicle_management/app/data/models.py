@@ -16,6 +16,7 @@ resident_account = Table(
     Column("password", String),
     Column("email", String),
     Column("device_token", String(255)),
+    Column("device_id", String),
     Column("is_login", Boolean),
     Column("login_datetime", DateTime),
     Column("create_datetime", DateTime),

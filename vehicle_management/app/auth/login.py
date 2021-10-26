@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.sql.expression import true
 
 from data.schemas import LoginDetails, LoginResident
 from data.models import resident_account, admin_account, guard_account
@@ -45,10 +46,18 @@ class Login:
 
         if resident is not None:
             # update login
-            query = resident_account.update()   \
-                .where(resident_account.c.username == auth_details.username)    \
-                .values(login_datetime=datetime.now(), device_token=auth_details.device_token, is_login=True)
-            await db.execute(query)
+            if resident["is_login"] is True:
+                if resident["device_id"] == auth_details.deviceId:
+                    return {"detail": 'login'}
+                else:
+                    raise HTTPException(
+                        status_code=401, detail='this user account already logged in')
+            else:
+                query = resident_account.update()   \
+                    .where(resident_account.c.username == auth_details.username)    \
+                    .values(login_datetime=datetime.now(), device_token=auth_details.device_token,
+                            device_id=auth_details.deviceId, is_login=True)
+                await db.execute(query)
 
         return Login().verify_password(resident, auth_details)
 

@@ -7,7 +7,9 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Depends, \
     WebSocket, WebSocketDisconnect, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_mqtt import FastMQTT, MQTTConfig
 from typing import Optional
+from data.schemas import PayloadFromPi
 
 from data.database import database as db
 from data.schemas import NotificationItem
@@ -30,6 +32,7 @@ app = FastAPI(
     title="REST API using FastAPI PostgreSQL Async EndPoints (Sammakorn API)",
     openapi_tags=tags_metadata)
 
+
 app.mount('/app_api', app_api)
 app.mount('/web_api', web_api)
 app.mount('/qr_api', qr_api)
@@ -47,6 +50,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+mqtt_config = MQTTConfig(host="54.255.225.178",
+                         port=1883,
+                         keepalive=60,
+                         username="user1@vms.com",
+                         password="passwd-vms")
+
+mqtt = FastMQTT(
+    config=mqtt_config
+)
+
+mqtt.init_app(app)
 
 
 @app.on_event("startup")
@@ -109,6 +124,40 @@ async def websocket_endpoint(websocket: WebSocket, token: str, apptype: str, hom
 
     elif status == 1008:
         await websocket.close()
+
+
+# --------------------------------- MQTT --------------------------
+@mqtt.on_connect()
+def connect(client, flags, rc, properties):
+    mqtt.client.subscribe("/fastapi-mqtt")  # subscribing mqtt topic
+    print("Connected: ", client, flags, rc, properties)
+
+
+@mqtt.on_message()
+async def message(client, topic, payload, qos, properties):
+    print("Received message: ", topic, payload.decode(), qos, properties)
+
+
+@mqtt.on_disconnect()
+def disconnect(client, packet, exc=None):
+    print("Disconnected")
+
+
+@mqtt.on_subscribe()
+def subscribe(client, mid, qos, properties):
+    print("subscribed", client, mid, qos, properties)
+
+
+@app.post('/mqtt-from-pi', status_code=200)
+def publishing(data: PayloadFromPi, token=Depends(auth_handler.get_token)):
+    if token == "nsr0bjfkbmmiarnbkzncvinrabkkvnaddff":
+        # publishing mqtt topic
+        mqtt.publish(data.topic, data.payload)
+        return {"result": True, "message": "Published"}
+    else:
+        raise HTTPException(status_code=401, detail='Invalid token')
+
+# ------------------------------------------------------------------------------
 
 
 # ------------------------------ End Websocket  --------------------------------

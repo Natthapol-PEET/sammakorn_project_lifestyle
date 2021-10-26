@@ -1,8 +1,10 @@
+from fastapi.encoders import jsonable_encoder
 from data.schemas import HomeIn, ResidentHomeIn, HomeId, VisitorId, HistoryLog, \
     ResidentId, SendToAdmin, AdminDelete
 from data.models import home, resident_home
 
 from datetime import datetime
+
 
 class Home:
     async def Add_Home(self, db, Home: HomeIn):
@@ -31,8 +33,10 @@ class Home:
             LEFT JOIN home AS h
             ON rh.home_id = h.home_id
             WHERE rh.resident_id = {item.resident_id}
+            ORDER BY home_id ASC;
         '''
-        return await db.fetch_all(query)
+        data = jsonable_encoder(await db.fetch_all(query))
+        return data
 
 
 class LicensePlate:
@@ -326,7 +330,6 @@ class LicensePlate:
         '''
         return await db.fetch_all(query)
 
-
     async def cancel_request_white_black(self, db, item):
         if item.type == 'White List':
             query = f"DELETE FROM whitelist WHERE whitelist_id = {item.id}"
@@ -334,7 +337,6 @@ class LicensePlate:
             query = f"DELETE FROM blacklist WHERE blacklist_id = {item.id}"
         result = await db.execute(query)
         return {"message": f"{item.type} with id: {item.id} deleted successfully!"}
-
 
     async def cancel_request_delete_white_black(self, db, item):
         if item.type == 'White List':
@@ -352,9 +354,6 @@ class LicensePlate:
         await db.execute(query)
         return {"id": item.id}
 
-        
-
-
     async def send_admin_delete_blackwhite(self, db, item):
         if item.type == 'White List':
             query = f'''
@@ -370,7 +369,6 @@ class LicensePlate:
             '''
         await db.execute(query)
         return {"id": item.id}
-
 
     async def checkout(self, db, item: HomeId):
         query = f'''
@@ -439,4 +437,3 @@ class LicensePlate:
         '''
 
         return await db.fetch_all(query)
-
