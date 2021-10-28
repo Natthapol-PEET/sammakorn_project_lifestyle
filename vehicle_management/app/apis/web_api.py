@@ -797,7 +797,7 @@ ORDER BY t.resident_id
 
         data = await db.fetch_all(query)
         data = jsonable_encoder(data)
-        # print(data[0]['class'])
+        # print(data[0]['class'])123
 
         return data
 # ------------------------------ End Web Application  --------------------------------
