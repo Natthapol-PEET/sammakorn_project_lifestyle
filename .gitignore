@@ -9,6 +9,7 @@ ehthumbs.db
 ehthumbs_vista.db
 
 vehicle_management/venv/*
+env/*
 
 # Dump file
 *.stackdump
