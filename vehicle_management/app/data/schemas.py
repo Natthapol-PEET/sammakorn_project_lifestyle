@@ -255,6 +255,11 @@ class DeclineDeleteBlacklist(BaseModel):
     admin_decline_datetime: str
     blacklist_id: int
 
+class GetIDResident(BaseModel):
+    firstname: str
+    lastname: str
+    username: str
+
 # -------------------------------- End Website ------------------------
 
 class ResidentHomeIn(BaseModel):

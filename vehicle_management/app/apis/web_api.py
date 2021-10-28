@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from data.schemas import RegisterDetails, LoginDetails, ResidentId, \
     GuardhouseCheckin, GuardhouseAddvisitor, GuardhouseCheckout, \
     Adminstamp, ApproveBlacklist, ApproveWhitelist, startDateendDate,  \
-    DeleteWhitelist, DeleteBlacklist, DeclineDeleteWhitelist, DeclineDeleteBlacklist
+    DeleteWhitelist, DeleteBlacklist, DeclineDeleteWhitelist, DeclineDeleteBlacklist, GetIDResident
 
 from data.database import database as db
 
@@ -754,4 +754,50 @@ async def decline_delete_blacklist(item: DeclineDeleteBlacklist, username=Depend
 
         return data
 
+@web_api.get("/get_resident_list", status_code=200)
+async def get_project_list(username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+    x = datetime.now()
+    date = f"{x.year}-{x.month}-{x.day}"
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""SELECT t.resident_id
+     , t.firstname
+     , t.lastname
+     , t.username
+     , t.password
+     , t.email
+     , t.create_datetime
+     , rh.home_id
+     , h.home_name
+     , h.home_number
+FROM public.resident_account t
+LEFT JOIN  public.resident_home rh on t.resident_id = rh.resident_id
+LEFT JOIN  public.home h on rh.home_id = h.home_id
+ORDER BY t.resident_id  """
+
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+#
+        return data
+
+
+@web_api.put('/get_resident_id_select', status_code=200)
+async def get_resident_id_select(item: GetIDResident, username=Depends(auth_handler.auth_wrapper), token=Depends(auth_handler.get_token)):
+
+    if await isTokenBlacklisted(db, token):
+        raise HTTPException(status_code=401, detail='Invalid token')
+    else:
+        query = f"""SELECT t.resident_id
+    
+FROM public.resident_account t
+WHERE t.firstname = \'{item.firstname}\' AND t.lastname = \'{item.lastname}\' AND t.username = \'{item.username}\'
+ORDER BY t.resident_id
+     """
+
+        data = await db.fetch_all(query)
+        data = jsonable_encoder(data)
+        # print(data[0]['class'])
+
+        return data
 # ------------------------------ End Web Application  --------------------------------
