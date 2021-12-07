@@ -22,9 +22,36 @@ const villColor = Color(0xff12976F);
 const approveColor = Color(0xff17CD4A);
 const disapproveColor = Color(0xffEA464C);
 
+List projectImages = [
+  'assets/images/Rectangle 2878.png',
+  'assets/images/Rectangle 2870.png',
+  'assets/images/Rectangle 2872.png',
+  'assets/images/Rectangle 2873.png'
+];
+
 // String host = "192.168.43.160";
 // String URL = "http://${host}:8080/app_api"; // local
 // String WS = "ws://${host}:8080";
 
-const String URL = "http://54.255.225.178:8080/app_api"; // server aws
-const String WS = "ws://54.255.225.178:8080";
+const String serverIp = "54.255.225.178";
+// const String serverIp = "192.168.0.103";
+
+const String URL = "http://${serverIp}:8080/app_api"; // server aws
+const String WS = "ws://${serverIp}:8080";
+
+/* MQTT config */
+const String mqttBroker = serverIp;
+const int mqttPort = 1883;
+const String mqttUsername = "user1@vms.com";
+const String mqttPassword = "passwd-vms";
+const String mqttClientId = "resident-";      // resident-<device id>
+
+List pubTopic = [
+  "app-to-web",
+];
+
+List subTopic = [
+  "app-to-app/",
+  "web-to-app/",
+  "pi-to-app/",
+];

@@ -1,97 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import '../../../constance.dart';
 
-SelectIndexButton(select) {
-  List<Color> selectColorButton;
+RxList SelectIndexButton(select) {
+  RxList<dynamic> selectColorButton = [].obs;
 
   if (select == 0) {
-    selectColorButton = [
+    selectColorButton.assignAll([
       goldenSecondary,
       Colors.white,
       Colors.white,
       Colors.white,
       Colors.white,
-    ];
+    ]);
   } else if (select == 1) {
-    selectColorButton = [
+    selectColorButton.assignAll([
       Colors.white,
       goldenSecondary,
       Colors.white,
       Colors.white,
       Colors.white,
-    ];
+    ]);
   } else if (select == 2) {
-    selectColorButton = [
+    selectColorButton.assignAll([
       Colors.white,
       Colors.white,
       goldenSecondary,
       Colors.white,
       Colors.white,
-    ];
+    ]);
   } else if (select == 3) {
-    selectColorButton = [
+    selectColorButton.assignAll([
       Colors.white,
       Colors.white,
       Colors.white,
       goldenSecondary,
       Colors.white,
-    ];
+    ]);
   } else {
-    selectColorButton = [
+    selectColorButton.assignAll([
       Colors.white,
       Colors.white,
       Colors.white,
       Colors.white,
       goldenSecondary,
-    ];
+    ]);
   }
 
   return selectColorButton;
 }
 
-SelectIndexElem(select) {
-  List<Color> selectColorElem;
+RxList SelectIndexElem(select) {
+  RxList<dynamic> selectColorElem = [].obs;
 
   if (select == 0) {
-    selectColorElem = [
+    selectColorElem.assignAll([
       Colors.white,
       goldenSecondary,
       goldenSecondary,
       goldenSecondary,
       goldenSecondary,
-    ];
+    ]);
   } else if (select == 1) {
-    selectColorElem = [
+    selectColorElem.assignAll([
       goldenSecondary,
       Colors.white,
       goldenSecondary,
       goldenSecondary,
       goldenSecondary,
-    ];
+    ]);
   } else if (select == 2) {
-    selectColorElem = [
+    selectColorElem.assignAll([
       goldenSecondary,
       goldenSecondary,
       Colors.white,
       goldenSecondary,
       goldenSecondary,
-    ];
+    ]);
   } else if (select == 3) {
-    selectColorElem = [
+    selectColorElem.assignAll([
       goldenSecondary,
       goldenSecondary,
       goldenSecondary,
       Colors.white,
       goldenSecondary,
-    ];
+    ]);
   } else {
-    selectColorElem = [
+    selectColorElem.assignAll([
       goldenSecondary,
       goldenSecondary,
       goldenSecondary,
       goldenSecondary,
       Colors.white,
-    ];
+    ]);
   }
 
   return selectColorElem;

@@ -6,8 +6,8 @@ import 'package:registerapp_flutter/data/notification.dart';
 import '../../constance.dart';
 import 'components/body.dart';
 import 'components/list_notification.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/status.dart' as status;
+// import 'package:web_socket_channel/io.dart';
+// import 'package:web_socket_channel/status.dart' as status;
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key key}) : super(key: key);
@@ -24,7 +24,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   String descTime = "";
 
   // socket variable
-  IOWebSocketChannel channel;
+  // IOWebSocketChannel channel;
 
   @override
   void initState() {
@@ -135,22 +135,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
     String token = data[0]['TOKEN'];
     String homeId = await home.getHomeId();
 
-    channel = IOWebSocketChannel.connect(
-        Uri.parse('${WS}/ws/${token}/app/${homeId}'));
+    // channel = IOWebSocketChannel.connect(
+    //     Uri.parse('${WS}/ws/${token}/app/${homeId}'));
 
-    try {
-      channel.stream.listen((msg) {
-        if (msg == "ALERT_MESSAGE") {
-          // ทุกครั้งที่มีแจ้งเตือนเข้ามา [topic ALERT_MESSAGE] {web -> app}
-          Future.delayed(Duration(milliseconds: 500), () => getNotification());
-        }
-      });
-    } catch (e) {}
+    // try {
+    //   channel.stream.listen((msg) {
+    //     if (msg == "ALERT_MESSAGE") {
+    //       // ทุกครั้งที่มีแจ้งเตือนเข้ามา [topic ALERT_MESSAGE] {web -> app}
+    //       Future.delayed(Duration(milliseconds: 500), () => getNotification());
+    //     }
+    //   });
+    // } catch (e) {}
   }
 
   @override
   void dispose() {
     super.dispose();
-    channel.sink.close(status.goingAway);
+    // channel.sink.close(status.goingAway);
   }
 }

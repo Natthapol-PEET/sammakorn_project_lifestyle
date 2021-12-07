@@ -27,6 +27,8 @@ class Services {
       List home_id = [];
 
       for (var elem in allHome_list) {
+        print(elem);
+
         allHome.add(elem['home']);
         home_id.add(elem['home_id']);
       }

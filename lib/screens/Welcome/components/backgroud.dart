@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../constance.dart';
 
 class Backgroud extends StatelessWidget {
@@ -31,19 +30,21 @@ class Backgroud extends StatelessWidget {
           ),
           isLogin
               ? child
-              : Positioned(
-                  bottom: 0,
-                  child: Container(
-                    width: size.width,
-                    height: size.height * 0.25,
-                    decoration: BoxDecoration(
-                      color: greenPrimary,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
+              : Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: size.width,
+                      // height: size.height * 0.25,
+                      decoration: BoxDecoration(
+                        color: greenPrimary,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
                       ),
+                      child: child,
                     ),
-                    child: child,
                   ),
                 ),
         ],

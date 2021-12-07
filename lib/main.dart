@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/add_licente_plate_screen.dart';
 import 'package:registerapp_flutter/screens/Home/home_screen.dart';
 import 'package:registerapp_flutter/screens/Login/login_screen.dart';
@@ -14,11 +15,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:registerapp_flutter/service/fcm.dart';
 import 'package:registerapp_flutter/service/push_notification.dart';
-
 import 'data/notification.dart';
 
 NotificationDB notifications = NotificationDB();
-
 PushNotification pushNotification = PushNotification();
 FirebaseMessaging messaging;
 FCM fcm = FCM();
@@ -72,7 +71,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -97,6 +96,9 @@ class MyApp extends StatelessWidget {
         '/addLicenseplate': (context) => AddLicensePlateScreen(),
         '/logout': (context) => LogoutScreen(),
         '/changePassword': (context) => PasswordScreen(),
+
+        // Not call
+        '/show_qrcode': (context) => ShowQrcodeScreen(data: "init qr code"),
       },
     );
   }

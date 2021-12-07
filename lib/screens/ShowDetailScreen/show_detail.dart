@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/models/screenArg.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
 import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
-import 'package:registerapp_flutter/service/socket.dart';
 import '../../constance.dart';
 import 'components/bottom_nav_bar.dart';
 import 'components/card_list_timeline.dart';
@@ -36,6 +37,8 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
   List<Function> pass = [];
 
   bool disNavButton = false;
+
+  final controller = Get.put(HomeController());
 
   @override
   void initState() {
@@ -90,13 +93,15 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
                         builder: (BuildContext context) {
                           return DialogStamp(
                             press: () async {
-                              var socket = SocketManager();
-                              socket.send_message('RESIDENT_STAMP', 'web');
-                              socket.send_message('RESIDENT_STAMP', 'app');
+                              // var socket = SocketManager();
+                              // socket.send_message('RESIDENT_STAMP', 'web');
+                              // socket.send_message('RESIDENT_STAMP', 'app');
 
                               services.resident_stamp(
                                   arguments['log_id'].toString());
-                              Navigator.pushNamed(context, '/home');
+
+                              controller.publishMqtt("app-to-web", "RESIDENT_STAMP");
+                              Get.toNamed('/home');
                             },
                           );
                         },
@@ -176,17 +181,17 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
     if (arguments.containsKey('invite') && arguments['invite'] != null) {
       items.add(TimeLineItem('Invite', arguments['invite']));
 
-      setState(() {
-        disNavButton = false;
-        titleButton = 'Delete';
-        iconButton = Icons.delete;
-        isEnableList.add(true);
-        pass.add(() => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ShowQrcodeScreen(
-                      data: ScreenArguments(
+      setState(
+        () {
+          disNavButton = false;
+          titleButton = 'Delete';
+          iconButton = Icons.delete;
+          isEnableList.add(true);
+          pass.add(
+            () => {
+              Get.off(
+                ShowQrcodeScreen(
+                  data: ScreenArguments(
                     "Visitor",
                     arguments['license_plate'],
                     arguments['invite'].split('T')[0],
@@ -194,11 +199,13 @@ class _ShowDetailScreenState extends State<ShowDetailScreen> {
                     arguments['fullname'].split('  ')[1],
                     arguments['qr_gen_id'],
                     true,
-                  )),
+                  ),
                 ),
-              )
-            });
-      });
+              ),
+            },
+          );
+        },
+      );
     }
 
     if (arguments.containsKey('datetime_in') &&

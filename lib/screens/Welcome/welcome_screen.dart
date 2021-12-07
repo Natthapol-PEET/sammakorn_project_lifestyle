@@ -1,112 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:registerapp_flutter/data/auth.dart';
-import 'package:registerapp_flutter/data/home.dart';
-import 'package:registerapp_flutter/data/notification.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/initdb_controller.dart';
 import 'package:registerapp_flutter/screens/Home/home_screen.dart';
 import 'components/body.dart';
 import 'is_loading.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({Key key}) : super(key: key);
+  WelcomeScreen({Key key}) : super(key: key);
 
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool isLogin = false;
-  bool isLoad = true;
-  bool lock1 = false;
-  bool lock2 = false;
+  final initDBController = Get.put(InitDatabaseController());
 
-  Auth auth = Auth();
-  Home home = Home();
-  NotificationDB notification = NotificationDB();
+  final args = Get.arguments;
 
   @override
   void initState() {
+    check();
+
     super.initState();
-    // SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-
-    // home.deleteHome();
-    // auth.deleteToken();
-    // notification.deleteNotification();
-
-    checkDB();
   }
 
-  Future checkDB() async {
-    var isHaveDBH = home.checkDBHome();
-    var isHaveDBA = auth.checkDBAuth();
-    await notification.checkDBNotification();
-
-    isHaveDBH.then((v) {
-      if (!v) {
-        setLock(1);
-      } else {
-        setState(() {
-          lock1 = true;
-        });
-      }
-    });
-
-    isHaveDBA.then((v) {
-      if (!v) {
-        setLock(2);
-      } else {
-        setState(() {
-          lock2 = true;
-        });
-      }
-    });
-  }
-
-  setLock(int lockIndex) {
-    Future.delayed(const Duration(milliseconds: 2000), () {
-      setState(() {
-        if (lockIndex == 1) {
-          lock1 = true;
-        } else {
-          lock2 = true;
-        }
-      });
-    });
+  check() async {
+    await initDBController.checkDB(args);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (lock1 && lock2) {
-      _checkLogin();
-    }
-
-    return Scaffold(
-      body: isLoad
-          ? IsLoadding(isLogin: true)
-          : isLogin
-              ? HomeScreen()
-              : Body(),
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Obx(
+        () => Scaffold(
+          body: initDBController.isLoad.value
+              ? IsLoadding(isLogin: true)
+              : initDBController.isLogin.value
+                  ? HomeScreen()
+                  : Body(),        // welcome page
+        ),
+      ),
     );
   }
 
-  _checkLogin() async {
-    var token = await auth.getToken();
+  DateTime currentBackPressTime;
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
 
-    setState(() {
-      lock1 = false;
-      lock2 = false;
-    });
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
 
-    if (token[0]["TOKEN"] == "-1") {
-      setState(() {
-        isLogin = false;
-        isLoad = false;
-      });
-    } else {
-      setState(() {
-        isLogin = true;
-        isLoad = false;
-      });
+      Fluttertoast.showToast(msg: "Press back again to exit");
+      return Future.value(false);
     }
+
+    Fluttertoast.showToast(msg: "Close Application");
+    SystemNavigator.pop();
+    return Future.value(true);
   }
 }

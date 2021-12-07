@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/service/service.dart';
 import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
@@ -24,7 +26,7 @@ class AddLicensePlateScreen extends StatefulWidget {
 
 class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
   String classValue = "visitor";
-  DateTime dateTime;
+  DateTime dateTime = DateTime.now();
   final firstname = TextEditingController();
   final lastname = TextEditingController();
   final licenseplate = TextEditingController();
@@ -32,15 +34,13 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
 
   Services services = Services();
   Home home = Home();
-  var socket = SocketManager();
+  // var socket = SocketManager();
+
+  // Getx controller
+  final controller = Get.put(HomeController());
 
   // random number
   var rng = Random();
-
-  void initState() {
-    super.initState();
-    dateTime = DateTime.now();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,25 +113,25 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                         DateFormat('yyyy-MM-dd').format(dateTime),
                         "V${qrGenId}");
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ShowQrcodeScreen(
-                            data: ScreenArguments(
-                              "Visitor",
-                              licenseplate.text,
-                              DateFormat('yyyy-MM-dd').format(dateTime),
-                              firstname.text,
-                              lastname.text,
-                              "V${qrGenId}",
-                              false,
-                            ),
+                      Get.offAll(
+                        () => ShowQrcodeScreen(
+                          data: ScreenArguments(
+                            "Visitor",
+                            licenseplate.text,
+                            DateFormat('yyyy-MM-dd').format(dateTime),
+                            firstname.text,
+                            lastname.text,
+                            "V${qrGenId}",
+                            false,
                           ),
                         ),
                       );
 
                       // socket update web
-                      socket.send_message('INVITE_VISITOR', 'web');
+                      // socket.send_message('INVITE_VISITOR', 'web');
+
+                      // publish mqtt
+                      controller.publishMqtt("app-to-web", "INVITE_VISITOR");
                     } else {
                       _show_error_toast(res_text);
                     }
@@ -149,10 +149,14 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                       "W${qrGenId}",
                     );
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      Navigator.pushNamed(context, '/home');
+                      Get.toNamed('/home');
 
                       // socket update web
-                      socket.send_message('RESIDENT_REQUEST_WHITELIST', 'web');
+                      // socket.send_message('RESIDENT_REQUEST_WHITELIST', 'web');
+
+                      // publish mqtt
+                      controller.publishMqtt(
+                          "app-to-web", "RESIDENT_REQUEST_WHITELIST");
                     } else {
                       _show_error_toast(res_text);
                     }
@@ -164,10 +168,14 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                         licenseplate.text,
                         reason.text);
                     if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                      Navigator.pushNamed(context, '/home');
+                      Get.toNamed('/home');
 
                       // socket update web
-                      socket.send_message('RESIDENT_REQUEST_BLACKLIST', 'web');
+                      // socket.send_message('RESIDENT_REQUEST_BLACKLIST', 'web');
+
+                      // publish mqtt
+                      controller.publishMqtt(
+                          "app-to-web", "RESIDENT_REQUEST_BLACKLIST");
                     } else {
                       _show_error_toast(res_text);
                     }
@@ -213,7 +221,8 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
   Future chooseDate() async {
     DateTime chooseDateTime = await showDatePicker(
       context: context,
-      firstDate: DateTime(DateTime.now().year - 5),
+      // firstDate: DateTime(DateTime.now().year - 5),
+      firstDate: DateTime.now(),
       lastDate: DateTime(DateTime.now().year + 5),
       initialDate: dateTime,
       builder: (BuildContext context, Widget child) {

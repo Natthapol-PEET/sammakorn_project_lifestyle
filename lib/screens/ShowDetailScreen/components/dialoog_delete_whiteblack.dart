@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
 import 'package:registerapp_flutter/service/socket.dart';
 import '../../../constance.dart';
@@ -7,11 +9,13 @@ class DialogSendDeleteWhiteBlack extends StatelessWidget {
   final String type;
   final String id;
 
-  const DialogSendDeleteWhiteBlack({
+   DialogSendDeleteWhiteBlack({
     Key key,
     @required this.type,
     @required this.id,
   }) : super(key: key);
+
+  final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -91,14 +95,19 @@ class DialogSendDeleteWhiteBlack extends StatelessWidget {
                               type, id, reasonController.text);
                           Navigator.pushNamed(context, '/home');
 
-                          var socket = SocketManager();
-                          socket.send_message(
-                              'RESIDENT_REQUEST_WHITELIST', 'web');
-                          socket.send_message(
-                              'RESIDENT_REQUEST_BLACKLIST', 'web');
+                          // var socket = SocketManager();
+                          // socket.send_message(
+                          //     'RESIDENT_REQUEST_WHITELIST', 'web');
+                          // socket.send_message(
+                          //     'RESIDENT_REQUEST_BLACKLIST', 'web');
+                          // socket.send_message(
+                          //     'RESIDENT_REQUEST_WHITEBLACK', 'app');
 
-                          socket.send_message(
-                              'RESIDENT_REQUEST_WHITEBLACK', 'app');
+                          controller.publishMqtt("app-to-web", "RESIDENT_REQUEST_WHITELIST");
+                          controller.publishMqtt("app-to-web", "RESIDENT_REQUEST_BLACKLIST");
+
+                          
+                          controller.publishMqtt("app-to-app", "RESIDENT_REQUEST_WHITEBLACK");
                         }
                       },
                     ),

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/data/auth.dart';
-import 'package:registerapp_flutter/data/home.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
-import 'package:registerapp_flutter/service/socket.dart';
-import 'package:web_socket_channel/io.dart';
+// import 'package:web_socket_channel/io.dart';
 import '../../../constance.dart';
 
 class DialogSendAdmin extends StatelessWidget {
   final String id;
 
-  const DialogSendAdmin({
+  DialogSendAdmin({
     Key key,
     this.id,
   }) : super(key: key);
+
+  final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +89,14 @@ class DialogSendAdmin extends StatelessWidget {
                       ),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          var socket = SocketManager();
-                          socket.send_message('RESIDENT_REQUEST_STAMP', 'web');
-                          socket.send_message('RESIDENT_SEND_STAMP', 'app');
+                          // var socket = SocketManager();
+                          // socket.send_message('RESIDENT_REQUEST_STAMP', 'web');
+                          // socket.send_message('RESIDENT_SEND_STAMP', 'app');
+
+                          controller.publishMqtt(
+                              "app-to-web", "RESIDENT_REQUEST_STAMP");
+                          controller.publishMqtt(
+                              "app-to-app", "RESIDENT_SEND_STAMP");
 
                           services.send_admin_stamp(id, reasonController.text);
                           Navigator.pushNamed(context, '/home');

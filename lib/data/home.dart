@@ -17,31 +17,17 @@ class Home {
   }
 
   checkDBHome() async {
-    // final String command =
-    //     "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' ORDER BY 1;";
-    // final row = await sqlite.queryDatabase(command);
-
-    // for (var elem in row.toList()) {
-    //   print(elem);
-
-    //   if (elem['name'] == 'HomeData') {
-    //     return true;
-    //   }
-    // }
-    // return false;
-
     try {
       var row = await getHomeAndId();
+
       if (row.isEmpty || row == null) {
         insertHome();
-        return true;
-      } else {
-        return false;
       }
     } catch (e) {
       initHome();
-      return true;
     }
+
+    return true;
   }
 
   getHome() async {
@@ -66,7 +52,7 @@ class Home {
     return row;
   }
 
-  void updateHome(String home, String home_id) async {
+  Future updateHome(String home, String home_id) async {
     final String command =
         "UPDATE HomeData SET home = '${home}', home_id = ${home_id};";
     final row = await sqlite.updateDatabase(command);

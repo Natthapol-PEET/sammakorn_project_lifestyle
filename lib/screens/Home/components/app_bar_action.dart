@@ -3,7 +3,7 @@ import 'package:registerapp_flutter/screens/Notification/notification_screen.dar
 import '../../../constance.dart';
 
 class AppBarAction extends StatelessWidget {
-  final int countAlert;
+  final String countAlert;
   final Function pass;
 
   const AppBarAction({
@@ -41,7 +41,7 @@ class AppBarAction extends StatelessWidget {
               // ),
             ),
             child: Center(
-                child: Text(countAlert.toString(),
+                child: Text(countAlert,
                     style:
                         TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
           ),

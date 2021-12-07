@@ -26,14 +26,21 @@ dependencies:
   firebase_messaging: ^10.0.4
   firebase_core: ^1.4.0
 
-  web_socket_channel: ^2.1.0
+  # web socket client
+  # web_socket_channel: ^2.1.0
+
   device_info: ^2.0.2
 
   # create qrcode
   qr_flutter: ^4.0.0
   screenshot: ^1.2.3
   share: ^2.0.4
-  
+
+  # getx 
+  get: ^4.3.8
+
+  # mqtt
+  mqtt_client: ^9.6.1
 
   # flutter_datetime_picker: ^1.5.1
   # awesome_dialog: ^2.1.0

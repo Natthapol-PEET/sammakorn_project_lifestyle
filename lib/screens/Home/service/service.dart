@@ -340,7 +340,7 @@ class Services {
       String body = utf8.decode(response.bodyBytes);
       return json.decode(body);
     } else {
-      return 301;
+      return [];
     }
   }
 
@@ -364,7 +364,8 @@ class Services {
   }
 
   cancel_request_delete_white_black(String type, String id) async {
-    Uri url = Uri.parse("${URL}/license_plate/cancel_request_delete_white_black/");
+    Uri url =
+        Uri.parse("${URL}/license_plate/cancel_request_delete_white_black/");
     var token_var = await auth.getToken();
     String token = 'Bearer ${token_var[0]["TOKEN"]}';
 

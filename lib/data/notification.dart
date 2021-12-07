@@ -41,59 +41,75 @@ class NotificationDB {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
-    final String command =
-        "SELECT COUNT(id) AS count FROM Notification WHERE is_read = false AND home_id = ${homeId} AND time >= '${formattedDate} 00:00:00'";
+    final String command = """
+                SELECT COUNT(id) AS count 
+                  FROM Notification 
+                  WHERE is_read = 0
+                    AND home_id = ${homeId} 
+                    AND time >= '${formattedDate} 00:00:00'
+            """;
+
     final row = await sqlite.queryDatabase(command);
-    // print(row.toList());
-    return row.toList()[0]['count'].toInt();
+    return row.toList()[0]['count'].toString();
   }
 
   insertNotification(
       String Class, String title, String description, String homeId) async {
     DateTime now = DateTime.now();
 
-    final String command =
-        '''INSERT INTO Notification (class, title, description, time, is_read, home_id) 
-        VALUES ('${Class}', '${title}', '${description}', '${now}', false, ${homeId})''';
-    var row = await sqlite.insertDatabase(command);
-    // print("insert Notification: ${row}");
+    final String command = """
+          INSERT INTO Notification (class, title, description, time, is_read, home_id) 
+            VALUES ('${Class}', '${title}', '${description}', '${now}', false, ${homeId})
+        """;
+
+    await sqlite.insertDatabase(command);
   }
 
   updateNotification() async {
-    final String command =
-        "UPDATE Notification SET is_read = true WHERE is_read = false";
-    final row = await sqlite.updateDatabase(command);
-    // print("UPDATE Notification ${row}");
+    final String command = """
+        UPDATE Notification 
+          SET is_read = 1 
+            WHERE is_read = 0
+      """;
+
+    await sqlite.updateDatabase(command);
   }
 
   deleteNotification(int id) async {
-    final String command = "DELETE FROM Notification WHERE id = ${id}";
-    final row = await sqlite.deleteDatabase(command);
-    // print("id ${id} : ${row}");
+    final String command = """
+        DELETE FROM Notification 
+          WHERE id = ${id}
+      """;
+    sqlite.deleteDatabase(command);
   }
 
   dropNotification() async {
     final String command = "DROP TABLE Notification";
-    final row = await sqlite.deleteDatabase(command);
-    // print("DROP TABLE Notification ${row}");
+    await sqlite.deleteDatabase(command);
   }
 
   checkDBNotification() async {
-    final String command =
-        "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' ORDER BY 1;";
+    final String command = """
+        SELECT name 
+          FROM sqlite_master 
+            WHERE type IN ('table','view') 
+              AND name NOT LIKE 'sqlite_%' 
+              ORDER BY 1;
+      """;
+
     final row = await sqlite.queryDatabase(command);
     bool isHave = false;
 
     for (var elem in row.toList()) {
-      // print(elem);
-
       if (elem['name'] == 'Notification') {
         isHave = true;
       }
     }
 
-    if (!isHave) {
+    if (isHave == false) {
       initNotification();
     }
+
+    return true;
   }
 }

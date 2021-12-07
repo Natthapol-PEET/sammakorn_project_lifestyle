@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
-import 'package:registerapp_flutter/service/socket.dart';
 import '../../../constance.dart';
 
 class DialogCancelRequest extends StatelessWidget {
@@ -8,12 +9,14 @@ class DialogCancelRequest extends StatelessWidget {
   final String type;
   final String id;
 
-  const DialogCancelRequest({
+  DialogCancelRequest({
     Key key,
     this.resident_remove_reason,
     this.id,
     this.type,
   }) : super(key: key);
+
+  final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +105,18 @@ class DialogCancelRequest extends StatelessWidget {
                           services.cancel_request_delete_white_black(type, id);
                         }
 
-                        var socket = SocketManager();
-                        socket.send_message(
-                            'RESIDENT_REQUEST_WHITELIST', 'web');
-                        socket.send_message(
-                            'RESIDENT_REQUEST_BLACKLIST', 'web');
+                        // var socket = SocketManager();
+                        // socket.send_message(
+                        //     'RESIDENT_REQUEST_WHITELIST', 'web');
+                        // socket.send_message(
+                        //     'RESIDENT_REQUEST_BLACKLIST', 'web');
 
-                        socket.send_message(
-                            'RESIDENT_REQUEST_WHITEBLACK', 'app');
+                        // socket.send_message(
+                        //     'RESIDENT_REQUEST_WHITEBLACK', 'app');
+
+                        controller.publishMqtt("app-to-web", "RESIDENT_REQUEST_WHITELIST");
+                        controller.publishMqtt("app-to-web", "RESIDENT_REQUEST_BLACKLIST");
+                        controller.publishMqtt("app-to-app", "RESIDENT_REQUEST_WHITEBLACK");
 
                         Navigator.pushNamed(context, '/home');
 

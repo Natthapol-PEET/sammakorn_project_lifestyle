@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
@@ -112,7 +112,7 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
                           text: "Back to Home",
                           colorText: Colors.white,
                           colorButton: darkgreen200,
-                          press: () => Navigator.pushNamed(context, '/home'),
+                          press: () => Get.toNamed('/home'),
                         ),
                       ],
                     ),

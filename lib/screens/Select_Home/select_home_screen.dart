@@ -1,78 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/controller/select_home_controller.dart';
 import '../../constance.dart';
 import 'components/dropdown_item.dart';
-import 'package:registerapp_flutter/screens/Select_Home/service/service.dart';
-import 'package:registerapp_flutter/data/home.dart';
 
-class SelectHomeScreen extends StatefulWidget {
-  const SelectHomeScreen({Key key}) : super(key: key);
+class SelectHomeScreen extends StatelessWidget {
+  SelectHomeScreen({Key key}) : super(key: key);
 
-  @override
-  _SelectHomeScreenState createState() => _SelectHomeScreenState();
-}
-
-class _SelectHomeScreenState extends State<SelectHomeScreen> {
-  Services services = Services();
-  Home home = Home();
-
-  List home_ids = [];
-  List listItem = [];
-  String selectHome;
-
-  @override
-  void initState() {
-    super.initState();
-
-    getHome();
-  }
-
-  getHome() async {
-    var data = await services.getHome();
-    var allHome = data[0], home_id = data[1];
-
-    if (allHome == -1) {
-      // print("services error");
-    } else {
-      setState(() {
-        selectHome = allHome[0];
-        listItem = allHome;
-        home_ids = home_id;
-      });
-    }
-  }
+  final controller = Get.put(SelectHomeController());
+  final homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: darkgreen,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          DropdownItem(
-            listItem: listItem,
-            chosenValue: selectHome,
-            onChanged: (value) {
-              setState(() {
-                selectHome = value;
-              });
-            },
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(greenYellow)),
-            onPressed: () {
-              // updateHome
-              int find_id =
-                  listItem.indexWhere((item) => item.startsWith(selectHome));
-              home.updateHome(selectHome, home_ids[find_id].toString());
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        backgroundColor: darkgreen,
+        body: Obx(
+          () => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  controller.isLoading.value == false
+                      ? DropdownItem(
+                          listItem: controller.listItem.value,
+                          chosenValue: controller.selectHome.value,
+                          onChanged: (value) {
+                            controller.selectHome.value = value;
+                          },
+                        )
+                      : Dialog(
+                          backgroundColor: Colors.transparent,
+                          child: Container(
+                            height: 150,
+                            padding: EdgeInsets.fromLTRB(100, 50, 100, 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.black54,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                                SizedBox(height: 20),
+                                Text(
+                                  'Loading ...',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                ],
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(greenYellow)),
+                onPressed: () async {
+                  // updateHome
+                  int findId = controller.listItem.indexWhere(
+                      (item) => item.startsWith(controller.selectHome.value));
 
-              Navigator.pushNamed(context, '/home');
-            },
-            child: Text('Go to home'),
+                  await controller.home.updateHome(
+                    controller.selectHome.value,
+                    controller.homeIds[findId].toString(),
+                  );
+
+                  // init service
+                  homeController.onInit();
+
+                  Get.offNamed('/home');
+                },
+                child: Text('Go to home'),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  Future<bool> onWillPop() {
+    return Future.value(false);
   }
 }

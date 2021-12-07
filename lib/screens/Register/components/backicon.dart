@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BackIcon extends StatelessWidget {
   const BackIcon({
@@ -10,7 +11,8 @@ class BackIcon extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
       child: GestureDetector(
-        onTap: () => Navigator.pop(context),
+        // onTap: () => Navigator.pop(context),
+        onTap: () => Get.back(),
         child: Icon(
           Icons.arrow_back_ios,
           size: 24.0,

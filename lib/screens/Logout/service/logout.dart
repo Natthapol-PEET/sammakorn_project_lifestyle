@@ -6,7 +6,7 @@ import '../../../constance.dart';
 class Services {
   Auth auth = Auth();
 
-  logout() async {
+  Future logout() async {
     Uri url = Uri.parse("${URL}/logout/");
     String resident_id = await auth.getResidentId();
 

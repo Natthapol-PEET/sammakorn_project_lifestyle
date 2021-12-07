@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/rounded_button.dart';
-import 'package:registerapp_flutter/screens/Login/login_screen.dart';
-import 'package:registerapp_flutter/screens/Register/register_screen.dart';
 import 'backgroud.dart';
 
 class Body extends StatelessWidget {
@@ -17,17 +16,18 @@ class Body extends StatelessWidget {
             RoundedButton(
               text: "Login",
               press: () {
-                Navigator.pushNamed(context, '/login');
+                Get.toNamed('/login');
               },
               topSize: 30,
             ),
-            RoundedButton(
-              text: "Register",
-              press: () {
-                Navigator.pushNamed(context, '/register');
-              },
-              topSize: 15,
-            ),
+            // RoundedButton(
+            //   text: "Register",
+            //   press: () {
+            //     Get.toNamed('/register');
+            //   },
+            //   topSize: 15,
+            // ),
+            SizedBox(height: 20),
           ],
         ),
       ),

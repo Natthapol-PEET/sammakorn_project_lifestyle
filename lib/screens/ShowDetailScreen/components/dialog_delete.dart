@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
 
 import '../../../constance.dart';
@@ -6,10 +8,13 @@ import '../../../constance.dart';
 class DialogDelete extends StatelessWidget {
   final String id;
 
-  const DialogDelete({
+  DialogDelete({
     Key key,
     this.id,
   }) : super(key: key);
+
+  // Getx controller
+  final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +82,7 @@ class DialogDelete extends StatelessWidget {
                           color: goldenSecondary,
                         ),
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Get.back(),
                     ),
                   ),
                 ),
@@ -97,7 +102,10 @@ class DialogDelete extends StatelessWidget {
                       ),
                       onPressed: () {
                         services.deleteInvite(id);
-                        Navigator.pushNamed(context, '/home');
+                        Get.toNamed('/home');
+
+                        controller.publishMqtt("app-to-web", "INVITE_VISITOR");
+                        controller.publishMqtt("app-to-app", "INVITE_VISITOR");
 
                         // if (_formKey.currentState.validate()) {
                         //   // _formKey.currentState.save();

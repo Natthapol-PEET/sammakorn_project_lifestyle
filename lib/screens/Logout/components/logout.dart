@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/home_controller.dart';
 import '../../../constance.dart';
 import '../service/logout.dart';
 
 class LogoutButton extends StatelessWidget {
-  const LogoutButton({
+  LogoutButton({
     Key key,
   }) : super(key: key);
+
+  final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +17,7 @@ class LogoutButton extends StatelessWidget {
 
     return Center(
       child: GestureDetector(
-        onTap: () {
-          _logout(context);
-        },
+        onTap: () => _logout(),
         child: Container(
           width: size.width * 0.9,
           height: size.height * 0.08,
@@ -32,12 +34,10 @@ class LogoutButton extends StatelessWidget {
     );
   }
 
-  _logout(context) {
+  _logout() async {
     Services services = Services();
-    var res = services.logout();
-
-    res.then((v) {
-      Navigator.pushNamed(context, '/');
-    });
+    await services.logout();
+    await controller.closeConnection();
+    Get.offAllNamed('/', arguments: "logout");
   }
 }

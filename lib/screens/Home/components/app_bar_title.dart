@@ -4,28 +4,35 @@ import '../../../constance.dart';
 class AppBarTitle extends StatelessWidget {
   final Function press;
   final String title;
+  final int titleIndex;
 
   const AppBarTitle({
     Key key,
-    @required this.title,
     @required this.press,
+    @required this.title,
+    @required this.titleIndex,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    print(title);
+    print(titleIndex);
+
     return Row(
       children: [
         GestureDetector(
           onTap: press,
-          child: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/Rectangle 2878.png'),
-          ),
+          child: titleIndex != -1
+              ? CircleAvatar(
+                  backgroundImage: AssetImage(projectImages[titleIndex]),
+                )
+              : Container(),
         ),
         SizedBox(width: 10),
         Text(
           title,
           style: TextStyle(color: goldenSecondary),
-        )
+        ),
       ],
     );
   }

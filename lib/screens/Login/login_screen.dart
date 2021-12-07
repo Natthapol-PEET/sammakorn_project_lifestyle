@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/rounded_button.dart';
 import 'package:registerapp_flutter/components/rounded_input_field.dart';
 import 'package:registerapp_flutter/components/rounded_password_field.dart';
@@ -6,6 +7,7 @@ import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/screens/Login/service/login.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:registerapp_flutter/service/device_id.dart';
 import 'package:registerapp_flutter/service/fcm.dart';
 import '../../constance.dart';
 import 'components/backgroud.dart';
@@ -29,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Auth auth = Auth();
   Home home = Home();
   FCM fcm = FCM();
+  Device device = Device();
 
   Services services = Services();
 
@@ -54,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: size.height * 0.07),
               LoginTitle(),
               SizedBox(height: size.height * 0.025),
-              CardFormInput(),
+              cardFormInput(),
             ],
           ),
         ),
@@ -62,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget CardFormInput() {
+  Widget cardFormInput() {
     Size size = MediaQuery.of(context).size;
 
     return Padding(
@@ -99,13 +102,15 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundedButton(
               text: "LOGIN",
               press: () async {
-                var token = await services.login(username.text, password.text);
+                String deviceId = await device.getId();
+                var token = await services.login(
+                    username.text, password.text, deviceId);
 
                 if (token["statusCode"] == 200) {
                   auth.updateToken(token["token"], token["id"].toString(),
                       token["username"]);
 
-                  Navigator.pushNamed(context, '/select_home');
+                  Get.toNamed('/select_home');
                 } else {
                   Fluttertoast.showToast(
                     msg: token["token"],

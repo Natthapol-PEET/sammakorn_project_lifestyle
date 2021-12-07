@@ -8,7 +8,7 @@ class RoundInputField extends StatelessWidget {
   const RoundInputField({
     Key key,
     @required this.title,
-    @required this.controller,
+    this.controller,
   }) : super(key: key);
 
   @override

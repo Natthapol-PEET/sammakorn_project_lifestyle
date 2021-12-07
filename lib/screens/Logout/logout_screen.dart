@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import '../../constance.dart';
@@ -57,13 +58,12 @@ class _LogoutScreenState extends State<LogoutScreen> {
             ListItem(
                 title: "Password",
                 desc: "********",
-                press: () {
-                  Navigator.pushNamed(context, '/changePassword');
-                }),
+                press: () => Get.toNamed('/changePassword')),
             SizedBox(height: size.height * 0.02),
             ListItem(title: "Version", desc: "1.0"),
             SizedBox(height: size.height * 0.46),
-            LogoutButton()
+            LogoutButton(),
+            SizedBox(height: 10),
           ],
         ),
       ),
