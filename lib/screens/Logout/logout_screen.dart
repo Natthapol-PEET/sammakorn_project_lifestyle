@@ -17,6 +17,7 @@ class LogoutScreen extends StatefulWidget {
 class _LogoutScreenState extends State<LogoutScreen> {
   String title = "";
   String username = "";
+  String email = "";
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
 
     getHome();
     getUser();
+    getEmail();
   }
 
   @override
@@ -33,7 +35,23 @@ class _LogoutScreenState extends State<LogoutScreen> {
     return Scaffold(
       backgroundColor: darkgreen200,
       appBar: AppBar(
-        title: AppBarTitle(title: title),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: goldenSecondary,
+          ),
+        ),
+        // title: AppBarTitle(title: title),
+        title: Center(
+          child: Text(
+            "ตั้งค่า",
+            style: TextStyle(
+              color: goldenSecondary,
+              fontFamily: 'Prompt',
+            ),
+          ),
+        ),
         backgroundColor: darkgreen,
         automaticallyImplyLeading: false,
         actions: [
@@ -41,7 +59,10 @@ class _LogoutScreenState extends State<LogoutScreen> {
             padding: const EdgeInsets.only(right: 5),
             child: IconButton(
               onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_forward_ios, color: goldenSecondary),
+              icon: Icon(
+                Icons.arrow_forward_ios,
+                color: greenPrimary,
+              ),
             ),
           )
         ],
@@ -51,17 +72,21 @@ class _LogoutScreenState extends State<LogoutScreen> {
           children: [
             SizedBox(height: size.height * 0.05),
             ListItem(
-              title: "Username",
-              desc: username,
+              title: "อีเมล",
+              // desc: username,
+              desc: email,
+              // desc: "vms-user@domail.com",
             ),
             SizedBox(height: size.height * 0.02),
             ListItem(
-                title: "Password",
-                desc: "********",
-                press: () => Get.toNamed('/changePassword')),
+              title: "รหัสผ่าน",
+              desc: "********",
+              press: () => Get.toNamed('/changePassword'),
+              // press: null,
+            ),
             SizedBox(height: size.height * 0.02),
-            ListItem(title: "Version", desc: "1.0"),
-            SizedBox(height: size.height * 0.46),
+            ListItem(title: "เวอร์ชั่น", desc: "1.0"),
+            SizedBox(height: size.height * 0.4),
             LogoutButton(),
             SizedBox(height: 10),
           ],
@@ -85,6 +110,15 @@ class _LogoutScreenState extends State<LogoutScreen> {
 
     setState(() {
       username = user;
+    });
+  }
+
+  Future getEmail() async {
+    Auth auth = Auth();
+    String e = await auth.getEmail();
+
+    setState(() {
+      email = e;
     });
   }
 }

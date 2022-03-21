@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/screens/Add_License_plate/add_licente_plate_screen.dart';
-import 'package:registerapp_flutter/screens/List_Item_All/list_item_screen.dart';
+import 'package:get/get.dart';
 import '../../../constance.dart';
 
 class FloatingButtonGroup extends StatelessWidget {
@@ -17,9 +16,7 @@ class FloatingButtonGroup extends StatelessWidget {
         children: <Widget>[
           FloatingActionButton(
             heroTag: "btn1",
-            onPressed: () {
-              Navigator.pushNamed(context, '/addLicenseplate');
-            },
+            onPressed: () => Get.toNamed('/addLicenseplate'),
             child: Icon(Icons.add, size: 36, color: tabBarBodyColor),
             backgroundColor: goldenSecondary,
           ),

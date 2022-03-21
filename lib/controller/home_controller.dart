@@ -14,6 +14,7 @@ import 'package:registerapp_flutter/screens/Home/service/service.dart';
 import 'package:registerapp_flutter/service/fcm.dart';
 import 'package:registerapp_flutter/service/mqtt_manage.dart';
 import 'package:registerapp_flutter/service/push_notification.dart';
+import 'package:registerapp_flutter/utils/time__to_thai.dart';
 
 class HomeController extends GetxController {
   Home home = Home();
@@ -50,6 +51,10 @@ class HomeController extends GetxController {
 
   // loading dialog variable
   BuildContext dialogContext;
+
+  // Dropdown Month
+  var dropdowValue = "".obs;
+  List history_data = [];
 
   @override
   void onReady() {
@@ -109,7 +114,7 @@ class HomeController extends GetxController {
     checkout();
 
     // whitelist and blacklist -> all status
-    get_white_black();
+    // get_white_black();
 
     // multiclient (application) [RESIDENT_SEND_STAMP] {app -> app}
     // [RESIDENT_SEND_STAMP] {web -> app}
@@ -127,11 +132,14 @@ class HomeController extends GetxController {
     selectIndex.value = index;
     selectColorButton = SelectIndexButton(index);
     selectColorElem = SelectIndexElem(index);
+    update();
   }
 
   getCountAlert() async {
     String count = await notifications.getCountNotification();
     countAlert.value = count;
+
+    print('count >> ${count}');
   }
 
   getHomeSlide() async {
@@ -188,6 +196,35 @@ class HomeController extends GetxController {
   getHistory() async {
     var data = await services.getHistory();
     history_list.value = data;
+    find_data_inMonth(DateTime.now().month, history_list);
+  }
+
+  void find_data_inMonth(monthKey, lists) {
+    // clear
+    history_data.clear();
+
+    for (Map data in lists) {
+      String month = data['datetime_in'].split('-')[1];
+      List date = data['datetime_in'].split('T')[0].split('-');
+      int yearIn = christian_buddhist_year(int.parse(date[0]));
+      // String monthIn = month_eng_to_thai(int.parse(date[1]));
+      int monthIn = int.parse(date[1]);
+      int dayIn = int.parse(date[2]);
+
+      if (int.parse(month) == monthKey) {
+        history_data.add({
+          "date": "${dayIn} ${month_eng_to_thai(monthIn)} ${yearIn}",
+          "license":
+              data['license_plate'].isNotEmpty ? data['license_plate'] : '-',
+          "id_card": data['id_card'],
+          "fullname": data['fullname'],
+        });
+      }
+      // print("data >> ${data}");
+      // print("history_data >> ${history_data}");
+    }
+
+    update();
   }
 
   publishMqtt(String topic, String msg) async {
@@ -200,7 +237,10 @@ class HomeController extends GetxController {
 
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
-    client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload);
+
+    try {
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload);
+    } catch (e) {}
   }
 
   listenMqtt() {
@@ -225,14 +265,17 @@ class HomeController extends GetxController {
       // ทุกครั้งที่มีรถ coming in and walk in [topic COMING_WALK_IN] {web -> app}
       Future.delayed(Duration(milliseconds: 1000), () => getLicenseInvite());
       Future.delayed(Duration(milliseconds: 1000), () => coming_and_walk());
-    } else if (msg == "RESIDENT_STAMP") {
+    } else if (msg == "RESIDENT_STAMP" || msg == "ADMIN_STAMP") {
       // multiclient (application) [topic RESIDENT_STAMP] {app -> app}
+      Future.delayed(Duration(milliseconds: 1000), () => coming_and_walk());
       Future.delayed(Duration(milliseconds: 1000), () => get_resident_stamp());
-    } else if (msg == "RESIDENT_SEND_STAMP") {
-      // multiclient (application) [RESIDENT_SEND_STAMP] {app -> app}
-      // [RESIDENT_SEND_STAMP] {web -> app}
-      Future.delayed(Duration(milliseconds: 1000), () => resident_send_admin());
-    } else if (msg == "ADMIN_OPERATION") {
+    }
+    // else if (msg == "RESIDENT_SEND_STAMP") {
+    //   // multiclient (application) [RESIDENT_SEND_STAMP] {app -> app}
+    //   // [RESIDENT_SEND_STAMP] {web -> app}
+    //   Future.delayed(Duration(milliseconds: 1000), () => resident_send_admin());
+    // }
+    else if (msg == "ADMIN_OPERATION") {
       // Admin operation -> all status [topic ADMIN_OPERATION]  {web -> app}
       // Future.delayed(Duration(milliseconds: 2000), () {
       //   resident_send_admin();
@@ -241,6 +284,7 @@ class HomeController extends GetxController {
       resident_send_admin();
       pms_show();
     } else if (msg == "CHECKOUT") {
+      Future.delayed(Duration(milliseconds: 1000), () => coming_and_walk());
       // PMS -> checkout || resident stamp -> checkout
       // [CHECKOUT] {web -> app}
       Future.delayed(Duration(milliseconds: 1000), () {

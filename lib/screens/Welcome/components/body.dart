@@ -14,7 +14,7 @@ class Body extends StatelessWidget {
         child: Column(
           children: [
             RoundedButton(
-              text: "Login",
+              text: "เข้าสู่ระบบ",
               press: () {
                 Get.toNamed('/login');
               },

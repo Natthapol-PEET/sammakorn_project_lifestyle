@@ -210,9 +210,10 @@ class ButtonSelectGroup extends StatelessWidget {
                 title,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                  // fontWeight: FontWeight.bold,
                   color: selectColorElem,
+                  fontFamily: 'Prompt',
                 ),
               ),
             ],

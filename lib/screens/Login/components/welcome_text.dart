@@ -10,11 +10,12 @@ class WelcomeText extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 23),
       child: Text(
-        'Welcome',
+        'ยินดีต้อนรับ',
         style: TextStyle(
           fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+          fontWeight: FontWeight.w500,
+          fontFamily: "Prompt",
+          color: Color(0xFFDF5F4EC),
         ),
       ),
     );

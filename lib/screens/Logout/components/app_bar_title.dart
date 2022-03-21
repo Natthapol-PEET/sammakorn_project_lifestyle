@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../constance.dart';
 
 class AppBarTitle extends StatelessWidget {
@@ -14,14 +13,17 @@ class AppBarTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        CircleAvatar(
-          backgroundImage: AssetImage('assets/images/Rectangle 2878.png'),
-        ),
-        SizedBox(width: 10),
+        // CircleAvatar(
+        //   backgroundImage: AssetImage('assets/images/Rectangle 2878.png'),
+        // ),
+        // SizedBox(width: 10),
         Text(
           title,
-          style: TextStyle(color: goldenSecondary),
-        )
+          style: TextStyle(
+            color: goldenSecondary,
+            fontFamily: 'Prompt',
+          ),
+        ),
       ],
     );
   }

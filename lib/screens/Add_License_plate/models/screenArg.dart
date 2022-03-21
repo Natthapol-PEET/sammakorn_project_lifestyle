@@ -1,12 +1,17 @@
 class ScreenArguments {
-  final String type; 
-  final String licensePlate;
-  final String date;
-  final String firstname;
-  final String lastname;
   final String qrGenId;
-  final bool isBack;
+  final String date;
+  final String idcard;
+  final String fullname;
+  final String licensePlate;
+  final String type;
 
-  ScreenArguments(this.type, this.licensePlate, this.date, this.firstname, this.lastname,
-      this.qrGenId, this.isBack);
+  ScreenArguments(
+    this.qrGenId,
+    this.date,
+    this.idcard,
+    this.fullname,
+    this.licensePlate,
+    this.type,
+  );
 }

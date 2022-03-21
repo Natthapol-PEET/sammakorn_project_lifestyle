@@ -2,12 +2,13 @@ import 'package:get/get.dart';
 import 'package:registerapp_flutter/data/auth.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/data/notification.dart';
+import 'package:registerapp_flutter/data/sqlite.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/service/clear_account.dart';
 import 'package:registerapp_flutter/service/device_id.dart';
 
 class InitDatabaseController extends GetxController {
-  var isLogin = false.obs;
-  var isLoad = true.obs;
+  bool isLogin = false;
+  bool isLoad = true;
 
   Auth auth = Auth();
   Home home = Home();
@@ -21,24 +22,28 @@ class InitDatabaseController extends GetxController {
 
     // home.deleteHome();
     // auth.deleteToken();
-    // notification.deleteNotification();
+    // notification.dropNotification();
 
     super.onInit();
   }
 
   Future checkDB(String data) async {
+    SQLite sqlite = SQLite("");
+    sqlite.OpenOrCreate();
+
     bool isHaveDBH = await home.checkDBHome();
     bool isHaveDBA = await auth.checkDBAuth();
     bool isHaveDBN = await notification.checkDBNotification();
 
     print("Start search table in DB");
-    print(isHaveDBH);
-    print(isHaveDBA);
-    print(isHaveDBN);
+    print("isHaveDBH >> ${isHaveDBH}");
+    print("isHaveDBA >> ${isHaveDBA}");
+    print("isHaveDBN >> ${isHaveDBN}");
     print("Stop search table in DB");
 
     if (data == "logout") {
-      Future.delayed(Duration(seconds: 1), () => checkLogin());
+      // Future.delayed(Duration(seconds: 3), () => checkLogin());
+      checkLogin();
     } else {
       checkLogin();
     }
@@ -56,11 +61,18 @@ class InitDatabaseController extends GetxController {
       // is login => logout
       await clearAccount(deviceId);
 
-      isLogin(false);
-      isLoad(false);
+      isLogin = false;
+      isLoad = false;
     } else {
-      isLogin(true);
-      isLoad(false);
+      isLogin = true;
+      isLoad = false;
     }
+
+    update();
+  }
+
+  clear() {
+    isLogin = false;
+    isLoad = true;
   }
 }

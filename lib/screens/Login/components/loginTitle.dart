@@ -10,10 +10,11 @@ class LoginTitle extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
       child: Text(
-        'Login',
+        'เข้าสู่ระบบ',
         style: TextStyle(
           fontSize: 36,
           fontWeight: FontWeight.w500,
+          fontFamily: "Prompt",
         ),
       ),
     );

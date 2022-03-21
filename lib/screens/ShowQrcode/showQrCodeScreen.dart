@@ -9,8 +9,9 @@ import '../../constance.dart';
 
 class ShowQrcodeScreen extends StatefulWidget {
   const ShowQrcodeScreen({Key key, @required this.data}) : super(key: key);
-
   final data;
+
+  // const ShowQrcodeScreen({Key key}) : super(key: key);
 
   @override
   _ShowQrcodeScreenState createState() => _ShowQrcodeScreenState();
@@ -27,11 +28,11 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
   void initState() {
     super.initState();
 
-    licensePlate = widget.data.licensePlate;
-    date = widget.data.date;
-    fnmae = widget.data.firstname;
-    lname = widget.data.lastname;
-    type = widget.data.type;
+    // licensePlate = widget.data.licensePlate;
+    // date = widget.data.date;
+    // fnmae = widget.data.firstname;
+    // lname = widget.data.lastname;
+    // type = widget.data.type;
   }
 
   @override
@@ -42,122 +43,122 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
       onWillPop: onWillPop,
       child: Scaffold(
         backgroundColor: darkgreen,
-        body: Padding(
-          padding: EdgeInsets.only(top: 30),
-          child: Screenshot(
-            controller: screenshotController,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: goldenSecondary,
-                    ),
-                  ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.05),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Image.asset(
+                  'assets/images/Artani Logo Ai B-01.png',
+                  width: size.width * 0.15,
                 ),
-                Padding(
-                  padding:
-                      EdgeInsets.only(top: 80, bottom: 30, left: 30, right: 30),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
+              ),
+            ),
+            Screenshot(
+              controller: screenshotController,
+              child: Container(
+                width: size.width * 0.9,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  children: [
+                    // head box ui
+                    Container(
+                      height: size.height * 0.05,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                        color: goldenSecondary,
                       ),
-                      color: Colors.white,
                     ),
-                  ),
-                ),
-                Positioned(
-                  top: size.height * 0.23,
-                  child: Container(
-                    color: darkgreen,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
+                    // component 1 - title text
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: size.height * 0.02),
+                      child: Center(
+                        child: Text(
+                          "ลงทะเบียนเชิญเข้ามาในโครงการสำเร็จ",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Prompt',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // component 2 - qr code
+                    Container(
+                      color: darkgreen,
+                      padding: EdgeInsets.all(8),
+                      margin: EdgeInsets.only(bottom: size.height * 0.03),
                       child: QrImage(
                         data: widget.data.qrGenId,
-                        size: 230,
+                        size: size.width * 0.6,
                         backgroundColor: Colors.white,
                         version: QrVersions.auto,
                         // gapless: false,
                       ),
                     ),
-                  ),
-                ),
-                if (isScreenshot) ...[
-                  Positioned(
-                    top: size.height * 0.63,
-                    child: Icon(Icons.verified_user,
-                        size: 160, color: Colors.grey[100]),
-                  ),
-                ],
-                if (!isScreenshot) ...[
-                  Positioned(
-                    top: size.height * 0.74,
-                    child: Column(
-                      children: [
-                        RoundButton(
-                          text: "Share",
-                          colorText: darkgreen200,
-                          colorButton: Colors.white,
-                          press: () {
-                            setState(() => isScreenshot = true);
-                            _takeScreenshot();
-                          },
-                        ),
-                        RoundButton(
-                          text: "Back to Home",
-                          colorText: Colors.white,
-                          colorButton: darkgreen200,
-                          press: () => Get.toNamed('/home'),
-                        ),
-                      ],
+
+                    // component 3 - details
+                    SubTitle(
+                      subTitle: "วันที่นัดหมาย",
+                      desc: widget.data.date,
                     ),
-                  ),
-                ],
-                Positioned(
-                  top: size.height * 0.13,
-                  child: Column(
-                    children: [
-                      Text("You invite completed",
-                          style: TextStyle(fontSize: 22)),
-                      Text("successfully", style: TextStyle(fontSize: 22)),
+                    SubTitle(
+                      subTitle: "เลขประจำตัวประชาชน",
+                      desc: widget.data.idcard,
+                    ),
+                    SubTitle(
+                      subTitle: "ชื่อ-นามสกุล",
+                      desc: widget.data.fullname,
+                    ),
+                    SubTitle(
+                      subTitle: "เลขทะเบียนรถ",
+                      desc: widget.data.licensePlate.isNotEmpty ? widget.data.licensePlate : '-',
+                    ),
+                    SubTitle(
+                      subTitle: "ประเภท",
+                      desc: widget.data.type,
+                    ),
+
+                    if (!isScreenshot) ...[
+                      SizedBox(height: size.height * 0.02),
+                      // component 4 - share button
+                      RoundButton(
+                        text: "แชร์",
+                        colorText: backtoHomeBtnColor,
+                        colorButton: Colors.white,
+                        press: () {
+                          setState(() => isScreenshot = true);
+                          _takeScreenshot();
+                        },
+                      ),
+
+                      // component 5 - redirec to home button
+                      RoundButton(
+                        text: "กลับหน้าหลัก",
+                        colorText: Colors.white,
+                        colorButton: backtoHomeBtnColor,
+                        press: () => Get.toNamed('/home'),
+                      ),
+                      SizedBox(height: size.height * 0.02),
                     ],
-                  ),
+
+                    if (isScreenshot) ...[SizedBox(height: size.height * 0.03)],
+                  ],
                 ),
-                Positioned(
-                  top: size.height * 0.55,
-                  child: Column(
-                    children: [
-                      Text(licensePlate,
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 20),
-                      SubTitle(
-                        subTitle: "Type",
-                        desc: type,
-                      ),
-                      SubTitle(
-                        subTitle: "Date",
-                        desc: date,
-                      ),
-                      SubTitle(
-                        subTitle: "Firstname",
-                        desc: fnmae,
-                      ),
-                      SubTitle(
-                        subTitle: "Lastname",
-                        desc: lname,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -180,7 +181,8 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
   }
 
   Future<bool> onWillPop() {
-    return Future.value(widget.data.isBack);
+    // return Future.value(widget.data.isBack);
+    return Future.value(false);
   }
 }
 
@@ -203,10 +205,28 @@ class SubTitle extends StatelessWidget {
       child: Container(
         width: size.width * 0.7,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(subTitle, style: TextStyle(fontSize: 16)),
-            Text(desc, style: TextStyle(fontSize: 16)),
+            Expanded(
+              flex: 6,
+              child: Text(
+                subTitle,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'Prompt',
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 5,
+              child: Text(
+                desc,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'Prompt',
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -239,14 +259,14 @@ class RoundButton extends StatelessWidget {
         width: size.width * 0.7,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: colorButton,
+            primary: colorButton, // bg color
             side: BorderSide(
-              width: 2,
-              color: darkgreen200,
+              width: 1.5,
+              color: backtoHomeBtnColor,
             ),
-            elevation: 3,
+            // elevation: 3,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
           onPressed: press,
@@ -254,8 +274,9 @@ class RoundButton extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: colorText,
+              fontFamily: 'Prompt',
             ),
           ),
         ),

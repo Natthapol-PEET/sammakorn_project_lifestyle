@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/screens/Notification/notification_screen.dart';
 import '../../../constance.dart';
 
 class AppBarAction extends StatelessWidget {

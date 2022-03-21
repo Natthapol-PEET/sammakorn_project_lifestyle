@@ -23,7 +23,7 @@ class Services {
 
     if (response.statusCode == 200) {
       print("logout successful");
-      auth.updateToken("-1", "0", "NULL");
+      auth.updateToken("-1", "0", "NULL", "NULL");
 
       return 200;
     }

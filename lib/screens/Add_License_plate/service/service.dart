@@ -8,7 +8,7 @@ class Services {
   Auth auth = Auth();
   Home home = Home();
 
-  invite_visitor(String firstname, String lastname, String license_plate,
+  invite_visitor(String firstname, String lastname, String license_plate, String idcard,
       String invite_date, String qrGenId) async {
     Uri url = Uri.parse("${URL}/invite/visitor/");
     var token_var = await auth.getToken();
@@ -30,7 +30,7 @@ class Services {
         "lastname": lastname,
         "home_id": home_id,
         "license_plate": license_plate,
-        "id_card": "",
+        "id_card": idcard,
         "invite_date": invite_date,
         "qrGenId": qrGenId,
       }),
@@ -41,7 +41,7 @@ class Services {
     } else {
       String body = utf8.decode(response.bodyBytes);
       Map detail = json.decode(body);
-      return detail['detail'];
+      return detail['detail'].toString();
     }
   }
 

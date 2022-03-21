@@ -2,18 +2,18 @@ import 'sqlite.dart';
 
 class Auth {
   SQLite sqlite = SQLite(
-      "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXT);");
+      "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXTม ,email TEXT);");
 
   initAuth() async {
     sqlite.queryDatabase(
-        "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXT);");
+        "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXT, email TEXT);");
 
     insertToken();
   }
 
   insertToken() async {
     final String command =
-        "INSERT INTO Auth (TOKEN, ID_RES, Username, device_token) values ('-1', 0, 'NULL', 'device_token')";
+        "INSERT INTO Auth (TOKEN, ID_RES, Username, device_token, email) values ('-1', 0, 'NULL', 'device_token', 'email')";
     var row = await sqlite.insertDatabase(command);
     // print("insertToken: ${row}");
   }
@@ -65,11 +65,17 @@ class Auth {
     return row[0]["Username"];
   }
 
-  void updateToken(String token, String id, String Username) async {
+  void updateToken(String token, String id, String Username, String email) async {
     final String command =
-        "UPDATE Auth SET TOKEN = '${token}', ID_RES = ${id}, Username = '${Username}';";
+        "UPDATE Auth SET TOKEN = '${token}', ID_RES = ${id}, Username = '${Username}', email = '${email}';";
     final row = await sqlite.updateDatabase(command);
     // print("UPDATE Auth ${row}");
+  }
+
+  getEmail() async {
+    final String command = "SELECT email FROM Auth";
+    final row = await sqlite.queryDatabase(command);
+    return row[0]["email"];
   }
 
   void deleteToken() async {

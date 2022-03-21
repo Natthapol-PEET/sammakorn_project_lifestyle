@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class ButtonGroup extends StatelessWidget {
+  final Function press;
+
   const ButtonGroup({
     Key key,
+    this.press,
   }) : super(key: key);
 
   @override
@@ -17,18 +20,24 @@ class ButtonGroup extends StatelessWidget {
         Center(
           child: ButtonTheme(
             minWidth: size.width * 0.4,
+            height: size.height * 0.05,
             child: OutlineButton(
               highlightedBorderColor: goldenSecondary,
-              child: Text("Concel", style: TextStyle(color: Colors.white)),
+              child: Text(
+                "ย้อนกลับ",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Prompt',
+                  fontSize: 16,
+                ),
+              ),
               borderSide: BorderSide(
                 color: goldenSecondary,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
           ),
         ),
@@ -36,15 +45,21 @@ class ButtonGroup extends StatelessWidget {
         Center(
           child: ButtonTheme(
             minWidth: size.width * 0.4,
+            height: size.height * 0.05,
             child: RaisedButton(
               color: goldenSecondary,
-              child: Text("Save", style: TextStyle(color: Colors.white)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+              child: Text(
+                "บันทึก",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Prompt',
+                  fontSize: 16,
+                ),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              onPressed: press,
             ),
           ),
         )

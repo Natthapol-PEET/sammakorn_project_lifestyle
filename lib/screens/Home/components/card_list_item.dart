@@ -19,7 +19,6 @@ class CardListItem extends StatelessWidget {
       width: size.width * 0.4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
       ),
       child: Stack(
         children: [

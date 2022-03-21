@@ -15,6 +15,21 @@ class PasswordScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios, color: goldenSecondary),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        title: Center(
+          child: Text(
+            'เปลี่ยนรหัสผ่าน',
+            style: TextStyle(
+              fontFamily: 'Prompt',
+              color: goldenSecondary,
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: greenPrimary),
+            onPressed: null
+          )
+        ],
         backgroundColor: darkgreen,
       ),
       body: Body(),

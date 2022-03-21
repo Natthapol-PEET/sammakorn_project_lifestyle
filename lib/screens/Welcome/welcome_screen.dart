@@ -21,8 +21,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   void initState() {
+    initDBController.clear();
     check();
-
     super.initState();
   }
 
@@ -34,15 +34,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: onWillPop,
-      child: Obx(
-        () => Scaffold(
-          body: initDBController.isLoad.value
+      child: GetBuilder<InitDatabaseController>(builder: (_) {
+        return Scaffold(
+          body: initDBController.isLoad
               ? IsLoadding(isLogin: true)
-              : initDBController.isLogin.value
+              : initDBController.isLogin
                   ? HomeScreen()
-                  : Body(),        // welcome page
-        ),
-      ),
+                  : Body(), // welcome page
+        );
+      }),
     );
   }
 
@@ -62,4 +62,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     SystemNavigator.pop();
     return Future.value(true);
   }
+
+  // @override
+  // void dispose() {
+  //   initDBController.clear();
+  //   super.dispose();
+  // }
 }

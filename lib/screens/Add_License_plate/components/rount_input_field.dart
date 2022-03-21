@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/add_controlller.dart';
 import '../../../constance.dart';
 
 class RoundInputField extends StatelessWidget {
   final String title;
   final TextEditingController controller;
+  final addController = Get.put(AddLicenseController());
 
-  const RoundInputField({
+  final String fullname;
+  final String idcard;
+  final String licenseplate;
+
+  RoundInputField({
     Key key,
     @required this.title,
     this.controller,
+    @required this.fullname,
+    @required this.idcard,
+    @required this.licenseplate,
   }) : super(key: key);
+
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return double.parse(s, (e) => null) != null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +39,18 @@ class RoundInputField extends StatelessWidget {
         children: [
           SizedBox(height: size.height * 0.03),
           Padding(
-            padding: const EdgeInsets.only(top: 5, bottom: 10, left: 30),
-            child: Text(title,
-                style: TextStyle(
-                    color: goldenSecondary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            // padding: const EdgeInsets.only(top: 5, bottom: 10, left: 30),
+            padding: const EdgeInsets.only(left: 40, bottom: 10),
+            child: Text(
+              title,
+              style: TextStyle(
+                // color: goldenSecondary,
+                color: Colors.white,
+                fontSize: 18,
+                fontFamily: 'Prompt',
+                // fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           Center(
             child: Container(
@@ -42,8 +65,28 @@ class RoundInputField extends StatelessWidget {
               ),
               child: TextField(
                 controller: controller,
+                onChanged: (v) {
+                  if (title == "ชื่อ-นามสกุล") {
+                    addController.fullname.value = v;
+                  } else if (title == "เลขประจำตัวประชาชน") {
+                    List lchar = v.split('');
+                    print("lchar: ${lchar}");
+
+                    if (isNumeric(lchar[lchar.length - 1]) && lchar.length < 14) {
+                      addController.idcard.value = v;
+                    }
+                    controller.text = addController.idcard.value;
+                    controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+
+                  } else if (title == "เลขทะเบียนรถ") {
+                    addController.license.value = v;
+                  }
+
+                  addController.onCheck();
+                },
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Prompt',
                 ),
                 cursorColor: goldenSecondary,
                 decoration: InputDecoration(

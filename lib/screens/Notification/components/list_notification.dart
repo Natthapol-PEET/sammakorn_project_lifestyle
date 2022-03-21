@@ -1,84 +1,129 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/components/success_dialog.dart';
+import 'package:registerapp_flutter/controller/notification_controller.dart';
 import '../../../constance.dart';
+import 'button_dialog.dart';
 import 'delete_button.dart';
+import 'dialog_delete.dart';
 import 'keepit_button.dart';
 
 class ListNotifiication extends StatelessWidget {
-  final String title;
-  final String descTime;
-  final Color color;
-  final Function pass;
+  final String text;
+  final String time;
+  final int id;
+  // final Color color;
+  // final Function pass;
 
-  const ListNotifiication({
+  final bool onclickTrashIcon;
+
+  final controller = Get.put(NotificationController());
+
+  ListNotifiication({
     Key key,
-    @required this.title,
-    @required this.descTime,
-    @required this.color,
-    @required this.pass,
+    @required this.onclickTrashIcon,
+    @required this.text,
+    @required this.time,
+    @required this.id,
+    // @required this.color,
+    // @required this.pass,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: Slidable(
-        actionPane: SlidableDrawerActionPane(),
-        actionExtentRatio: 0.25,
-        child: Container(
-          color: listColor,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: color,
-              child: color == Colors.blue
-                  ? Icon(Icons.manage_accounts)
-                  : Icon(Icons.directions_car),
-              foregroundColor: Colors.white,
+    final Size size = MediaQuery.of(context).size;
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: size.height * 0.005),
+      margin: EdgeInsets.symmetric(vertical: size.height * 0.008),
+      decoration: BoxDecoration(
+        color: listColor,
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: Colors.blue,
+          child: Colors.orange == Colors.blue
+              ? Icon(Icons.manage_accounts)
+              : Icon(Icons.directions_car),
+          foregroundColor: Colors.white,
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Prompt',
+                ),
+              ),
             ),
-            title: Text(title, style: TextStyle(color: Colors.white)),
-            subtitle:
-                Text(descTime, style: TextStyle(color: Colors.grey.shade400)),
+            if (onclickTrashIcon) ...[
+              InkWell(
+                onTap: () => dialogDelete(
+                  context,
+                  "ยืนยันการลบการแจ้งเตือนนี้?",
+                  "ลบ",
+                  () {
+                    // delete noti
+                    controller.delete(id);
+
+                    // update noti screen
+                    controller.getNotification();
+
+                    Get.back();
+                    Future.delayed(Duration(microseconds: 500),
+                        () => success_dialog(context, "ลบสำเร็จ"));
+                    Future.delayed(Duration(seconds: 2), () => Get.back());
+                  },
+                ),
+                child: Icon(
+                  Icons.close,
+                  color: dividerColor,
+                ),
+              )
+            ],
+          ],
+        ),
+        subtitle: Text(
+          time,
+          style: TextStyle(
+            color: Colors.grey.shade400,
+            fontFamily: 'Prompt',
           ),
         ),
-        secondaryActions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: IconSlideAction(
-              color: goldenSecondary,
-              iconWidget:
-                  Icon(Icons.delete_outline, size: 36, color: Colors.white),
-              onTap: () {
-                _show_dialod(context);
-              },
-            ),
-          ),
-        ],
+        onTap: () => Get.offNamed('/home', arguments: 'noti_screen'),
       ),
     );
   }
 
-  Widget _show_dialod(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: bgDialog,
-          title: new Text(
-            "Alert!!",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Text(
-            "Are you sure you want to delete\nyour notifications ?",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white),
-          ),
-          actions: [
-            KeepItButton(),
-            DeleteButton(pass: pass),
-          ],
-        );
-      },
-    );
-  }
+  // Widget _show_dialod(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         backgroundColor: bgDialog,
+  //         title: new Text(
+  //           "Alert!!",
+  //           textAlign: TextAlign.center,
+  //           style: TextStyle(color: Colors.white),
+  //         ),
+  //         content: Text(
+  //           "Are you sure you want to delete\nyour notifications ?",
+  //           textAlign: TextAlign.center,
+  //           style: TextStyle(color: Colors.white),
+  //         ),
+  //         actions: [
+  //           // KeepItButton(),
+  //           // DeleteButton(pass: pass),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 }

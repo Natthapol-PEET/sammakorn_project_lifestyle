@@ -15,9 +15,6 @@ class AppBarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(title);
-    print(titleIndex);
-
     return Row(
       children: [
         GestureDetector(
@@ -31,7 +28,10 @@ class AppBarTitle extends StatelessWidget {
         SizedBox(width: 10),
         Text(
           title,
-          style: TextStyle(color: goldenSecondary),
+          style: TextStyle(
+            color: goldenSecondary,
+            fontFamily: 'Prompt',
+          ),
         ),
       ],
     );

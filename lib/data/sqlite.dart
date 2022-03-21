@@ -6,7 +6,7 @@ class SQLite {
   final String _createSQL;
   SQLite(this._createSQL);
 
-  final _databaseName = 'db.db';
+  final _databaseName = 'database.db';
   final _databaseVersion = 1;
 
   String createSQLcommand;
@@ -20,6 +20,8 @@ class SQLite {
     dbPath = join(databasePath, _databaseName);
     _database = await openDatabase(dbPath,
         version: _databaseVersion, onCreate: createDatabase);
+
+    print("db location >> ${dbPath}");
   }
 
   Future<void> createDatabase(Database db, int version) async {

@@ -45,24 +45,41 @@ class NotificationDB {
                 SELECT COUNT(id) AS count 
                   FROM Notification 
                   WHERE is_read = 0
-                    AND home_id = ${homeId} 
+                    AND home_id = ${homeId}
                     AND time >= '${formattedDate} 00:00:00'
             """;
 
     final row = await sqlite.queryDatabase(command);
+
+    // select();
     return row.toList()[0]['count'].toString();
+  }
+
+  select() async {
+    String command = "SELECT * FROM Notification";
+    final row = await sqlite.queryDatabase(command);
+
+    for (var d in row) {
+      print('row >> ${d}');
+    }
   }
 
   insertNotification(
       String Class, String title, String description, String homeId) async {
     DateTime now = DateTime.now();
 
-    final String command = """
+    String command = """
           INSERT INTO Notification (class, title, description, time, is_read, home_id) 
-            VALUES ('${Class}', '${title}', '${description}', '${now}', false, ${homeId})
+            VALUES ('${Class}', '${title}', '${description}', '${now}', 0, ${homeId})
         """;
 
+    print('command >> ${command}');
+
     await sqlite.insertDatabase(command);
+
+    // command = """SELECT * FROM Notification""";
+    // final row = await sqlite.queryDatabase(command);
+    // print("row >> ${row}");
   }
 
   updateNotification() async {
@@ -83,13 +100,21 @@ class NotificationDB {
     sqlite.deleteDatabase(command);
   }
 
+  deleteAllNotification(String homeId) async {
+    final String command = """
+        DELETE FROM Notification 
+          WHERE home_id = ${homeId}
+      """;
+    sqlite.deleteDatabase(command);
+  }
+
   dropNotification() async {
     final String command = "DROP TABLE Notification";
     await sqlite.deleteDatabase(command);
   }
 
   checkDBNotification() async {
-    final String command = """
+    String command = """
         SELECT name 
           FROM sqlite_master 
             WHERE type IN ('table','view') 
@@ -97,10 +122,11 @@ class NotificationDB {
               ORDER BY 1;
       """;
 
-    final row = await sqlite.queryDatabase(command);
+    var row = await sqlite.queryDatabase(command);
     bool isHave = false;
 
     for (var elem in row.toList()) {
+      print("elem >> ${elem}");
       if (elem['name'] == 'Notification') {
         isHave = true;
       }

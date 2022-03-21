@@ -25,8 +25,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final username = TextEditingController(text: "admin");
-  final password = TextEditingController(text: "public");
+  final username = TextEditingController(text: "resident01");
+  final password = TextEditingController(text: "12345678");
 
   Auth auth = Auth();
   Home home = Home();
@@ -34,6 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Device device = Device();
 
   Services services = Services();
+
+  bool hidePassword = true;
+  bool rememberCheckbox = false;
 
   void initState() {
     super.initState();
@@ -88,19 +91,24 @@ class _LoginScreenState extends State<LoginScreen> {
             WelcomeText(),
             HelloThere(),
             SizedBox(height: size.height * 0.05),
-            SizedBox(height: size.height * 0.01),
             RoundedInputField(
-              hintText: "Username",
+              hintText: "ชื่อผู้ใช้หรืออีเมล",
               controller: username,
             ),
+            SizedBox(height: size.height * 0.03),
             RoundedPasswordField(
-              textHiht: "Password",
+              textHiht: "รหัสผ่าน",
               controller: password,
+              press: () => setState(() => hidePassword = !hidePassword),
+              hidePassword: hidePassword,
             ),
-            RememberForgot(),
+            RememberForgot(
+              rememberCheckbox: rememberCheckbox,
+              rememberPress: (v) => setState(() => rememberCheckbox = v),
+            ),
             SizedBox(height: size.height * 0.05),
             RoundedButton(
-              text: "LOGIN",
+              text: "เข้าสู่ระบบ",
               press: () async {
                 String deviceId = await device.getId();
                 var token = await services.login(
@@ -108,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 if (token["statusCode"] == 200) {
                   auth.updateToken(token["token"], token["id"].toString(),
-                      token["username"]);
+                      token["username"], token["email"]);
 
                   Get.toNamed('/select_home');
                 } else {

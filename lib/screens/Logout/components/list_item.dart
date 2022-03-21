@@ -33,9 +33,22 @@ class ListItem extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title,
-                    style: TextStyle(color: goldenSecondary, fontSize: 18)),
-                Text(desc, style: TextStyle(color: Colors.white, fontSize: 16)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: goldenSecondary,
+                    fontSize: 18,
+                    fontFamily: 'Prompt',
+                  ),
+                ),
+                Text(
+                  desc,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: 'Prompt',
+                  ),
+                ),
               ],
             ),
           ),

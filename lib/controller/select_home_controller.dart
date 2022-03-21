@@ -11,6 +11,8 @@ class SelectHomeController extends GetxController {
   var selectHome = "".obs;
   var isLoading = true.obs;
 
+  var selectIndex = 0.obs;
+
   @override
   void onInit() {
     getHome();
@@ -18,12 +20,16 @@ class SelectHomeController extends GetxController {
     super.onInit();
   }
 
+  setIndex(index) {
+    selectIndex.value = index;
+    selectHome.value = listItem[index];
+    update();
+  }
+
   getHome() async {
     var data = await services.getHome();
     var allHome = data[0];
     var homeId = data[1];
-
-    print(data);
 
     if (allHome != -1) {
       selectHome.value = allHome[0];
@@ -31,6 +37,7 @@ class SelectHomeController extends GetxController {
       homeIds.value = homeId;
 
       isLoading(false);
+      update();
     }
   }
 }

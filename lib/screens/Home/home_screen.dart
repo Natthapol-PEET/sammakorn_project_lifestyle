@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/list_item_field_container.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/data/notification.dart';
 import '../../constance.dart';
 import 'components/app_bar_action.dart';
 import 'components/app_bar_title.dart';
@@ -13,7 +14,6 @@ import 'components/builder_history.dart';
 import 'components/button_select_group.dart';
 import 'components/floating_button_group.dart';
 import 'components/list_project.dart';
-import 'components/timeline_blacklist_whitelist.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -25,13 +25,25 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final controller = Get.put(HomeController());
 
+  final arg = Get.arguments;
+
   @override
   void initState() {
-    print("fetchApi");
-
     controller.fetchApi();
-
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => set());
+  }
+
+  void set() {
+    if (arg == 'noti_screen') {
+      controller.selectIndex.value = 1;
+      controller.setSelectIndex(1);
+    } else {
+      // reset button group
+      controller.selectIndex.value = 0;
+      controller.setSelectIndex(0);
+    }
   }
 
   @override
@@ -57,6 +69,18 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: darkgreen,
               automaticallyImplyLeading: false,
               actions: [
+                // GetBuilder(
+                //   builder: (_) => AppBarAction(
+                //       countAlert: controller.countAlert.value,
+                //       pass: () async {
+                //         final result = await Get.toNamed('/notification');
+
+                //         if (result == null || result == "Yep!") {
+                //           // refresh
+                //           controller.countAlert.value = "0";
+                //         }
+                //       }),
+                // ),
                 Obx(
                   () => AppBarAction(
                       countAlert: controller.countAlert.value,
@@ -66,6 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (result == null || result == "Yep!") {
                           // refresh
                           controller.countAlert.value = "0";
+
+                          NotificationDB notifications = NotificationDB();
+                          notifications.updateNotification();
                         }
                       }),
                 ),
@@ -89,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       press5: () => controller.setSelectIndex(4),
                     ),
 
-                    // Invite
+                    // Invite - เชิญเข้ามา
                     if (controller.selectIndex.value == 0) ...[
                       BoxShowList(
                         lists: controller.licensePlateInvite.value,
@@ -98,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
 
-                    // Coming in
+                    // Coming in - เข้ามาแล้ว
                     if (controller.selectIndex.value == 1) ...[
                       BoxShowList(
                         lists: controller.coming_walk.value,
@@ -107,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
 
-                    // Stamp
+                    // Stamp - แสตมป์
                     if (controller.selectIndex.value == 2) ...[
                       BoxShowList(
                         lists: controller.resident_stamp_list.value,
@@ -124,14 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
 
                     // List Item
-                    if (controller.selectIndex.value == 3) ...[
-                      ListItemBlacklistWhitelist(
-                        lists: controller.white_black_list.value,
-                        select: "List Item",
-                      ),
-                    ],
+                    // if (controller.selectIndex.value == 3) ...[
+                    //   ListItemBlacklistWhitelist(
+                    //     lists: controller.white_black_list.value,
+                    //     select: "List Item",
+                    //   ),
+                    // ],
 
-                    // History
+                    // History - ประวัติ
                     if (controller.selectIndex.value == 4) ...[
                       BoxShowListHistory(
                         lists: controller.history_list.value,

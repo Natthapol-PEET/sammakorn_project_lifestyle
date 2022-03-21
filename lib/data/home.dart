@@ -42,8 +42,12 @@ class Home {
 
   getHomeId() async {
     final String command = "SELECT home_id FROM HomeData";
-    final row = await sqlite.queryDatabase(command);
-    return row.toList()[0]['home_id'].toString();
+    try {
+      final row = await sqlite.queryDatabase(command);
+      return row.toList()[0]['home_id'].toString();
+    } catch (e) {
+      return "0";
+    }
   }
 
   getHomeAndId() async {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../constance.dart';
 
 class DropdownItem extends StatelessWidget {
@@ -15,7 +14,6 @@ class DropdownItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    
 
     return Container(
       child: Column(
@@ -25,11 +23,16 @@ class DropdownItem extends StatelessWidget {
           SizedBox(height: size.height * 0.03),
           Padding(
             padding: const EdgeInsets.only(left: 40, bottom: 10),
-            child: Text("Type",
-                style: TextStyle(
-                    color: goldenSecondary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            child: Text(
+              "ประเภท",
+              style: TextStyle(
+                // color: goldenSecondary,
+                color: Colors.white,
+                fontSize: 18,
+                fontFamily: 'Prompt',
+                // fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           Center(
             child: Container(
@@ -52,13 +55,20 @@ class DropdownItem extends StatelessWidget {
                 icon: Icon(Icons.expand_more, color: Colors.black),
                 underline: Divider(color: Colors.transparent),
                 items: [
-                  'visitor',
-                  'whitelist',
-                  'blacklist',
+                  // 'visitor',
+                  // 'whitelist',
+                  // 'blacklist',
+                  'คน',
+                  'รถ',
                 ].map((String value) {
                   return DropdownMenuItem(
                     value: value,
-                    child: Text("\t\t\t$value"),
+                    child: Text(
+                      "\t\t\t$value",
+                      style: TextStyle(
+                        fontFamily: 'Prompt',
+                      ),
+                    ),
                   );
                 }).toList(),
                 onChanged: onChanged,

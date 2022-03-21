@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/screens/Notification/components/button_dialog.dart';
 import '../../../constance.dart';
 import '../service/logout.dart';
 
@@ -17,7 +20,17 @@ class LogoutButton extends StatelessWidget {
 
     return Center(
       child: GestureDetector(
-        onTap: () => _logout(),
+        onTap: () => dialogLogout(
+          context,
+          "ยืนยันการออกจากระบบ?",
+          () {
+            // reset service
+            _logout(context);
+
+            // Timer(Duration(seconds: 3),
+            //     () => Get.offAllNamed('/', arguments: "logout"));
+          },
+        ),
         child: Container(
           width: size.width * 0.9,
           height: size.height * 0.08,
@@ -26,18 +39,63 @@ class LogoutButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
-            child: Text("Logout",
-                style: TextStyle(color: goldenSecondary, fontSize: 18)),
+            child: Text(
+              "ออกจากระบบ",
+              style: TextStyle(
+                color: goldenSecondary,
+                // color: Color(0xFFCA0000),
+                fontSize: 18,
+                fontFamily: "Prompt",
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  _logout() async {
+  _logout(context) async {
     Services services = Services();
     await services.logout();
     await controller.closeConnection();
     Get.offAllNamed('/', arguments: "logout");
+    // Navigator.pushNamed(context, '/', arguments: "logout");
+  }
+
+  Future<dynamic> dialogLogout(
+      BuildContext context, String text, Function press) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: bgDialog,
+          title: Center(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18, color: dividerColor, fontFamily: 'Prompt'),
+            ),
+          ),
+          actions: [
+            if (true) ...[
+              ButtonDialoog(
+                text: "ยกเลิก",
+                setBackgroudColor: false,
+                press: () => Get.back(),
+              )
+            ],
+            if (true) ...[
+              ButtonDialoog(
+                text: "ยืนยัน",
+                setBackgroudColor: true,
+                press: press,
+              ),
+            ],
+          ],
+        );
+      },
+    );
   }
 }

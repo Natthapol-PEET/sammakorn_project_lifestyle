@@ -24,11 +24,14 @@ class DateInput extends StatelessWidget {
           SizedBox(height: size.height * 0.03),
           Padding(
             padding: const EdgeInsets.only(top: 5, bottom: 10),
-            child: Text("Date",
+            child: Text("วันที่นัดหมาย",
                 style: TextStyle(
-                    color: goldenSecondary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+                  // color: goldenSecondary,
+                  color: Colors.white,
+                  fontFamily: 'Prompt',
+                  fontSize: 18,
+                  // fontWeight: FontWeight.bold,
+                )),
           ),
           Container(
             width: size.width * 0.8,
@@ -43,11 +46,15 @@ class DateInput extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("\t\t\t${date}",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  "\t\t\t${date}",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Prompt',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: GestureDetector(

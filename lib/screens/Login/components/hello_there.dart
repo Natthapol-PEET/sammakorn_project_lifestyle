@@ -10,10 +10,12 @@ class HelloThere extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 23, top: 5),
       child: Text(
-        'Hello there, Login to continue',
+        'สวัสดี, เข้าสู่ระบบเพื่อดำเนินการต่อ',
         style: TextStyle(
-          fontSize: 14,
-          color: Colors.white,
+          fontSize: 18,
+          color: Color(0xFFB8B7B2),
+          fontWeight: FontWeight.w500,
+          fontFamily: "Prompt",
         ),
       ),
     );

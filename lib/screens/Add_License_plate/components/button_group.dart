@@ -20,14 +20,22 @@ class ButtonGroup extends StatelessWidget {
         Center(
           child: ButtonTheme(
             minWidth: size.width * 0.4,
+            height: size.height * 0.06,
             child: OutlineButton(
               highlightedBorderColor: goldenSecondary,
-              child: Text("Concel", style: TextStyle(color: Colors.white)),
+              child: Text(
+                "ยกเลิก",
+                style: TextStyle(
+                  color: goldenSecondary,
+                  fontSize: 16,
+                  fontFamily: 'Prompt',
+                ),
+              ),
               borderSide: BorderSide(
                 color: goldenSecondary,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -39,11 +47,17 @@ class ButtonGroup extends StatelessWidget {
         Center(
           child: ButtonTheme(
             minWidth: size.width * 0.4,
+            height: size.height * 0.06,
             child: RaisedButton(
               color: goldenSecondary,
-              child: Text("Save", style: TextStyle(color: Colors.white)),
+              child: Text("บันทึก",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: 'Prompt',
+                  )),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
               ),
               onPressed: save_press,
             ),
