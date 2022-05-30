@@ -8,8 +8,10 @@ Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 
-vehicle_management/venv/*
+ngrok.exe
+vehicle_management/env/*
 env/*
+vehicle_management/.env
 
 # Dump file
 *.stackdump

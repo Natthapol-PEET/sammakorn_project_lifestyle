@@ -1,0 +1,95 @@
+
+
+# ---------------- MQTT config -------------------------
+broker: localhost
+port: 1883
+username: alpr@lifestyle.com
+password: alpr@password
+client-id: alpr-position
+
+[Topic - Server]
+    pub: /vms-mqtt/server_to_alpr/
+    sub: /vms-mqtt/alpr_to_server/
+
+[Topic - ALPR]
+    pub: /vms-mqtt/alpr_to_server/
+    sub: /vms-mqtt/server_to_alpr/
+
+
+# register vehicle  [server -> ALPR] - ["resident", "guest", "whilelist", "backlist"]
+    publisher payload
+    {
+        "id": 1,
+        "type": "guest",
+        "plate_number": "ฉก8989",
+        "region_code": "th-10",
+        "family_id": "111/88",
+        "permission_begin": UTC,
+        "permission_end": UTC,
+        "action": "register",
+    }
+
+    subscriber payload
+    {
+        "id": 1,
+        "type": "guest",
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "message": "register successful",
+    }
+
+# delete vehicle [server -> ALPR]
+    publisher payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "action": "delete",
+    }
+
+    subscriber payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "message": "delete successful",
+    }
+
+
+# check-in [ALPR -> server]
+    publisher payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "action": "check-in",
+        "datetime_by": UTC
+    }
+
+    subscriber payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "message": "check-in successful",
+    }
+
+
+# stamp [server -> ALPR]
+    publisher payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "action": "stamp",
+    }
+
+    subscriber payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "message": "stamp successful",
+    }
+
+
+# checkout [ALPR -> server]
+    publisher payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "action": "checkout",
+        "datetime_by": UTC
+    }
+
+    subscriber payload
+    {
+        "vehicle_id": "dae32031-5845-446e-a8fd-015a6398606c",
+        "message": "checkout successful",
+    }
