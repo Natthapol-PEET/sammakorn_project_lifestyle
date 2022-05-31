@@ -1,0 +1,143 @@
+
+# remote pi
+ssh pi@raspberrypi.local
+
+@ PM2 - Cluster
+pm2 status
+npx pm2 start app.js
+
+
+@ remote pi by Lan
+	Open Natwork & Internet Setting 
+		-> Change adapter settings 
+		-> Ethernet 
+		-> Properties
+		-> IPv4 -> Properties
+		-> Use the follow IP address
+			ip: 192.168.1.1
+			subnet: 255.255.255.0
+		-> OK
+
+	Install DHCP Server 
+		-> Select Ethernet
+		-> Overwrite exitsting file -> Write IN file
+		-> Run DHCP server immediatly -> Admin
+		
+		1. Service -> install
+		2. Fiewwall exceptions -> Configured
+		3. Service -> Start
+		-> Exit
+		-> Finish
+		-> Continue as app -> yes
+
+	remote pi
+		ssh pi@192.168.1.2
+		pwd: raspberry
+
+@ display resolution
+	fbset -s
+	sudo nano /boot/config.txt
+		-> disable_overscan=0		# not full screen
+		-> disable_overscan=1		# full screen
+
+
+@ Build Release Flutter App
+Step 1: [windows]
+	flutter build bundle
+
+Step 2: build kernel_snapshot [windows]
+C:\flutter\bin\cache\dart-sdk\bin\dart.exe ^
+  C:\flutter\bin\cache\dart-sdk\bin\snapshots\frontend_server.dart.snapshot ^
+  --sdk-root C:\flutter\bin\cache\artifacts\engine\common\flutter_patched_sdk_product ^
+  --target=flutter ^
+  --aot ^
+  --tfa ^
+  -Ddart.vm.product=true ^
+  --packages .packages ^
+  --output-dill build\kernel_snapshot.dill ^
+  --verbose ^
+  --depfile build\kernel_snapshot.d ^
+  package:dashboard_status_vms_access_control/main.dart
+
+Step 3: lnk kernel_snapshot -> app.so [WSL or Linux]
+	../engine-binaries/arm/gen_snapshot_linux_x64_release \
+  	--deterministic \
+  	--snapshot_kind=app-aot-elf \
+  	--elf=build/flutter_assets/app.so \
+  	--strip \
+  	--sim-use-hardfp \
+  	build/kernel_snapshot.dill
+
+Raspberry PI - Lan
+	sudo scp -r ./build/flutter_assets pi@raspberrypi.local:~/
+
+Raspberry PI - Entrance
+	sudo scp -r ./flutter_assets pi@192.168.1.49:~/
+
+Raspberry PI - Exit
+	sudo scp -r ./flutter_assets pi@192.168.1.51:~/
+
+	Run on Raspberry Pi
+		flutter-pi --release flutter_assets/
+		flutter-pi --release /home/pi/engine-binaries/flutter_assets/
+
+	# Auto Startup
+	@ boot RC.local
+		sudo nano /etc/rc.local
+		
+		--------
+			fi
+			flutter-pi --release /home/pi/engine-binaries/flutter_assets_entrance/
+
+			sudo bash -c 'python3 /home/pi/relay_mqtt.py > /home/pi/relay_mqtt.log 2>&1' &
+			sleep 5
+			sudo bash -c 'flutter-pi --release /home/pi/flutter_assets_exit/ > /home/pi/flutter_assets_exit.log 2>&1' &
+
+			exit 0
+		--------
+
+		sudo bash -c 'flutter-pi --release /home/pi/engine-binaries/flutter_assets_exit/ > /home/pi/blink.log 2>&1' &  
+		cat blink.log
+
+	# How to Stop Your Program
+		sudo ps -ax | grep flutter-pi
+		sudo kill <PID>
+		
+WI-FI: Lifestyle
+PASSWD: tedels84
+
+# Setting wifi raspberry pi ด้วย command line
+https://thiti.dev/blog/6388/
+	sudo rfkill unblock wifi
+	sudo iwlist wlan0 scan
+	sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+	---
+		network={
+		ssid="ARTANI_BUILDING_TWO_2G"
+		psk="TEDEls@84"
+		}
+	---
+	sudo ifdown wlan0
+	sudo ifup wlan0
+	ifconfig wlan0
+
+# Raspbian Stretch: Wifi ไม่เริ่มทำงานเมื่อบู๊ต
+https://forums.raspberrypi.com/viewtopic.php?f=28&t=191061
+	sudo nano /etc/network/interfaces
+	---
+	allow-hotplug wlan0
+	iface wlan0 inet manual
+    		wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+	---
+	sudo systemctl enable wpa_supplicant.service
+	sudo reboot
+
+
+
+
+Entrance IP: 	1912.168.1.120
+Exit IP:		192.168.1.122
+
+Password:		raspberry
+
+

@@ -1,0 +1,28 @@
+sudo apt update
+sudo apt upgrade
+
+sudo apt install snapd
+
+sudo reboot
+
+sudo snap install core
+sudo snap install cmake --classic
+
+git clone --depth 1 https://github.com/ardera/flutter-engine-binaries-for-arm.git engine-binaries
+cd engine-binaries
+sudo ./install.sh
+
+
+sudo apt install cmake libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev ttf-mscorefonts-installer fontconfig libsystemd-dev libinput-dev libudev-dev  libxkbcommon-dev       
+
+
+sudo fc-cache
+
+git clone https://github.com/ardera/flutter-pi
+cd flutter-pi
+
+mkdir build && cd build
+cmake ..
+make -j`nproc`
+
+sudo make install

@@ -1,0 +1,40 @@
+import RPi.GPIO as GPIO
+from threading import Thread
+from time import sleep
+
+# config
+delay_time = 2
+
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+RELAIS_1_GPIO = 17
+RELAIS_2_GPIO = 18
+
+# setup mode
+GPIO.setup(RELAIS_1_GPIO, GPIO.OUT)
+GPIO.setup(RELAIS_2_GPIO, GPIO.OUT)
+
+
+def entrance_relay():
+    thr = Thread(target=toggle_relay_1)
+    thr.start()
+
+
+def exit_relay():
+    thr = Thread(target=toggle_relay_2)
+    thr.start()
+
+
+def toggle_relay_1():
+    GPIO.output(RELAIS_1_GPIO, GPIO.LOW)
+    sleep(delay_time)
+    GPIO.output(RELAIS_1_GPIO, GPIO.HIGH) 
+    
+    
+def toggle_relay_2():
+    GPIO.output(RELAIS_2_GPIO, GPIO.LOW)
+    sleep(delay_time)
+    GPIO.output(RELAIS_2_GPIO, GPIO.HIGH)
+    
