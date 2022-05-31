@@ -60,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: AppBar(
               title: Obx(
                 () => AppBarTitle(
-                  title: controller.title.value,
-                  titleIndex: controller.allHome.indexWhere(
-                      (note) => note.startsWith(controller.title.value)),
+                  title: controller.title,
+                  titleIndex: controller.allHome
+                      .indexWhere((note) => note.startsWith(controller.title)),
                   press: () => Get.toNamed('/logout'),
                 ),
               ),
@@ -103,8 +103,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 () => Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: size.height * 0.03),
-                    build_HomeSlide(context, controller.allHome.value),
+                    if (controller.allHome.length == 1) ...[
+                      Container(
+                        width: size.width,
+                        height: size.height * 0.18,
+                        child: Image.asset(
+                          projectImages[controller.allHome.indexWhere(
+                              (note) => note.startsWith(controller.title))],
+                          fit: BoxFit.cover,
+                          // height: double.infinity,
+                          // width: double.infinity,
+                          alignment: Alignment.center,
+                        ),
+                      )
+                    ],
+
+                    if (controller.allHome.length > 1) ...[
+                      SizedBox(height: size.height * 0.03),
+                      build_HomeSlide(context, controller.allHome),
+                    ],
+
                     SizedBox(height: size.height * 0.03),
                     ButtonSelectGroup(
                       selectColorElem: controller.selectColorElem,

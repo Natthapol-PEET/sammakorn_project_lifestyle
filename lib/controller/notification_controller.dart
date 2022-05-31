@@ -1,15 +1,17 @@
 import 'package:get/get.dart';
-import 'package:registerapp_flutter/data/home.dart';
+import 'package:registerapp_flutter/controller/select_home_controller.dart';
 import 'package:registerapp_flutter/data/notification.dart';
 
 class NotificationController extends GetxController {
+  final selectHomeController = Get.put(SelectHomeController());
   var lists = [].obs;
   var descTime = "".obs;
 
   NotificationDB notifications = NotificationDB();
 
   getNotification() async {
-    var data = await notifications.getNotification();
+    var data =
+        await notifications.getNotification(selectHomeController.homeId.value);
     DateTime now = DateTime.now();
     String text;
     Map dataMap = {};
@@ -53,8 +55,7 @@ class NotificationController extends GetxController {
   }
 
   deleteAll() async {
-    Home home = Home();
-    String homeId = await home.getHomeId();
-    notifications.deleteAllNotification(homeId);
+    notifications
+        .deleteAllNotification(selectHomeController.homeId.value.toString());
   }
 }

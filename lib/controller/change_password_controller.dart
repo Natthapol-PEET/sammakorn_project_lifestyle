@@ -5,6 +5,9 @@ class ChangePasswordController extends GetxController {
   var newPassword = "".obs;
   var confirmPassword = "".obs;
 
+  var checkOldPassword = false.obs;
+  var checkPassword = false.obs;
+
   var lock = true.obs;
 
   void onCheck() {
@@ -12,9 +15,19 @@ class ChangePasswordController extends GetxController {
     print("newPassword >> ${newPassword.value}");
     print("confirmPassword >> ${confirmPassword.value}");
 
-    if (newPassword.value == confirmPassword.value) {
+    // check old password
+    if (oldPassword.value != "") {
+      checkOldPassword(true);
+    } else {
+      checkOldPassword(false);
+    }
+
+    // check password
+    if (oldPassword.value != "" || newPassword.value == confirmPassword.value) {
+      checkPassword(true);
       lock(false);
     } else {
+      checkPassword(false);
       lock(true);
     }
   }

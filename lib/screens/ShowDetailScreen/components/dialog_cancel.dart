@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:registerapp_flutter/screens/Home/service/service.dart';
 
 import '../../../constance.dart';
 
@@ -14,7 +13,6 @@ class DialogCancel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    Services services = Services();
 
     return AlertDialog(
       backgroundColor: bgDialog,
@@ -92,7 +90,6 @@ class DialogCancel extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        services.resident_cancel_send_admin(id);
                         Navigator.pushNamed(context, '/home');
 
                         // if (_formKey.currentState.validate()) {

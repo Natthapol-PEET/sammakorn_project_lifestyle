@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
-// import 'package:web_socket_channel/io.dart';
 import '../../../constance.dart';
 
 class DialogSendAdmin extends StatelessWidget {
@@ -14,11 +14,11 @@ class DialogSendAdmin extends StatelessWidget {
   }) : super(key: key);
 
   final controller = Get.put(HomeController());
+  final loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    Services services = Services();
     final reasonController = TextEditingController();
 
     return AlertDialog(
@@ -98,7 +98,8 @@ class DialogSendAdmin extends StatelessWidget {
                           controller.publishMqtt(
                               "app-to-app", "RESIDENT_SEND_STAMP");
 
-                          services.send_admin_stamp(id, reasonController.text);
+                          sendAdminStampApi(loginController.dataLogin.authToken,
+                              id, reasonController.text);
                           Navigator.pushNamed(context, '/home');
                         }
                       },

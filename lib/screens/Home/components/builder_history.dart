@@ -57,9 +57,9 @@ class BoxShowListHistory extends StatelessWidget {
       12: "ธันวาคม ${year}",
     };
 
-    final controller = Get.put(HomeController());
+    final homeController = Get.put(HomeController());
 
-    controller.dropdowValue.value = mapMonth[datetime.month];
+    homeController.dropdowValue.value = mapMonth[datetime.month];
 
     return Container(
       margin: EdgeInsets.only(top: size.height * 0.025),
@@ -110,7 +110,7 @@ class BoxShowListHistory extends StatelessWidget {
                         ),
                         child: Obx(
                           () => DropdownButton(
-                              value: controller.dropdowValue.value,
+                              value: homeController.dropdowValue.value,
                               items: listMonth.map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
@@ -125,13 +125,13 @@ class BoxShowListHistory extends StatelessWidget {
                                 );
                               }).toList(),
                               onChanged: (value) {
-                                controller.dropdowValue.value = value;
+                                homeController.dropdowValue.value = value;
 
                                 var monthKey = mapMonth.keys.firstWhere(
                                     (k) => mapMonth[k] == value,
                                     orElse: () => null);
 
-                                controller.find_data_inMonth(monthKey, lists);
+                                homeController.findDataInMonth(monthKey, lists);
                               }),
                         ),
                       ),
@@ -142,7 +142,7 @@ class BoxShowListHistory extends StatelessWidget {
             ),
 
             GetBuilder<HomeController>(
-              builder: (_) => controller.history_data.length == 0
+              builder: (_) => homeController.history_data.length == 0
                   ? noHaveData(context, 'ไม่มีข้อมูล')
                   : Container(),
             ),
@@ -151,9 +151,9 @@ class BoxShowListHistory extends StatelessWidget {
               builder: (_) => ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: controller.history_data.length,
+                itemCount: homeController.history_data.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final data = controller.history_data[index];
+                  final data = homeController.history_data[index];
 
                   return // Card show detail
                       Container(
@@ -170,7 +170,8 @@ class BoxShowListHistory extends StatelessWidget {
                         children: [
                           textField("วันที่นัดหมาย : ${data['date']}"),
                           textField("เลขทะเบียนรถ : ${data['license']}"),
-                          textField("เลขประจำตัวประชาชน : ${data['id_card']}"),
+                          textField(
+                              "เลขประจำตัวประชาชน : ${data['id_card'] != null ? data['id_card'] : '-'}"),
                           textField("ชื่อ-นามสกุล : ${data['fullname']}"),
                         ],
                       ),

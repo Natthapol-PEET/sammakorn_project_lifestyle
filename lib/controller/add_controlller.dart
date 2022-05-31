@@ -2,14 +2,15 @@ import 'package:get/get.dart';
 
 class AddLicenseController extends GetxController {
   var lock = true.obs;
-  var classValue = "คน".obs;
+
+  var checkFullname = false.obs;
+  var checkIdCard = true.obs;
 
   var fullname = "".obs;
   var idcard = "".obs;
   var license = "".obs;
 
   onCheck() {
-    print("classValue >> ${classValue}");
     print("fullname >> ${fullname.value}");
     print("idcard >> ${idcard.value}");
     print("license >> ${license.value}");
@@ -17,28 +18,40 @@ class AddLicenseController extends GetxController {
     print(fullname.isNotEmpty && idcard.isNotEmpty);
     print(fullname.isNotEmpty && idcard.isNotEmpty && license.isNotEmpty);
 
-    List list = fullname.toString().split(" ");
-    list.removeWhere((item) => item == "");
+    List fullnameList = fullname.toString().split(" ");
+    fullnameList.removeWhere((item) => item == "");
 
-    if (classValue.value == 'คน') {
-      if (list.length == 2 && idcard.toString().length == 13) {
-        lock(false);
-      } else {
-        lock(true);
-      }
+    // check full name
+    if (fullnameList.length == 2) {
+      checkFullname(true);
     } else {
-      if (list.length == 2 &&
-          idcard.toString().length == 13 &&
-          license.isNotEmpty) {
-        lock(false);
-      } else {
-        lock(true);
-      }
+      checkFullname(false);
+    }
+
+    // check id card
+    if (idcard.toString().length == 13 || idcard.toString().length == 0) {
+      checkIdCard(true);
+    } else {
+      checkIdCard(false);
+    }
+
+    print('checkFullname >> $checkFullname');
+
+    if (fullnameList.length == 2 &&
+        (idcard.toString().length == 13 || idcard.toString().length == 0)) {
+      lock(false);
+    } else {
+      lock(true);
+    }
+    if (fullnameList.length == 2 &&
+        (idcard.toString().length == 13 || idcard.toString().length == 0)) {
+      lock(false);
+    } else {
+      lock(true);
     }
   }
 
   clear() {
-    classValue.value = "คน";
     fullname.value = "";
     idcard.value = "";
     license.value = "";

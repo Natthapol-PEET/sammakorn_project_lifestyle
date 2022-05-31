@@ -36,16 +36,17 @@ List projectImages = [
 // String WS = "ws://${host}:8080";
 
 // const String serverIp = "192.168.1.85";
-const String serverIp = "192.168.10.141";
-// const String serverIp = "c2a3-1-0-236-129.ngrok.io";
+// // const String serverIp = "192.168.1.9";
+// const String URL = "http://${serverIp}:8080/app_api"; // server aws
+// const String mqttBroker = serverIp;
 
-// const String URL = "http://${serverIp}/app_api"; // ngrok
-const String URL = "http://${serverIp}:8080/app_api"; // server aws
+const String serverIp = "vms-service.ngrok.io";
+const String domain = "http://$serverIp/app_api"; // ngrok
+const String mqttBroker = "broker.hivemq.com";
+
 // const String WS = "ws://${serverIp}:8080";
 
 /* MQTT config */
-const String mqttBroker = "broker.hivemq.com";
-// const String mqttBroker = "192.168.1.85";
 
 const int mqttPort = 1883;
 const String mqttUsername = "user1@vms.com";

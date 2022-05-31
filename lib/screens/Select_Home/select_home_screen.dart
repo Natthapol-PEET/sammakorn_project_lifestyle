@@ -2,18 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/rounded_button.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import 'package:registerapp_flutter/controller/select_home_controller.dart';
 import 'package:registerapp_flutter/screens/Login/components/backgroud.dart';
 import 'package:registerapp_flutter/screens/Select_Home/service/update_home.dart';
 import '../../constance.dart';
-import 'components/dropdown_item.dart';
 
-// ignore: must_be_immutable
-class SelectHomeScreen extends StatelessWidget {
-  SelectHomeScreen({Key key}) : super(key: key);
+class SelectHomeScreen extends StatefulWidget {
+  const SelectHomeScreen({Key key}) : super(key: key);
 
-  final controller = Get.put(SelectHomeController());
+  @override
+  State<SelectHomeScreen> createState() => _SelectHomeScreenState();
+}
+
+class _SelectHomeScreenState extends State<SelectHomeScreen> {
+  final selectHomeScreen = Get.put(SelectHomeController());
   final homeController = Get.put(HomeController());
+  final loginController = Get.put(LoginController());
+
+  @override
+  void initState() {
+    selectHomeScreen.getHome();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +62,19 @@ class SelectHomeScreen extends StatelessWidget {
                         SizedBox(height: size.height * 0.03),
                         DetailText(),
                         GetBuilder<SelectHomeController>(builder: (_) {
-                          return controller.isLoading.value == false
+                          return selectHomeScreen.isLoading.value == false
                               ? ListView.builder(
-                                  itemCount: controller.listItem.length,
+                                  itemCount: selectHomeScreen.listItem.length,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return SelectButton(
-                                      text: controller.listItem[index],
-                                      press: () {
-                                        controller.setIndex(index);
-                                      },
-                                      selectIndex: controller.selectIndex.value,
+                                      text: selectHomeScreen.listItem[index],
+                                      press: () =>
+                                          selectHomeScreen.setIndex(index),
+                                      selectIndex:
+                                          selectHomeScreen.selectIndex.value,
                                       index: index,
                                     );
                                   },
@@ -98,23 +110,16 @@ class SelectHomeScreen extends StatelessWidget {
                         }),
                         SizedBox(height: size.height * 0.05),
                         RoundedButton(
-                          text: "ตกลง",
+                          text: "เลือกโครงการ",
                           press: () async {
-                            //  updateHome
-                            int findId = controller.listItem.indexWhere(
-                                (item) => item
-                                    .startsWith(controller.selectHome.value));
-
-                            await controller.home.updateHome(
-                              controller.selectHome.value,
-                              controller.homeIds[findId].toString(),
-                            );
-
                             // init service
                             homeController.onInit();
 
                             // update home rest
-                            update_home_rest();
+                            updateHomeRestApi(
+                                loginController.dataLogin.authToken,
+                                loginController.dataLogin.residentId.toString(),
+                                selectHomeScreen.homeId.value.toString());
 
                             Get.offNamed('/home');
                           },
@@ -129,81 +134,6 @@ class SelectHomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      // child: Scaffold(
-      //   backgroundColor: darkgreen,
-      //   body: Obx(
-      //     () => Column(
-      //       mainAxisAlignment: MainAxisAlignment.center,
-      //       children: [
-      //         Column(
-      //           children: [
-      //             controller.isLoading.value == false
-      //                 ? DropdownItem(
-      //                     listItem: controller.listItem.value,
-      //                     chosenValue: controller.selectHome.value,
-      //                     onChanged: (value) {
-      //                       controller.selectHome.value = value;
-      //                     },
-      //                   )
-      //                 : Dialog(
-      //                     backgroundColor: Colors.transparent,
-      //                     child: Container(
-      //                       height: 150,
-      //                       padding: EdgeInsets.fromLTRB(100, 50, 100, 20),
-      //                       decoration: BoxDecoration(
-      //                         borderRadius: BorderRadius.circular(12),
-      //                         color: Colors.black54,
-      //                       ),
-      //                       child: Column(
-      //                         mainAxisAlignment: MainAxisAlignment.center,
-      //                         crossAxisAlignment: CrossAxisAlignment.center,
-      //                         children: [
-      //                           CircularProgressIndicator(
-      //                             color: Colors.white,
-      //                           ),
-      //                           SizedBox(height: 20),
-      //                           Text(
-      //                             'Loading ...',
-      //                             style: TextStyle(color: Colors.white),
-      //                           ),
-      //                         ],
-      //                       ),
-      //                     ),
-      //                   ),
-      //           ],
-      //         ),
-      //         SizedBox(height: 20),
-      //         ElevatedButton(
-      //           style: ButtonStyle(
-      //               backgroundColor: MaterialStateProperty.all(greenYellow)),
-      //           onPressed: () async {
-      //             // updateHome
-      //             int findId = controller.listItem.indexWhere(
-      //                 (item) => item.startsWith(controller.selectHome.value));
-
-      //             await controller.home.updateHome(
-      //               controller.selectHome.value,
-      //               controller.homeIds[findId].toString(),
-      //             );
-
-      //             // init service
-      //             homeController.onInit();
-
-      //             Get.offNamed('/home');
-      //           },
-      //           child: Text(
-      //             'ไปที่หน้าแรก',
-      //             style: TextStyle(
-      //               fontSize: 18,
-      //               fontWeight: FontWeight.w500,
-      //               fontFamily: "Prompt",
-      //             ),
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 

@@ -1,18 +1,20 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/account_controller.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
+import 'package:registerapp_flutter/models/account_model.dart';
 import 'package:registerapp_flutter/screens/Notification/components/button_dialog.dart';
 import '../../../constance.dart';
 import '../service/logout.dart';
 
 class LogoutButton extends StatelessWidget {
-  LogoutButton({
-    Key key,
-  }) : super(key: key);
+  LogoutButton({Key key}) : super(key: key);
 
-  final controller = Get.put(HomeController());
+  final homeController = Get.put(HomeController());
+  final loginController = Get.put(LoginController());
+  final accountController = Get.put(AccountController());
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +25,7 @@ class LogoutButton extends StatelessWidget {
         onTap: () => dialogLogout(
           context,
           "ยืนยันการออกจากระบบ?",
-          () {
-            // reset service
-            _logout(context);
-
-            // Timer(Duration(seconds: 3),
-            //     () => Get.offAllNamed('/', arguments: "logout"));
-          },
+          () => _logout(context),
         ),
         child: Container(
           width: size.width * 0.9,
@@ -55,11 +51,16 @@ class LogoutButton extends StatelessWidget {
   }
 
   _logout(context) async {
-    Services services = Services();
-    await services.logout();
-    await controller.closeConnection();
+    await logoutApi(loginController.dataLogin.authToken,
+        loginController.dataLogin.residentId.toString());
+
+    accountController.account.updateAccount(AccountModel(
+        id: 1,
+        username: loginController.username.value.text,
+        password: loginController.password.value.text,
+        isLogin: 0));
+
     Get.offAllNamed('/', arguments: "logout");
-    // Navigator.pushNamed(context, '/', arguments: "logout");
   }
 
   Future<dynamic> dialogLogout(
@@ -79,20 +80,16 @@ class LogoutButton extends StatelessWidget {
             ),
           ),
           actions: [
-            if (true) ...[
-              ButtonDialoog(
-                text: "ยกเลิก",
-                setBackgroudColor: false,
-                press: () => Get.back(),
-              )
-            ],
-            if (true) ...[
-              ButtonDialoog(
-                text: "ยืนยัน",
-                setBackgroudColor: true,
-                press: press,
-              ),
-            ],
+            ButtonDialoog(
+              text: "ยกเลิก",
+              setBackgroudColor: false,
+              press: () => Get.back(),
+            ),
+            ButtonDialoog(
+              text: "ยืนยัน",
+              setBackgroudColor: true,
+              press: press,
+            ),
           ],
         );
       },

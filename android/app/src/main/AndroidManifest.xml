@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.registerapp_flutter">
 
+    <!-- com.example.registerapp_flutter -->
+
     <!-- Required to fetch data from the internet. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- flutter_local_notifications -->
@@ -9,7 +11,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
    <application
-        android:label="registerapp_flutter"
+        android:label="vms register app"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

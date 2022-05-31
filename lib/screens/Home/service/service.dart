@@ -1,385 +1,223 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:registerapp_flutter/data/auth.dart';
-import 'package:registerapp_flutter/data/home.dart';
 import '../../../constance.dart';
 
-class Services {
-  Auth auth = Auth();
-  Home home = Home();
+getHistoryApi(String token, String homeId) async {
+  String url = "$domain/history/";
 
-  getHistory() async {
-    Uri url = Uri.parse("${URL}/history/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String home_id = await home.getHomeId();
+  var response = await http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
+    body: jsonEncode(<String, String>{"home_id": homeId}),
+  );
 
-    var response = await http.post(
-      url,
+  List object = [];
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    var lists = json.decode(body);
+    object = lists.toList();
+  }
+  return object;
+}
+
+getLicenseInviteApi(String token, String homeId) async {
+  String url = "$domain/license_plate/invite/";
+
+  var response = await http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(<String, String>{"home_id": homeId}),
+  );
+
+  List object = [];
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    var lists = json.decode(body);
+    object = lists.toList();
+  }
+  return object;
+}
+
+deleteInviteApi(String token, String visitorId) async {
+  String url = "$domain/license_plate/invite/delete/";
+
+  var response = await http.delete(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(<String, String>{"visitor_id": visitorId}),
+  );
+  return response.statusCode;
+}
+
+commingAndWalkApi(String token, String homeId) async {
+  String url = "$domain/license_plate/coming_and_walk/";
+
+  var response = await http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
+    body: jsonEncode(<String, String>{"home_id": homeId}),
+  );
+
+  List object = [];
+
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    var lists = json.decode(body);
+    object = lists.toList();
+  }
+  return object;
+}
+
+residentStampApi(String token, String logId) async {
+  String url = "$domain/license_plate/resident_stamp/";
+
+  var response = await http.put(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
+    body: jsonEncode(<String, String>{"log_id": logId}),
+  );
+  return response.statusCode;
+}
+
+getResidentStampApi(String token, String homeId) async {
+  Uri url = Uri.parse("$domain/license_plate/get_resident_stamp/");
+
+  var response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
+    body: jsonEncode(<String, String>{"home_id": homeId}),
+  );
+
+  List object = [];
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    var lists = json.decode(body);
+    object = lists.toList();
+  }
+  return object;
+}
+
+sendAdminStampApi(String token, String logId, String reason) async {
+  String url = "$domain/license_plate/send_admin_stamp/";
+
+  var response = await http.put(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
+    body: jsonEncode(<String, String>{
+      "log_id": logId,
+      "reason": reason,
+    }),
+  );
+
+  return response.statusCode;
+}
+
+pmsShowApi(String token, String homeId) async {
+  String url = "$domain/license_plate/pms_show_list/";
+  var response = await http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(<String, String>{"home_id": homeId}),
+  );
+
+  List object = [];
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    var lists = json.decode(body);
+    object = lists.toList();
+  }
+  return object;
+}
+
+checkoutApi(String token, String homeId) async {
+  String url = "$domain/license_plate/checkout/";
+
+  var response = await http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
+    body: jsonEncode(<String, String>{"home_id": homeId}),
+  );
+
+  List object = [];
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    var lists = json.decode(body);
+    object = lists.toList();
+  }
+  return object;
+}
+
+getHomeApi(String token, String residentId) async {
+  Uri url = Uri.parse("$domain/gethome/");
+
+  var response = await http.post(url,
       headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(<String, String>{"home_id": home_id}),
-    );
+      body: jsonEncode(<String, String>{'resident_id': residentId}));
 
-    List object = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      object = lists.toList();
-      // for (var elem in lists) {
-      //   object.add(elem);
-      // }
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    List allHomeList = json.decode(body);
+    List allHome = [];
+    List homeId = [];
+
+    for (var elem in allHomeList) {
+      allHome.add(elem['home']);
+      homeId.add(elem['home_id']);
     }
-    return object;
+
+    return [allHome, homeId];
+  } else {
+    return [-1];
   }
+}
 
-  getLicenseInvite() async {
-    Uri url = Uri.parse("${URL}/license_plate/invite/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String home_id = await home.getHomeId();
+getListItemsApi(String token, String homeId, String residentId) async {
+  Uri url = Uri.parse("$domain/listItem_whitelist_blacklist/");
 
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"home_id": home_id}),
-    );
+  var response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
+    body: jsonEncode(
+        <String, String>{"home_id": homeId, "resident_id": residentId}),
+  );
 
-    List object = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      object = lists.toList();
-    }
-    return object;
-  }
-
-  deleteInvite(String visitor_id) async {
-    Uri url = Uri.parse("${URL}/license_plate/invite/delete/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.delete(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"visitor_id": visitor_id}),
-    );
-    return response.statusCode;
-  }
-
-  coming_and_walk() async {
-    Uri url = Uri.parse("${URL}/license_plate/coming_and_walk/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String home_id = await home.getHomeId();
-
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"home_id": home_id}),
-    );
-
-    List object = [];
-
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      object = lists.toList();
-    }
-    return object;
-  }
-
-  resident_stamp(String log_id) async {
-    Uri url = Uri.parse("${URL}/license_plate/resident_stamp/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.put(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"log_id": log_id}),
-    );
-    return response.statusCode;
-  }
-
-  get_resident_stamp() async {
-    Uri url = Uri.parse("${URL}/license_plate/get_resident_stamp/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String home_id = await home.getHomeId();
-
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"home_id": home_id}),
-    );
-
-    List object = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      object = lists.toList();
-    }
-    return object;
-  }
-
-  send_admin_stamp(String log_id, String reason) async {
-    Uri url = Uri.parse("${URL}/license_plate/send_admin_stamp/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.put(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{
-        "log_id": log_id,
-        "reason": reason,
-      }),
-    );
-    return response.statusCode;
-  }
-
-  send_admin_delete_blackwhite(String type, String id, String reason) async {
-    Uri url = Uri.parse("${URL}/license_plate/send_admin_delete_blackwhite/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.put(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{
-        "type": type,
-        "id": id,
-        "reason": reason,
-      }),
-    );
-    return response.statusCode;
-  }
-
-  send_admin_delete(String type, String id, String reason) async {
-    Uri url = Uri.parse("${URL}/license_plate/send_admin_delete/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.put(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{
-        "type": type,
-        "id": id,
-        "reason": reason,
-      }),
-    );
-    return response.statusCode;
-  }
-
-  get_resident_send_admin() async {
-    Uri url = Uri.parse("${URL}/license_plate/get_resident_send_admin/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String home_id = await home.getHomeId();
-
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"home_id": home_id}),
-    );
-
-    List object = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      object = lists.toList();
-    }
-    return object;
-  }
-
-  resident_cancel_send_admin(String log_id) async {
-    Uri url = Uri.parse("${URL}/license_plate/resident_cancel_send_admin/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.put(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"log_id": log_id}),
-    );
-    return response.statusCode;
-  }
-
-  pms_show() async {
-    Uri url = Uri.parse("${URL}/license_plate/pms_show_list/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String home_id = await home.getHomeId();
-
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"home_id": home_id}),
-    );
-
-    List object = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      object = lists.toList();
-    }
-    return object;
-  }
-
-  checkout() async {
-    Uri url = Uri.parse("${URL}/license_plate/checkout/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String home_id = await home.getHomeId();
-
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{"home_id": home_id}),
-    );
-
-    List object = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      var lists = json.decode(body);
-      object = lists.toList();
-    }
-    return object;
-  }
-
-  getHome() async {
-    Uri url = Uri.parse("${URL}/gethome/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    String res_id = await auth.getResidentId();
-
-    var response = await http.post(url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': token
-        },
-        body: jsonEncode(<String, String>{'resident_id': res_id}));
-
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      List allHome_list = json.decode(body);
-      List allHome = [];
-      List home_id = [];
-
-      for (var elem in allHome_list) {
-        allHome.add(elem['home']);
-        home_id.add(elem['home_id']);
-      }
-
-      return [allHome, home_id];
-    } else {
-      return [-1];
-    }
-  }
-
-  getListItems() async {
-    Uri url = Uri.parse("${URL}/listItem_whitelist_blacklist/");
-
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-    String resId = await auth.getResidentId();
-    String home_id = await home.getHomeId();
-
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(
-          <String, String>{"home_id": home_id, "resident_id": resId}),
-    );
-
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      return json.decode(body);
-    } else {
-      return [];
-    }
-  }
-
-  cancel_request_white_black(String type, String id) async {
-    Uri url = Uri.parse("${URL}/license_plate/cancel_request_white_black/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.delete(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{
-        "type": type,
-        "id": id,
-      }),
-    );
-    return response.statusCode;
-  }
-
-  cancel_request_delete_white_black(String type, String id) async {
-    Uri url =
-        Uri.parse("${URL}/license_plate/cancel_request_delete_white_black/");
-    var token_var = await auth.getToken();
-    String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-    var response = await http.put(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: jsonEncode(<String, String>{
-        "type": type,
-        "id": id,
-      }),
-    );
-    return response.statusCode;
+  if (response.statusCode == 200) {
+    String body = utf8.decode(response.bodyBytes);
+    return json.decode(body);
+  } else {
+    return [];
   }
 }

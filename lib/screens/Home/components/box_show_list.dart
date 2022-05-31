@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/empty_componenmt.dart';
 import 'package:registerapp_flutter/components/success_dialog.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/models/screenArg.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
 import 'package:registerapp_flutter/screens/ShowDetailScreen/components/card_list_timeline.dart';
@@ -18,6 +19,8 @@ class BoxShowList extends StatelessWidget {
   final Color color;
   final String select;
   final String selectRSA, selectPMS, selectCO;
+
+  final loginController = Get.put(LoginController());
 
   BoxShowList({
     Key key,
@@ -151,11 +154,13 @@ class BoxShowList extends StatelessWidget {
             data.add(d);
           }
 
-          if (lists[index]['license_plate'].isNotEmpty) {
+          if (lists[index]['license_plate'] != null) {
             if (lists[index]['license_plate'] != null) {
-              Map d = packData(
-                  lists[index]['datetime_in'], 'รอแสตมป์ออกจากโครงการ');
-              data.add(d);
+              if (lists[index]['license_plate'] != null) {
+                Map d = packData(
+                    lists[index]['datetime_in'], 'รอแสตมป์ออกจากโครงการ');
+                data.add(d);
+              }
             }
           }
         }
@@ -224,13 +229,13 @@ class BoxShowList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         textFieldPopup(
-                            "เลขทะเบียนรถ : ${lists[index]['license_plate'].isNotEmpty ? lists[index]['license_plate'] : '-'}"),
+                            "เลขทะเบียนรถ : ${lists[index]['license_plate'] != null ? lists[index]['license_plate'] : '-'}"),
                         textFieldPopup(
-                            "เลขประจำตัวประชาชน : ${lists[index]['id_card']}"),
+                            "เลขประจำตัวประชาชน : ${lists[index]['id_card'] != null ? lists[index]['id_card'] : '-'}"),
                         textFieldPopup(
                             "ชื่อ-นามสกุล : ${lists[index]['fullname']}"),
                         textFieldPopup(
-                            "ประเภท : ${lists[index]['license_plate'].isNotEmpty ? 'รถ' : 'คน'}"),
+                            "ประเภท : ${lists[index]['license_plate'] != null ? 'รถ' : 'คน'}"),
                         SizedBox(height: size.height * 0.03),
 
                         // timeline
@@ -303,10 +308,12 @@ class BoxShowList extends StatelessWidget {
                                 lists[index]['qr_gen_id'],
                                 lists[index]['invite'].split('T')[
                                     0], // DateFormat('yyyy-MM-dd').format(dateTime),
-                                lists[index]['id_card'],
+                                lists[index]['id_card'] != null
+                                    ? lists[index]['id_card']
+                                    : '-',
                                 lists[index]['fullname'],
                                 lists[index]['license_plate'],
-                                lists[index]['license_plate'].isNotEmpty
+                                lists[index]['license_plate'] != null
                                     ? 'รถ'
                                     : 'คน', // addController.classValue.value,
                               ),
@@ -315,14 +322,12 @@ class BoxShowList extends StatelessWidget {
                         },
                       )
                     ],
-                    if (select == 'coming_walk' &&
-                        lists[index]['license_plate'].isNotEmpty) ...[
+                    if (select == 'coming_walk') ...[
                       ButtonDialoog(
                         text: "แสตมป์",
                         icon: Icons.approval,
                         press: () {
-                          Services services = Services();
-                          services.resident_stamp(
+                          residentStampApi(loginController.dataLogin.authToken,
                               lists[index]['log_id'].toString());
 
                           // update
@@ -346,13 +351,14 @@ class BoxShowList extends StatelessWidget {
                         text: "ลบ",
                         icon: Icons.delete,
                         press: () {
-                          Services services = Services();
-                          services.deleteInvite(
+                          deleteInviteApi(loginController.dataLogin.authToken,
                               lists[index]['visitor_id'].toString());
 
                           // update
                           controller.publishMqtt(
                               "app-to-app", "INVITE_VISITOR");
+                          controller.publishMqtt(
+                              "app-to-web", "INVITE_VISITOR");
 
                           Get.back();
                         },
@@ -393,9 +399,9 @@ class BoxShowList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         textField(
-                            "เลขทะเบียนรถ : ${lists[index]['license_plate'].isNotEmpty ? lists[index]['license_plate'] : '-'}"),
+                            "เลขทะเบียนรถ : ${lists[index]['license_plate'] != null ? lists[index]['license_plate'] : '-'}"),
                         textField(
-                            "เลขประจำตัวประชาชน : ${lists[index]['id_card']}"),
+                            "เลขประจำตัวประชาชน : ${lists[index]['id_card'] != null ? lists[index]['id_card'] : '-'}"),
                         textField("ชื่อ-นามสกุล : ${lists[index]['fullname']}"),
                       ],
                     ),
@@ -492,6 +498,13 @@ class ButtonDialoog extends StatelessWidget {
 Map packData(String datetime, String text) {
   String inviteDateTime = datetime;
 
+  print('text: $text || inviteDateTime: $inviteDateTime');
+  if (inviteDateTime[0] == 'T') {
+    final now = DateTime.now();
+
+    inviteDateTime = "${now.year}-${now.month}-${now.day}$inviteDateTime";
+  }
+
   if (inviteDateTime == null) {
     return {};
   }
@@ -512,4 +525,10 @@ Map packData(String datetime, String text) {
     'time': 'เวลา ${hour}.${minute} น.',
     'text': text,
   };
+
+  // return {
+  //   'date': 'วันที่ ',
+  //   'time': 'เวลา  น.',
+  //   'text': text,
+  // };
 }

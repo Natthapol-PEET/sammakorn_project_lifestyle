@@ -2,16 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:registerapp_flutter/constance.dart';
-import 'package:registerapp_flutter/data/home.dart';
 import 'device_id.dart';
 
 class MqttManager {
-  Home home = Home();
   Device device = Device();
 
   Future mqttInit(client) async {
     // constance
-    String homeId = await home.getHomeId();
     String deviceId = await device.getId();
     String clientId = mqttClientId + deviceId;
 
@@ -74,11 +71,12 @@ class MqttManager {
 
     /// Subscribe to it
     // print('EXAMPLE::Subscribing to the Dart/Mqtt_client/testtopic topic');
-    for (String t in subTopic) {
-      String topic = t + homeId;
-      // client.subscribe(topic, MqttQos.exactlyOnce);
-      client.subscribe(topic, MqttQos.atMostOnce);
-    }
+
+    // for (String t in subTopic) {
+    //   String topic = t + homeId;
+    //   // client.subscribe(topic, MqttQos.exactlyOnce);
+    //   client.subscribe(topic, MqttQos.atMostOnce);
+    // }
 
     /// Publish it
     // print('EXAMPLE::Publishing our topic');

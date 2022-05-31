@@ -3,20 +3,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:registerapp_flutter/components/success_dialog.dart';
+import 'package:registerapp_flutter/components/show_text_check_input.dart';
 import 'package:registerapp_flutter/controller/add_controlller.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
+import 'package:registerapp_flutter/controller/select_home_controller.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/service/service.dart';
-import 'package:registerapp_flutter/screens/Home/components/show_button_group.dart';
 import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
 import '../../constance.dart';
 import 'components/button_group.dart';
 import 'components/date_input.dart';
-import 'components/dropdown_item.dart';
 import 'components/rount_input_field.dart';
 import 'package:intl/intl.dart';
-
 import 'models/screenArg.dart';
 
 class AddLicensePlateScreen extends StatefulWidget {
@@ -32,12 +31,10 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
   final licenseplate = TextEditingController();
   final idcard = TextEditingController();
 
-  Services services = Services();
-  Home home = Home();
-  // var socket = SocketManager();
-
   // Getx controller
-  final controller = Get.put(HomeController());
+  final homeController = Get.put(HomeController());
+  final loginController = Get.put(LoginController());
+  final selectHomeController = Get.put(SelectHomeController());
   final addController = Get.put(AddLicenseController());
 
   // random number
@@ -45,6 +42,10 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
 
   @override
   void initState() {
+    addController.lock.value = true;
+    addController.checkFullname.value = false;
+    addController.checkIdCard.value = true;
+
     super.initState();
   }
 
@@ -72,28 +73,18 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // DropdownItem(
-            //   chosenValue: classValue,
-            //   onChanged: (value) {
-            //     setState(() {
-            //       classValue = value;
-            //     });
-            //   },
-            // ),
             DateInput(
               date: DateFormat('dd-MM-yyyy').format(dateTime),
               press: () => chooseDate(),
             ),
-            Obx(
-              () => DropdownItem(
-                chosenValue: addController.classValue.value,
-                onChanged: (value) {
-                  // setState(() {
-                  addController.classValue.value = value;
-                  // });
-                },
-              ),
-            ),
+            // Obx(
+            //   () => DropdownItem(
+            //     chosenValue: addController.classValue.value,
+            //     onChanged: (value) {
+            //       addController.classValue.value = value;
+            //     },
+            //   ),
+            // ),
             RoundInputField(
               title: "ชื่อ-นามสกุล",
               controller: fullname,
@@ -101,6 +92,9 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
               idcard: idcard.text,
               licenseplate: licenseplate.text,
             ),
+            Obx(() => !addController.checkFullname.value
+                ? ShowTextCheckInput(text: 'กรุณากรอกชื่อและนามสกุล')
+                : Container()),
             RoundInputField(
               title: "เลขประจำตัวประชาชน",
               controller: idcard,
@@ -108,27 +102,16 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
               idcard: idcard.text,
               licenseplate: licenseplate.text,
             ),
-            // RoundInputField(
-            //   title: "Last Name",
-            //   controller: lastname,
-            // ),
-            Obx(
-              () => addController.classValue.value == "รถ"
-                  ? RoundInputField(
-                      title: "เลขทะเบียนรถ",
-                      controller: licenseplate,
-                      fullname: fullname.text,
-                      idcard: idcard.text,
-                      licenseplate: licenseplate.text,
-                    )
-                  : Container(),
+            Obx(() => !addController.checkIdCard.value
+                ? ShowTextCheckInput(text: 'กรุณากรอกเลขประจำตัวประชาชนให้ครบ')
+                : Container()),
+            RoundInputField(
+              title: "เลขทะเบียนรถ",
+              controller: licenseplate,
+              fullname: fullname.text,
+              idcard: idcard.text,
+              licenseplate: licenseplate.text,
             ),
-            // classValue == "visitor"
-            //     ? Container()
-            //     : RountInputLarge(
-            //         title: "Reason",
-            //         controller: reason,
-            //       ),
             SizedBox(height: size.height * 0.1),
             Obx(
               () => ButtonGroup(
@@ -212,19 +195,24 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                                         String firstname = full[0];
                                         String lastname = full[1];
 
-                                        String res_text =
-                                            await services.invite_visitor(
-                                                firstname,
-                                                lastname,
-                                                licenseplate.text,
-                                                idcard.text,
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(dateTime),
-                                                "V${qrGenId}");
+                                        String resText = await inviteVisitorApi(
+                                          firstname,
+                                          lastname,
+                                          licenseplate.text,
+                                          idcard.text,
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(dateTime),
+                                          "V$qrGenId",
+                                          loginController.dataLogin.authToken,
+                                          loginController.dataLogin.residentId
+                                              .toString(),
+                                          selectHomeController.homeId
+                                              .toString(),
+                                        );
 
-                                        print(res_text);
+                                        print(resText);
 
-                                        if (res_text ==
+                                        if (resText ==
                                             "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
                                           /* Fhase - 1 */
                                           // Timer(Duration(seconds: 1), () {
@@ -253,7 +241,9 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                                                 idcard.text,
                                                 fullname.text,
                                                 licenseplate.text,
-                                                addController.classValue.value,
+                                                licenseplate.text.length == 0
+                                                    ? 'คน'
+                                                    : 'รถ',
                                               ),
                                             ),
                                           );
@@ -262,12 +252,12 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                                           addController.clear();
 
                                           // publish mqtt
-                                          controller.publishMqtt(
+                                          homeController.publishMqtt(
                                               "app-to-app", "INVITE_VISITOR");
-                                          controller.publishMqtt(
+                                          homeController.publishMqtt(
                                               "app-to-web", "INVITE_VISITOR");
                                         } else {
-                                          _show_error_toast(res_text);
+                                          _show_error_toast(resText);
                                         }
                                       },
                                     ),
@@ -278,95 +268,6 @@ class _AddLicensePlateScreenState extends State<AddLicensePlateScreen> {
                             );
                           },
                         ),
-                // save_press: () async {
-                //   if (firstname.text.isNotEmpty &&
-                //       lastname.text.isNotEmpty &&
-                //       licenseplate.text.isNotEmpty) {
-                //     if (classValue == 'visitor') {
-                //       // random number
-                //       // String qrGenId = rng.nextInt(9).toString(); // 10 point
-                //       String qrGenId = getRandomNumber();
-
-                //       String res_text = await services.invite_visitor(
-                //           firstname.text,
-                //           lastname.text,
-                //           licenseplate.text,
-                //           DateFormat('yyyy-MM-dd').format(dateTime),
-                //           "V${qrGenId}");
-                //       if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                //         Get.offAll(
-                //           () => ShowQrcodeScreen(
-                //             data: ScreenArguments(
-                //               "Visitor",
-                //               licenseplate.text,
-                //               DateFormat('yyyy-MM-dd').format(dateTime),
-                //               firstname.text,
-                //               lastname.text,
-                //               "V${qrGenId}",
-                //               false,
-                //             ),
-                //           ),
-                //         );
-
-                //         // socket update web
-                //         // socket.send_message('INVITE_VISITOR', 'web');
-
-                //         // publish mqtt
-                //         controller.publishMqtt("app-to-web", "INVITE_VISITOR");
-                //       } else {
-                //         _show_error_toast(res_text);
-                //       }
-                //     } else if (classValue == 'whitelist' &&
-                //         reason.text.isNotEmpty) {
-                //       // random number
-                //       // String qrGenId = rng.nextInt(9).toString(); // 10 point
-                //       String qrGenId = getRandomNumber();
-
-                //       String res_text = await services.register_whitelist(
-                //         firstname.text,
-                //         lastname.text,
-                //         licenseplate.text,
-                //         reason.text,
-                //         "W${qrGenId}",
-                //       );
-                //       if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                //         Get.toNamed('/home');
-
-                //         // socket update web
-                //         // socket.send_message('RESIDENT_REQUEST_WHITELIST', 'web');
-
-                //         // publish mqtt
-                //         controller.publishMqtt(
-                //             "app-to-web", "RESIDENT_REQUEST_WHITELIST");
-                //       } else {
-                //         _show_error_toast(res_text);
-                //       }
-                //     } else if (classValue == 'blacklist' &&
-                //         reason.text.isNotEmpty) {
-                //       String res_text = await services.register_blacklist(
-                //           firstname.text,
-                //           lastname.text,
-                //           licenseplate.text,
-                //           reason.text);
-                //       if (res_text == "ระบบได้ทำการเพิ่มข้อมูลเรียบร้อยแล้ว") {
-                //         Get.toNamed('/home');
-
-                //         // socket update web
-                //         // socket.send_message('RESIDENT_REQUEST_BLACKLIST', 'web');
-
-                //         // publish mqtt
-                //         controller.publishMqtt(
-                //             "app-to-web", "RESIDENT_REQUEST_BLACKLIST");
-                //       } else {
-                //         _show_error_toast(res_text);
-                //       }
-                //     } else {
-                //       _show_error_toast("กรุณาป้อนข้อมูลให้ครบทุกช่อง");
-                //     }
-                //   } else {
-                //     _show_error_toast("กรุณาป้อนข้อมูลให้ครบทุกช่อง");
-                //   }
-                // },
               ),
             ),
             SizedBox(height: size.height * 0.05),

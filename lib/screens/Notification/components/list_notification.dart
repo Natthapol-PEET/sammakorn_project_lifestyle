@@ -3,21 +3,21 @@ import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/success_dialog.dart';
 import 'package:registerapp_flutter/controller/notification_controller.dart';
 import '../../../constance.dart';
-import 'button_dialog.dart';
-import 'delete_button.dart';
 import 'dialog_delete.dart';
-import 'keepit_button.dart';
 
 class ListNotifiication extends StatelessWidget {
   final String text;
   final String time;
   final int id;
+  final String classNoti;
   // final Color color;
   // final Function pass;
 
   final bool onclickTrashIcon;
-
   final controller = Get.put(NotificationController());
+
+  Color avatarColor = Colors.amber;
+  Icon avatarIcon = Icon(Icons.check_circle_outline);
 
   ListNotifiication({
     Key key,
@@ -25,6 +25,7 @@ class ListNotifiication extends StatelessWidget {
     @required this.text,
     @required this.time,
     @required this.id,
+    @required this.classNoti,
     // @required this.color,
     // @required this.pass,
   }) : super(key: key);
@@ -32,6 +33,17 @@ class ListNotifiication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+
+    if (classNoti == 'comming') {
+      avatarColor = Colors.greenAccent;
+      avatarIcon = Icon(Icons.emoji_transportation);
+    } else if (classNoti == 'stamp') {
+      avatarColor = Colors.blueAccent;
+      avatarIcon = Icon(Icons.approval);
+    } else if (classNoti == 'checkout') {
+      avatarColor = Colors.redAccent;
+      avatarIcon = Icon(Icons.directions_car);
+    }
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: size.height * 0.005),
@@ -44,10 +56,8 @@ class ListNotifiication extends StatelessWidget {
       ),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Colors.blue,
-          child: Colors.orange == Colors.blue
-              ? Icon(Icons.manage_accounts)
-              : Icon(Icons.directions_car),
+          backgroundColor: avatarColor,
+          child: avatarIcon,
           foregroundColor: Colors.white,
         ),
         title: Row(

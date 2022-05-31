@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import 'package:registerapp_flutter/screens/Home/service/service.dart';
 
 import '../../../constance.dart';
@@ -15,11 +16,11 @@ class DialogDelete extends StatelessWidget {
 
   // Getx controller
   final controller = Get.put(HomeController());
+  final loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    Services services = Services();
 
     return AlertDialog(
       backgroundColor: bgDialog,
@@ -101,7 +102,8 @@ class DialogDelete extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        services.deleteInvite(id);
+                        deleteInviteApi(
+                            loginController.dataLogin.authToken, id);
                         Get.toNamed('/home');
 
                         controller.publishMqtt("app-to-web", "INVITE_VISITOR");

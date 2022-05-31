@@ -1,9 +1,15 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:registerapp_flutter/data/auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:get/get.dart';
 
-class FCM {
-  Auth auth = Auth();
+class FcmController extends GetxController {
+  String fcmToken;
+
+  @override
+  void onInit() {
+    initFirebaseMessaging();
+    super.onInit();
+  }
 
   initFirebaseMessaging() async {
     await Firebase.initializeApp();
@@ -19,9 +25,8 @@ class FCM {
       sound: true,
     );
     // print('User granted permission: ${settings.authorizationStatus}');
-    String token = await messaging.getToken();
+    fcmToken = await messaging.getToken();
     // print(token);
-    auth.updateDeviceToken(token);
 
     return messaging;
   }

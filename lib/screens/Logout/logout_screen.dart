@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:registerapp_flutter/data/auth.dart';
-import 'package:registerapp_flutter/data/home.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import '../../constance.dart';
-import 'components/app_bar_title.dart';
 import 'components/list_item.dart';
 import 'components/logout.dart';
 
@@ -15,18 +13,7 @@ class LogoutScreen extends StatefulWidget {
 }
 
 class _LogoutScreenState extends State<LogoutScreen> {
-  String title = "";
-  String username = "";
-  String email = "";
-
-  @override
-  void initState() {
-    super.initState();
-
-    getHome();
-    getUser();
-    getEmail();
-  }
+  final loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +61,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
             ListItem(
               title: "อีเมล",
               // desc: username,
-              desc: email,
+              desc: loginController.dataLogin.email,
               // desc: "vms-user@domail.com",
             ),
             SizedBox(height: size.height * 0.02),
@@ -93,32 +80,5 @@ class _LogoutScreenState extends State<LogoutScreen> {
         ),
       ),
     );
-  }
-
-  Future getHome() async {
-    Home home = Home();
-    String _home = await home.getHome();
-
-    setState(() {
-      title = _home;
-    });
-  }
-
-  Future getUser() async {
-    Auth auth = Auth();
-    String user = await auth.getUser();
-
-    setState(() {
-      username = user;
-    });
-  }
-
-  Future getEmail() async {
-    Auth auth = Auth();
-    String e = await auth.getEmail();
-
-    setState(() {
-      email = e;
-    });
   }
 }

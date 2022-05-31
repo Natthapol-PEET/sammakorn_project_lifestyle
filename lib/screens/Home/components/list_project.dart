@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/success_dialog.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
-import 'package:registerapp_flutter/data/auth.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import 'package:registerapp_flutter/data/home.dart';
 import 'package:registerapp_flutter/screens/Select_Home/service/update_home.dart';
 import 'package:registerapp_flutter/screens/Notification/components/button_dialog.dart';
@@ -24,6 +23,7 @@ class ListProject extends StatelessWidget {
   final int index;
 
   final homeController = Get.put(HomeController());
+  final loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -37,28 +37,25 @@ class ListProject extends StatelessWidget {
             context,
             'ไปที่โครงการ ${title}',
             () async {
-              Home home = Home();
-
               // [API] GET home_id by home_name, home_number
-              var data = await getHomeIdByRest(title);
+              var data = await getHomeIdByRest(
+                  loginController.dataLogin.authToken, title);
               String homeId = data['home_id'].toString();
               String homeName = data['home_name'];
 
               // print("homeId >> ${homeId}");
               // print("homeName >> ${homeName}");
               // Update Home in sqlite3
-              await home.updateHome(homeName, homeId);
 
               // update home rest
-              await update_home_rest();
+              await updateHomeRestApi(loginController.dataLogin.authToken,
+                  loginController.dataLogin.residentId.toString(), homeId);
 
               // Reconnection MQTT
               Get.back();
               homeController.closeConnection();
               Future.delayed(Duration(milliseconds: 100), () async {
                 await homeController.initMqtt();
-                // Redirec Screen
-                await homeController.getHome();
                 // fetchApi
                 await homeController.fetchApi();
                 // success dialog
@@ -121,38 +118,28 @@ Future<dynamic> dialogConfirm(
   );
 }
 
-getHomeIdByRest(String title) async {
-  Auth auth = Auth();
-  Uri url = Uri.parse("${URL}/get_home_id/");
-  var token_var = await auth.getToken();
-  String token = 'Bearer ${token_var[0]["TOKEN"]}';
-
-  String home_name = title.split(' - ')[0];
-  String home_number = title.split(' - ')[1];
+getHomeIdByRest(String token, String title) async {
+  String url = "$domain/get_home_id/";
+  String homeName = title.split(' - ')[0];
+  String homeNumber = title.split(' - ')[1];
 
   var response = await http.post(
-    url,
+    Uri.parse(url),
     headers: <String, String>{
       'Content-Type': 'application/json',
-      'Authorization': token
+      'Authorization': 'Bearer $token'
     },
     body: jsonEncode(<String, String>{
-      "home_name": home_name,
-      "home_number": home_number,
+      "home_name": homeName,
+      "home_number": homeNumber,
     }),
   );
-
-  // List object = [];
 
   if (response.statusCode == 200) {
     String body = utf8.decode(response.bodyBytes);
     var lists = json.decode(body);
 
     print(lists);
-
-    //   object = lists.toList();
     return lists;
   }
-
-  // return object;
 }

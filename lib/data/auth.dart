@@ -1,86 +1,86 @@
-import 'sqlite.dart';
+// import 'sqlite.dart';
 
-class Auth {
-  SQLite sqlite = SQLite(
-      "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXTม ,email TEXT);");
+// class Auth {
+//   SQLite sqlite = SQLite(
+//       "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXTม ,email TEXT);");
 
-  initAuth() async {
-    sqlite.queryDatabase(
-        "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXT, email TEXT);");
+//   initAuth() async {
+//     sqlite.queryDatabase(
+//         "CREATE TABLE Auth (TOKEN TEXT, ID_RES INTEGER, Username TEXT, device_token TEXT, email TEXT);");
 
-    insertToken();
-  }
+//     insertToken();
+//   }
 
-  insertToken() async {
-    final String command =
-        "INSERT INTO Auth (TOKEN, ID_RES, Username, device_token, email) values ('-1', 0, 'NULL', 'device_token', 'email')";
-    var row = await sqlite.insertDatabase(command);
-    // print("insertToken: ${row}");
-  }
+//   insertToken() async {
+//     final String command =
+//         "INSERT INTO Auth (TOKEN, ID_RES, Username, device_token, email) values ('-1', 0, 'NULL', 'device_token', 'email')";
+//     var row = await sqlite.insertDatabase(command);
+//     // print("insertToken: ${row}");
+//   }
 
-  checkDBAuth() async {
-    try {
-      var row = await getToken();
+//   checkDBAuth() async {
+//     try {
+//       var row = await getToken();
 
-      if (row.isEmpty || row == null) {
-        insertToken();
-      }
-    } catch (e) {
-      initAuth();
-    }
+//       if (row.isEmpty || row == null) {
+//         insertToken();
+//       }
+//     } catch (e) {
+//       initAuth();
+//     }
 
-    return true;
-  }
+//     return true;
+//   }
 
-  getToken() async {
-    final String command = "SELECT TOKEN, ID_RES FROM Auth";
-    final row = await sqlite.queryDatabase(command);
-    return row;
-    // row.forEach((value) {
-    //   return value["TOKEN"];
-    // });
-  }
+//   getToken() async {
+//     final String command = "SELECT TOKEN, ID_RES FROM Auth";
+//     final row = await sqlite.queryDatabase(command);
+//     return row;
+//     // row.forEach((value) {
+//     //   return value["TOKEN"];
+//     // });
+//   }
 
-  getResidentId() async {
-    final String command = "SELECT ID_RES FROM Auth";
-    final row = await sqlite.queryDatabase(command);
-    return row.toList()[0]['ID_RES'].toString();
-  }
+//   getResidentId() async {
+//     final String command = "SELECT ID_RES FROM Auth";
+//     final row = await sqlite.queryDatabase(command);
+//     return row.toList()[0]['ID_RES'].toString();
+//   }
 
-  void updateDeviceToken(String token) async {
-    final String command = "UPDATE Auth SET device_token = '${token}';";
-    final row = await sqlite.updateDatabase(command);
-    // print("UPDATE Auth ${row}");
-  }
+//   void updateDeviceToken(String token) async {
+//     final String command = "UPDATE Auth SET device_token = '${token}';";
+//     final row = await sqlite.updateDatabase(command);
+//     // print("UPDATE Auth ${row}");
+//   }
 
-  getDeviceToken() async {
-    final String command = "SELECT device_token FROM Auth";
-    final row = await sqlite.queryDatabase(command);
-    return row.toList()[0]['device_token'].toString();
-  }
+//   getDeviceToken() async {
+//     final String command = "SELECT device_token FROM Auth";
+//     final row = await sqlite.queryDatabase(command);
+//     return row.toList()[0]['device_token'].toString();
+//   }
 
-  getUser() async {
-    final String command = "SELECT Username FROM Auth";
-    final row = await sqlite.queryDatabase(command);
-    return row[0]["Username"];
-  }
+//   getUser() async {
+//     final String command = "SELECT Username FROM Auth";
+//     final row = await sqlite.queryDatabase(command);
+//     return row[0]["Username"];
+//   }
 
-  void updateToken(String token, String id, String Username, String email) async {
-    final String command =
-        "UPDATE Auth SET TOKEN = '${token}', ID_RES = ${id}, Username = '${Username}', email = '${email}';";
-    final row = await sqlite.updateDatabase(command);
-    // print("UPDATE Auth ${row}");
-  }
+//   void updateToken(String token, String id, String Username, String email) async {
+//     final String command =
+//         "UPDATE Auth SET TOKEN = '${token}', ID_RES = ${id}, Username = '${Username}', email = '${email}';";
+//     final row = await sqlite.updateDatabase(command);
+//     // print("UPDATE Auth ${row}");
+//   }
 
-  getEmail() async {
-    final String command = "SELECT email FROM Auth";
-    final row = await sqlite.queryDatabase(command);
-    return row[0]["email"];
-  }
+//   getEmail() async {
+//     final String command = "SELECT email FROM Auth";
+//     final row = await sqlite.queryDatabase(command);
+//     return row[0]["email"];
+//   }
 
-  void deleteToken() async {
-    final String command = "DROP TABLE Auth";
-    final row = await sqlite.deleteDatabase(command);
-    // print("DROP TABLE Auth ${row}");
-  }
-}
+//   void deleteToken() async {
+//     final String command = "DROP TABLE Auth";
+//     final row = await sqlite.deleteDatabase(command);
+//     // print("DROP TABLE Auth ${row}");
+//   }
+// }

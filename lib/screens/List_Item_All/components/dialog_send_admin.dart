@@ -16,7 +16,6 @@ class DialogSendAdmin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    Services services = Services();
     final reasonController = TextEditingController();
 
     return AlertDialog(
@@ -81,8 +80,6 @@ class DialogSendAdmin extends StatelessWidget {
                               fontWeight: FontWeight.bold, fontSize: 18)),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          services.send_admin_delete(type, id, reasonController.text);
-
                           // Services services = Services();
                           // services.deleteItem(lists[index]['type'],
                           //     lists[index]['id'].toString());

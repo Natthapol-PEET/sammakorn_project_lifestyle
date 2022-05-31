@@ -1,9 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:registerapp_flutter/controller/fcm_controller.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/screens/Add_License_plate/add_licente_plate_screen.dart';
 import 'package:registerapp_flutter/screens/ForgetPasswordScreen/forget_password_screen.dart';
@@ -12,22 +13,18 @@ import 'package:registerapp_flutter/screens/Login/login_screen.dart';
 import 'package:registerapp_flutter/screens/Logout/logout_screen.dart';
 import 'package:registerapp_flutter/screens/Notification/notification_screen.dart';
 import 'package:registerapp_flutter/screens/Password/password_screen.dart';
-import 'package:registerapp_flutter/screens/Register/register_screen.dart';
 import 'package:registerapp_flutter/screens/Select_Home/select_home_screen.dart';
-import 'package:registerapp_flutter/screens/ShowDetailScreen/show_detail.dart';
-import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
 import 'package:registerapp_flutter/screens/Welcome/welcome_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:registerapp_flutter/service/fcm.dart';
 import 'package:registerapp_flutter/service/push_notification.dart';
 import 'controller/notification_controller.dart';
 import 'data/notification.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 NotificationDB notifications = NotificationDB();
 PushNotification pushNotification = PushNotification();
 FirebaseMessaging messaging;
-FCM fcm = FCM();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // print("Handling a background title: ${message.notification.title}");
@@ -51,10 +48,6 @@ initFirebaseMessaging(message) async {
       pushNotification.sendNotification(
           message.notification.title, message.notification.body);
 
-      // print('Message title: ${message.notification.title}');
-      // print('Message body: ${message.notification.body}');
-      // print('Message data: ${message.data}');
-
       notifications.insertNotification(
           message.data['Class'],
           message.notification.title,
@@ -74,13 +67,20 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // Forgroud
-  messaging = await fcm.initFirebaseMessaging();
+  final fcmController = Get.put(FcmController());
+  messaging = await fcmController.initFirebaseMessaging();
   initFirebaseMessaging(messaging);
   pushNotification.initializationNotificationSettings();
 
   // show datetime thai
   Intl.defaultLocale = "th";
-  initializeDateFormatting();
+  initializeDateFormatting('th_TH');
+
+  // set location time ago
+  timeago.setLocaleMessages('th', timeago.ThMessages());
+
+  final fifteenAgo = DateTime.now().subtract(Duration(minutes: 15));
+  print(timeago.format(fifteenAgo, locale: 'th'));
 
   runApp(MyApp());
 }
@@ -90,30 +90,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      // localizationsDelegates: [
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate,
-      //   GlobalCupertinoLocalizations.delegate,
-      // ],
-      // supportedLocales: [
-      //   Locale('en', ''), // English, no country code
-      //   Locale('es', ''), // Spanish, no country code
-      // ],
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      // home: WelcomeScreen(),
-      // home: WebSocketScreen(),
-      // home: NotificationScreen(),
-      // home: NotificationLocal(),
-
+      theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/',
       routes: {
         '/': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
         '/forgot_password': (context) => ForgetPasswordScreen(),
-        '/register': (context) => RegisterScreen(),
+        // '/register': (context) => RegisterScreen(),
         '/select_home': (context) => SelectHomeScreen(),
         '/home': (context) => HomeScreen(),
         // '/show_detail': (context) => ShowDetailScreen(),

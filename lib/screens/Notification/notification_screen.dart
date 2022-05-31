@@ -20,9 +20,6 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  Home home = Home();
-  Auth auth = Auth();
-
   final controller = Get.put(NotificationController());
 
   @override
@@ -99,14 +96,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: Obx(
         () => Body(
-          child: build_ListNotifiication(context, controller.lists),
+          child: buildListNotifiication(context, controller.lists),
         ),
       ),
       backgroundColor: darkgreen200,
     );
   }
 
-  Widget build_ListNotifiication(BuildContext context, lists) {
+  Widget buildListNotifiication(BuildContext context, lists) {
     final Size size = MediaQuery.of(context).size;
 
     // if (lists.length == 0) {
@@ -141,6 +138,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             text: lists[index]['description'],
             time: lists[index]['time_desc'],
             id: lists[index]['id'],
+            classNoti: lists[index]['class'],
             // title: lists[index]['description'],
             // // descTime: '8 นาทีที่แล้ว',
             // descTime: lists[index]['time_desc'],

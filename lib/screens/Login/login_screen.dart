@@ -3,12 +3,8 @@ import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/rounded_button.dart';
 import 'package:registerapp_flutter/components/rounded_input_field.dart';
 import 'package:registerapp_flutter/components/rounded_password_field.dart';
-import 'package:registerapp_flutter/data/auth.dart';
-import 'package:registerapp_flutter/data/home.dart';
-import 'package:registerapp_flutter/screens/Login/service/login.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:registerapp_flutter/service/device_id.dart';
-import 'package:registerapp_flutter/service/fcm.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
+import 'package:registerapp_flutter/controller/select_home_controller.dart';
 import '../../constance.dart';
 import 'components/backgroud.dart';
 import 'components/backicon.dart';
@@ -25,23 +21,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final username = TextEditingController(text: "resident01");
-  final password = TextEditingController(text: "12345678");
-
-  Auth auth = Auth();
-  Home home = Home();
-  FCM fcm = FCM();
-  Device device = Device();
-
-  Services services = Services();
-
-  bool hidePassword = true;
-  bool rememberCheckbox = false;
+  final loginController = Get.put(LoginController());
 
   void initState() {
+    loginController.getUsernamePassword();
     super.initState();
-
-    fcm.initFirebaseMessaging();
   }
 
   @override
@@ -91,53 +75,46 @@ class _LoginScreenState extends State<LoginScreen> {
             WelcomeText(),
             HelloThere(),
             SizedBox(height: size.height * 0.05),
-            RoundedInputField(
-              hintText: "ชื่อผู้ใช้หรืออีเมล",
-              controller: username,
-            ),
+            Obx(() => RoundedInputField(
+                  hintText: "ชื่อผู้ใช้หรืออีเมล",
+                  controller: loginController.username.value,
+                  onChanged: (v) {
+                    if (v != '' && loginController.password.value.text != '') {
+                      loginController.disLoginBtn(false);
+                    } else {
+                      loginController.disLoginBtn(true);
+                    }
+                  },
+                )),
             SizedBox(height: size.height * 0.03),
-            RoundedPasswordField(
-              textHiht: "รหัสผ่าน",
-              controller: password,
-              press: () => setState(() => hidePassword = !hidePassword),
-              hidePassword: hidePassword,
-            ),
-            RememberForgot(
-              rememberCheckbox: rememberCheckbox,
-              rememberPress: (v) => setState(() => rememberCheckbox = v),
-            ),
+            Obx(() => RoundedPasswordField(
+                  textHiht: "รหัสผ่าน",
+                  controller: loginController.password.value,
+                  press: () => loginController.hidePassword.value =
+                      !loginController.hidePassword.value,
+                  hidePassword: loginController.hidePassword.value,
+                  onChanged: (v) {
+                    if (v != '' && loginController.username.value.text != '') {
+                      loginController.disLoginBtn(false);
+                    } else {
+                      loginController.disLoginBtn(true);
+                    }
+                  },
+                )),
+            Obx(() => RememberForgot(
+                  rememberCheckbox: loginController.rememberCheckbox.value,
+                  rememberPress: (v) => loginController.rememberCheckbox(v),
+                )),
             SizedBox(height: size.height * 0.05),
-            RoundedButton(
-              text: "เข้าสู่ระบบ",
-              press: () async {
-                String deviceId = await device.getId();
-                var token = await services.login(
-                    username.text, password.text, deviceId);
-
-                if (token["statusCode"] == 200) {
-                  auth.updateToken(token["token"], token["id"].toString(),
-                      token["username"], token["email"]);
-
-                  Get.toNamed('/select_home');
-                } else {
-                  Fluttertoast.showToast(
-                    msg: token["token"],
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                  );
-                }
-              },
-            ),
+            Obx(() => RoundedButton(
+                  text: "เข้าสู่ระบบ",
+                  press: loginController.disLoginBtn.value
+                      ? null
+                      : () => loginController.login(),
+                )),
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    username.dispose();
-    password.dispose();
-    super.dispose();
   }
 }

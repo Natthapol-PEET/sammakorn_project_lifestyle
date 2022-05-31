@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:registerapp_flutter/components/rounded_button.dart';
 import 'package:registerapp_flutter/components/rounded_input_field.dart';
 import 'package:registerapp_flutter/components/success_dialog.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import 'package:registerapp_flutter/screens/Login/components/backgroud.dart';
 import 'package:registerapp_flutter/screens/Login/components/backicon.dart';
 import 'package:registerapp_flutter/screens/Select_Home/service/reset_password.dart';
@@ -18,6 +19,8 @@ class ForgetPasswordScreen extends StatefulWidget {
 }
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
+  final loginController = Get.put(LoginController());
+
   final email = TextEditingController(text: '@gmail.com');
 
   @override
@@ -83,8 +86,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     gravity: ToastGravity.BOTTOM,
                   );
 
-                  var response = await reset_password_rest(email.text);
-                  print("response >> ${response}");
+                  var response = await resetPasswordApi(
+                      loginController.dataLogin.authToken, email.text);
 
                   if (response == true) {
                     success_dialog(context, "ส่งรหัสผ่านใหม่ไปยังอีเมลสำเร็จ");

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:registerapp_flutter/controller/initdb_controller.dart';
+import 'package:registerapp_flutter/controller/account_controller.dart';
+import 'package:registerapp_flutter/controller/welcome_controller.dart';
 import 'package:registerapp_flutter/screens/Home/home_screen.dart';
 import 'components/body.dart';
 import 'is_loading.dart';
@@ -15,34 +16,32 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final initDBController = Get.put(InitDatabaseController());
-
-  final args = Get.arguments;
+  final accountController = Get.put(AccountController());
+  final welcomeController = Get.put(WelcomeController());
 
   @override
   void initState() {
-    initDBController.clear();
-    check();
+    initAsync();
     super.initState();
   }
 
-  check() async {
-    await initDBController.checkDB(args);
+  initAsync() async {
+    await accountController.account.getDatabase();
+    await accountController.account.initAccount();
+    welcomeController.checkLogin();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: onWillPop,
-      child: GetBuilder<InitDatabaseController>(builder: (_) {
-        return Scaffold(
-          body: initDBController.isLoad
-              ? IsLoadding(isLogin: true)
-              : initDBController.isLogin
-                  ? HomeScreen()
-                  : Body(), // welcome page
-        );
-      }),
+      child: Obx(() => Scaffold(
+            body: welcomeController.isLoad.value
+                ? IsLoadding(isLogin: true)
+                : welcomeController.isLogin.value
+                    ? HomeScreen()
+                    : Body(), // welcome page
+          )),
     );
   }
 
@@ -62,10 +61,4 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     SystemNavigator.pop();
     return Future.value(true);
   }
-
-  // @override
-  // void dispose() {
-  //   initDBController.clear();
-  //   super.dispose();
-  // }
 }

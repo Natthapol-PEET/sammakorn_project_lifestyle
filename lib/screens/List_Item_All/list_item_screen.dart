@@ -1,9 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
+import 'package:registerapp_flutter/controller/select_home_controller.dart';
 import 'package:registerapp_flutter/screens/List_Item_All/service/service.dart';
 import '../../constance.dart';
-import 'components/dialog_send_admin.dart';
 import 'components/list_item.dart';
 
 class ListItemScreen extends StatefulWidget {
@@ -14,7 +15,9 @@ class ListItemScreen extends StatefulWidget {
 }
 
 class _ListItemScreenState extends State<ListItemScreen> {
-  Services services = Services();
+  final loginController = Get.put(LoginController());
+  final selectHomeController = Get.put(SelectHomeController());
+
   List whitelist_show = [];
   List blacklist_show = [];
   List whitelist_wait_approve_show = [];
@@ -28,9 +31,9 @@ class _ListItemScreenState extends State<ListItemScreen> {
   void initState() {
     super.initState();
 
-    get_white_black();
+    getWhileBlack();
     // timer = Timer.periodic(Duration(seconds: 3), (timer) {
-    //   get_white_black();
+    //   getWhileBlack();
     // });
   }
 
@@ -147,15 +150,19 @@ class _ListItemScreenState extends State<ListItemScreen> {
               // Services services = Services();
               // services.deleteItem(
               //     lists[index]['type'], lists[index]['id'].toString());
-              // get_white_black();
+              // getWhileBlack();
               // Navigator.pop(context);
             },
           );
         });
   }
 
-  get_white_black() {
-    var data = services.getListItems();
+  getWhileBlack() {
+    var data = getListItemsApi(
+      loginController.dataLogin.authToken,
+      selectHomeController.homeId.toString(),
+      loginController.dataLogin.residentId.toString(),
+    );
 
     data.then((values) {
       List whitelist = values[0];

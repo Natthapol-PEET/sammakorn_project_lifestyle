@@ -12,8 +12,6 @@ class NotificationDB {
           time DATETIME,
           is_read BOOLEAN);''');
 
-  Home home = Home();
-
   initNotification() async {
     sqlite.queryDatabase('''CREATE TABLE Notification (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -25,19 +23,17 @@ class NotificationDB {
           is_read BOOLEAN);''');
   }
 
-  getNotification() async {
-    String homeId = await home.getHomeId();
+  getNotification(int homeId) async {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     final String command =
-        "SELECT * FROM Notification WHERE time >= '${formattedDate} 00:00:00' AND home_id = ${homeId} ORDER BY time DESC";
+        "SELECT * FROM Notification WHERE time >= '$formattedDate 00:00:00' AND home_id = $homeId ORDER BY time DESC";
     final row = await sqlite.queryDatabase(command);
     // print(row.toList());
     return row.toList();
   }
 
-  getCountNotification() async {
-    String homeId = await home.getHomeId();
+  getCountNotification(int homeId) async {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
@@ -45,8 +41,8 @@ class NotificationDB {
                 SELECT COUNT(id) AS count 
                   FROM Notification 
                   WHERE is_read = 0
-                    AND home_id = ${homeId}
-                    AND time >= '${formattedDate} 00:00:00'
+                    AND home_id = $homeId
+                    AND time >= '$formattedDate 00:00:00'
             """;
 
     final row = await sqlite.queryDatabase(command);

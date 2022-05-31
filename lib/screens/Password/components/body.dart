@@ -3,17 +3,32 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:registerapp_flutter/components/show_text_check_input.dart';
 import 'package:registerapp_flutter/components/success_dialog.dart';
-import 'package:registerapp_flutter/controller/add_controlller.dart';
 import 'package:registerapp_flutter/controller/change_password_controller.dart';
+import 'package:registerapp_flutter/controller/login_controller.dart';
 import 'package:registerapp_flutter/screens/Select_Home/service/reset_password.dart';
 import '../../../constance.dart';
 import 'button_group.dart';
 
-class Body extends StatelessWidget {
-  Body({Key key}) : super(key: key);
+class Body extends StatefulWidget {
+  const Body({Key key}) : super(key: key);
 
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
   final changeController = Get.put(ChangePasswordController());
+  final loginController = Get.put(LoginController());
+
+  @override
+  void initState() {
+    changeController.checkOldPassword.value = false;
+    changeController.checkPassword.value = false;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +38,15 @@ class Body extends StatelessWidget {
       child: Column(
         children: [
           RoundInputField(title: "รหัสผ่านเดิม"),
+          Obx(() => !changeController.checkOldPassword.value
+              ? ShowTextCheckInput(text: 'กรุณากรอกรหัสผ่านเดิม')
+              : Container()),
           RoundInputField(title: "รหัสผ่านใหม่"),
           RoundInputField(title: "ยืนยันรหัสผ่านใหม่"),
+          Obx(() => !changeController.checkPassword.value
+              ? ShowTextCheckInput(text: 'รหัสผ่านไม่ตรง')
+              : ShowTextCheckInput(
+                  text: 'รหัสผ่านตรงกัน', color: Colors.green)),
           SizedBox(height: size.height * 0.35),
           Obx(
             () => ButtonGroup(
@@ -37,10 +59,11 @@ class Body extends StatelessWidget {
                         gravity: ToastGravity.BOTTOM,
                       );
 
-                      var response = await change_password_rest(
-                        changeController.oldPassword.value,
-                        changeController.newPassword.value,
-                      );
+                      var response = await changePasswordApi(
+                          loginController.dataLogin.authToken,
+                          changeController.oldPassword.value,
+                          changeController.newPassword.value,
+                          loginController.dataLogin.residentId.toString());
 
                       if (response == true) {
                         success_dialog(context, "เปลี่ยนรหัสผ่านสำเร็จ");

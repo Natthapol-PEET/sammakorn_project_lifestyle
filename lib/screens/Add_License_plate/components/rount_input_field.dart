@@ -40,16 +40,33 @@ class RoundInputField extends StatelessWidget {
           SizedBox(height: size.height * 0.03),
           Padding(
             // padding: const EdgeInsets.only(top: 5, bottom: 10, left: 30),
-            padding: const EdgeInsets.only(left: 40, bottom: 10),
-            child: Text(
-              title,
-              style: TextStyle(
-                // color: goldenSecondary,
-                color: Colors.white,
-                fontSize: 18,
-                fontFamily: 'Prompt',
-                // fontWeight: FontWeight.bold,
-              ),
+            padding: EdgeInsets.only(
+                left: size.width * 0.1, bottom: size.height * 0.01),
+            child: Row(
+              children: [
+                if (title == 'ชื่อ-นามสกุล') ...[
+                  Text(
+                    "*",
+                    style: TextStyle(
+                      // color: goldenSecondary,
+                      color: Colors.red,
+                      fontSize: 18,
+                      fontFamily: 'Prompt',
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+                Text(
+                  title,
+                  style: TextStyle(
+                    // color: goldenSecondary,
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontFamily: 'Prompt',
+                    // fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           Center(
@@ -72,12 +89,18 @@ class RoundInputField extends StatelessWidget {
                     List lchar = v.split('');
                     print("lchar: ${lchar}");
 
-                    if (isNumeric(lchar[lchar.length - 1]) && lchar.length < 14) {
+                    if (lchar.isEmpty) {
                       addController.idcard.value = v;
+                    } else {
+                      if (isNumeric(lchar[lchar.length - 1]) &&
+                          lchar.length < 14) {
+                        addController.idcard.value = v;
+                      }
                     }
-                    controller.text = addController.idcard.value;
-                    controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
 
+                    controller.text = addController.idcard.value;
+                    controller.selection = TextSelection.fromPosition(
+                        TextPosition(offset: controller.text.length));
                   } else if (title == "เลขทะเบียนรถ") {
                     addController.license.value = v;
                   }

@@ -20,7 +20,6 @@ class DialogShow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    Services services = Services();
     final reasonController = TextEditingController();
 
     return AlertDialog(
