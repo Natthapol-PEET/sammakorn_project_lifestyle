@@ -1,2 +1,0 @@
-from .PersonalCard import PersonalCard
-
