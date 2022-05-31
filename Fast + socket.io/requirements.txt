@@ -1,0 +1,9 @@
+# server.py
+uvicorn
+fastapi
+python-socketio
+websockets
+
+# client.py
+requests 
+websocket-client
