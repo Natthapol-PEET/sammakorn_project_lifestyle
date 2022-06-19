@@ -1,4 +1,4 @@
-version: '2'
+version: '3.9'
 
 volumes:
     pg_data: 
@@ -103,4 +103,12 @@ services:
   #   networks:
   #     - dev_network
 
+
 # docker network inspect main_dev_network
+
+# Deploy the stack to the swarm
+# docker stack deploy --compose-file docker-compose.yml vmsdemo
+# docker stack services vmsdemo
+# docker stack rm vmsdemo
+# docker service rm registry
+# docker swarm leave --force
