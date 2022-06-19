@@ -1,0 +1,106 @@
+version: '2'
+
+volumes:
+    pg_data: 
+
+networks:
+  dev_network:
+
+services:
+  backend:
+    image: natthapol593/vms-service:v0.1.0
+    container_name: vms_api
+    restart: always
+    command: ["./wait-for-it.sh", "db:5432", "--", "python", "app.py"]
+    ports:
+      - 8080:8080
+    networks:
+      - dev_network
+
+  db:
+    image: postgres
+    container_name: vms_db
+    restart: always
+    environment:
+        POSTGRES_USER: lifestyle
+        POSTGRES_PASSWORD: lifestyle_tech
+        POSTGRES_DB: vehicle_management
+    ports:
+        - 5432:5432
+    volumes:
+        - $HOME/Desktop/PostgreSql-Snippets/infile:/infile
+        - pg_data:/var/lib/postgresql/data/
+    networks:
+      - dev_network
+
+  mqtt:
+    image: emqx/emqx:v4.0.0
+    container_name: vms_mqtt
+    ports:
+      - 1883:1883
+      - 18083:18083
+    volumes:
+        - ./tmp/emqx.lic:/opt/emqx/etc/emqx.lic
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx_ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      - dev_network
+
+  socketio:
+    image: natthapol593/node-socketio-service:v0.1.0
+    container_name: vms_socketio
+    restart: always
+    ports:
+      - 9090:9090
+    networks:
+      - dev_network
+
+  ngrok1:
+    image: shkoliar/ngrok:latest
+    container_name: vms_ngrok_backend
+    ports:
+      - 4551:4551
+    environment:
+      - DOMAIN=http://vms_api
+      - PROTOCOL=http
+      - PORT=8080
+      - REGION=us
+      - SUBDOMAIN=vms-service
+      - AUTH_TOKEN=1Z4FuXChSDd2OAdFcDxTS7h8aeQ_4LVDV8ErSMjeg6aphr1tA
+    networks:
+      - dev_network
+
+  ngrok2:
+    image: shkoliar/ngrok:latest
+    container_name: vms_ngrok_socketio
+    ports:
+      - 4552:4551
+    environment:
+      - DOMAIN=http://vms_socketio
+      - PROTOCOL=http
+      - PORT=9090
+      - REGION=us
+      - SUBDOMAIN=socketio-service
+      - AUTH_TOKEN=1Z4FuXChSDd2OAdFcDxTS7h8aeQ_4LVDV8ErSMjeg6aphr1tA
+    networks:
+      - dev_network
+
+  # ngrok3:
+  #   image: shkoliar/ngrok:latest
+  #   container_name: vms_ngrok_mqtt
+  #   ports:
+  #     - 4553:4551
+  #   environment:
+  #     - DOMAIN=http://vms_mqtt
+  #     - PROTOCOL=http
+  #     - PORT=18083
+  #     - REGION=us
+  #     - SUBDOMAIN=vms-mqtt
+  #     - AUTH_TOKEN=1Z4FuXChSDd2OAdFcDxTS7h8aeQ_4LVDV8ErSMjeg6aphr1tA
+  #   networks:
+  #     - dev_network
+
+# docker network inspect main_dev_network
