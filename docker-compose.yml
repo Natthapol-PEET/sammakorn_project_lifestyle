@@ -2,6 +2,7 @@ version: '3.9'
 
 volumes:
     pg_data: 
+    pgadmin-data:
 
 networks:
   dev_network:
@@ -11,14 +12,30 @@ services:
     image: natthapol593/vms-service:v0.1.0
     container_name: vms_api
     restart: always
-    command: ["./wait-for-it.sh", "db:5432", "--", "python", "app.py"]
+    # command: ["./wait-for-it.sh", "db:5432", "--", "python", "app.py"]
     ports:
       - 8080:8080
     networks:
       - dev_network
 
+  ngrok1:
+    image: shkoliar/ngrok:latest
+    container_name: vms_ngrok_backend
+    ports:
+      - 4551:4551
+    environment:
+      - DOMAIN=http://vms_api
+      - PROTOCOL=http
+      - PORT=8080
+      - REGION=us
+      - SUBDOMAIN=vms-service
+      - AUTH_TOKEN=1Z4FuXChSDd2OAdFcDxTS7h8aeQ_4LVDV8ErSMjeg6aphr1tA
+    networks:
+      - dev_network
+
   db:
-    image: postgres
+    # image: postgres
+    image: natthapol593/vms-postgresql:v0.1.0
     container_name: vms_db
     restart: always
     environment:
@@ -58,20 +75,6 @@ services:
     networks:
       - dev_network
 
-  ngrok1:
-    image: shkoliar/ngrok:latest
-    container_name: vms_ngrok_backend
-    ports:
-      - 4551:4551
-    environment:
-      - DOMAIN=http://vms_api
-      - PROTOCOL=http
-      - PORT=8080
-      - REGION=us
-      - SUBDOMAIN=vms-service
-      - AUTH_TOKEN=1Z4FuXChSDd2OAdFcDxTS7h8aeQ_4LVDV8ErSMjeg6aphr1tA
-    networks:
-      - dev_network
 
   ngrok2:
     image: shkoliar/ngrok:latest
@@ -103,6 +106,21 @@ services:
   #   networks:
   #     - dev_network
 
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4:5.5
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: secret
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "80:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - dev_network
 
 # docker network inspect main_dev_network
 
