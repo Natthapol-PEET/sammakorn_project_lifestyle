@@ -34,8 +34,8 @@ services:
       - dev_network
 
   db:
-    image: postgres
-    # image: natthapol593/vms-postgresql:v0.1.0
+    # image: postgres
+    image: natthapol593/vms-postgresql:v0.1.0
     container_name: vms_db
     restart: always
     environment:
