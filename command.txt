@@ -72,3 +72,11 @@ docker service create \
 
 docker network create --driver overlay my-network
 
+docker image prune -a
+
+
+
+
+docker commit 7455cad84be2 natthapol593/vms-postgresql:v0.1.0
+docker push natthapol593/vms-postgresql:v0.1.0
+docker pull natthapol593/vms-postgresql:v0.1.0

@@ -11,15 +11,13 @@ def generage_qr_code(prefix: str):
         return qrCodeId
 
     
-def calculaetTwoTime(queryTime: str):
+def calculaetTwoTime(queryTime):
     from datetime import datetime
 
-    first = queryTime.split('.')[0]
-    last = str(datetime.now()).replace(' ', 'T').split('.')[0]
-    FMT = '%Y-%m-%dT%H:%M:%S'
-    tdelta = datetime.strptime(last, FMT) - datetime.strptime(first, FMT)
-
-    # print(tdelta.days)
-    # print(tdelta.total_seconds())
+    # first = queryTime.split('.')[0]
+    # last = str(datetime.now()).replace(' ', 'T').split('.')[0]
+    # FMT = '%Y-%m-%dTH:%M:%S'
+    # tdelta = datetime.strptime(last, FMT) - datetime.strptime(first, '%Y-%m-%d H:%M:%S')
+    tdelta = datetime.now() - queryTime
 
     return tdelta.total_seconds()

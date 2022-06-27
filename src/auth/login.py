@@ -1,7 +1,5 @@
-from unittest import result
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.sql.expression import true
 
 from data.schemas import LoginDetails, LoginResident
 from data.models import resident_account, admin_account, guard_account
@@ -29,19 +27,6 @@ class Login:
         else:
             return {"token": token}
 
-    async def clear_account(self, db, deviceId):
-        query = f'''
-                    UPDATE resident_account 
-                        SET device_token = NULL, 
-                            device_id = NULL, 
-                            is_login = False 
-                        WHERE device_id = '{deviceId}'
-                '''
-        result = await db.execute(query)
-
-        print(f"clear_account: {result}")
-
-        return True
 
     async def login_resident(self, db,  auth_details: LoginResident):
         query = resident_account.select().where(
@@ -51,7 +36,7 @@ class Login:
         if resident is not None:
             # update login
             if resident["device_id"] is None or resident["device_id"] == auth_details.deviceId:
-                # First Login
+                # Login
                 query = resident_account.update()   \
                     .where(resident_account.c.username == auth_details.username)    \
                     .values(login_datetime=datetime.now(), device_token=auth_details.device_token,
@@ -82,10 +67,14 @@ class Login:
         admin = jsonable_encoder(await db.fetch_one(query))
 
         if admin is not None:
-            query = admin_account.update()   \
-                .where(admin_account.c.username == auth_details.username)    \
-                .values(login_datetime=datetime.now())
-            await db.execute(query)
+            if admin['active_user']:
+                query = admin_account.update()   \
+                    .where(admin_account.c.username == auth_details.username)    \
+                    .values(login_datetime=datetime.now())
+                await db.execute(query)
+            else:
+                raise HTTPException(
+                    status_code=401, detail='This user account has been disabled.')
 
         result = Login().verify_password(admin, auth_details)
 
@@ -102,10 +91,14 @@ class Login:
         guard = jsonable_encoder(await db.fetch_one(query))
 
         if guard is not None:
-            query = guard_account.update()   \
+            if guard['active_user']:
+                query = guard_account.update()   \
                 .where(guard_account.c.username == auth_details.username)    \
                 .values(login_datetime=datetime.now())
-            await db.execute(query)
+                await db.execute(query)
+            else:
+                raise HTTPException(
+                    status_code=401, detail='This user account has been disabled.')
 
         result = Login().verify_password(guard, auth_details)
 

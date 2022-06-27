@@ -27,3 +27,5 @@ services:
             - ./app:/src/app
 volumes:
     pg_data: 
+
+

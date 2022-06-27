@@ -1,31 +1,38 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
-from io import BytesIO
-from PIL import Image, ImageFilter
+import codecs
+from email.message import EmailMessage
+from smtplib import SMTP_SSL
+import ssl
 
-app = FastAPI()
+email_from = 'natthapol593@gmail.com'
+password = 's x u r e t f c e j j g u h x y'
+email_to = 'natthapol593@gmail.com'
 
-file_path = "videos/large-video-file.mp4"
+def readHtml(file: str) -> str:
+    f = codecs.open(f"templates/{file}", 'r', 'utf-8')
+    return f.read()
+    
 
-# @app.get("/")
-# def main():
-#     def iterfile():
-#         with open(file_path, mode="rb") as file_like:
-#             yield from file_like
+msg = EmailMessage()
+msg['Subject'] = 'Here is my newsletter'
+msg['From'] = email_from
+msg['To'] = email_to
 
-#     return StreamingResponse(iterfile(), media_type="video/mp4")
+html = readHtml("new.html")
+
+html = html.replace('this-title', 'WELCOME TO ARTANI PROJECT')
+html = html.replace('this-role', 'ลูกบ้าน')   # ลูกบ้าน, พนักงานรักษาความปลอดภัย, นิติบุคคล
+html = html.replace('this-full-name', 'นัฐพล นนทะศรี')
+html = html.replace('this-id-card', '1410501130726')
+html = html.replace('this-home-number', 'lifestyle 1/10')
+html = html.replace('this-license-plate', '123 กด')
+html = html.replace('this-qr-code', 'W12345678952')
+html = html.replace('this-create-date-time', '10-04-2541')
+html = html.replace('this-link', 'www.google.com')
+
+msg.set_content(html, subtype='html')
 
 
-@app.get("/image")
-# @app.post("/image")
-# def image_filter(img: UploadFile = File(...)):
-def image_filter():
-    # original_image = Image.open(img.file)
-    original_image = Image.open('images/1410501130726.jpg')
-    original_image = original_image.filter(ImageFilter.BLUR)
-
-    filtered_image = BytesIO()
-    original_image.save(filtered_image, "JPEG")
-    filtered_image.seek(0)
-
-    return StreamingResponse(filtered_image, media_type="image/jpeg")
+context = ssl.create_default_context()
+with SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+    smtp.login(email_from, password)
+    smtp.send_message(msg)

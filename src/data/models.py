@@ -41,6 +41,7 @@ admin_account = Table(
     Column("id_card", String),
     Column("active_user", Boolean),
     Column("role", String),
+    Column("profile_path", String),
     Column("login_datetime", DateTime),
     Column("create_datetime", DateTime, default=datetime.now()),
 )

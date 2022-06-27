@@ -22,6 +22,9 @@ python-engineio==3.14.2
 python-socketio==4.6.0
 aiohttp
 uuid
-opencv-python
+# opencv-python
+# opencv-contrib-python
+opencv-python-headless<4.3
 numpy
 easyocr
+pyngrok

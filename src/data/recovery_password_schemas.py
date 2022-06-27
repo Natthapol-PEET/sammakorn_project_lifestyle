@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 class RecoverySchemas(BaseModel):
     email: str
-    url: str = "http://domain.com/"
 
 
 class ConfirmSchemas(BaseModel):

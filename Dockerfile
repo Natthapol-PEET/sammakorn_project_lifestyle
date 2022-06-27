@@ -14,10 +14,18 @@ ENV TZ Asia/Bangkok
 # Upgrade pip
 RUN python -m pip install --upgrade pip
 
+# wait for database start
+COPY wait-for-it.sh ./
+RUN chmod +x wait-for-it.sh
+
 # Install dependencies:
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Run the application:
 # CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# CMD ["python", "app.py"]
+
+RUN sleep 30
+
 CMD ["python", "app.py"]

@@ -1,23 +1,24 @@
 from dataclasses import replace
-from fastapi import FastAPI, Depends, status, HTTPException, Header, Request
+from fastapi import FastAPI, Depends,  HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from typing import Optional, List
-from fastapi import FastAPI, HTTPException, Depends, \
-    WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Depends
+from apis.notification import send_notification_v2
 
 from data.schemas import QRCode
 from data.database import database as db
 
-from datetime import datetime, timedelta, date
+from datetime import datetime,  date
 from auth.auth import AuthHandler
 
 from configs import config
 from data.models import resident_account
 
 from icecream import ic
-from configs import config
 
 from services import socket_manage
+from utils.enums.data import DataClass
+from utils.enums.title import Title
 
 tags_metadata = [
     {"name": "checkIn", "description": ""},
@@ -28,28 +29,28 @@ qr_api = FastAPI(openapi_tags=tags_metadata)
 auth_handler = AuthHandler()
 
 
-@qr_api.post("/entrance", status_code=201)
-async def for_mp86(request: Request):
-    qrId = await replaceRequest(request)
-    ic(qrId)
-    data = await comming_in(qrId)
+# @qr_api.post("/entrance", status_code=201)
+# async def for_mp86(request: Request):
+#     qrId = await replaceRequest(request)
+#     ic(qrId)
+#     data = await comming_in(qrId)
 
-    # send socket to nodejs server
-    await socket_manage.emit_message('entrance', data)
+#     # send socket to nodejs server
+#     await socket_manage.emit_message('entrance', data)
 
-    return {'status_code': 200}
+#     return {'status_code': 200}
 
 
-@qr_api.post("/exit", status_code=201)
-async def for_mp86(request: Request):
-    qrId = await replaceRequest(request)
-    ic(qrId)
-    data = await checkout_func(qrId)
+# @qr_api.post("/exit", status_code=201)
+# async def for_mp86(request: Request):
+#     qrId = await replaceRequest(request)
+#     ic(qrId)
+#     data = await checkout_func(qrId)
 
-    # send socket to nodejs server
-    await socket_manage.emit_message('exit', data)
+#     # send socket to nodejs server
+#     await socket_manage.emit_message('exit', data)
 
-    return {'status_code': 200}
+#     return {'status_code': 200}
 
 
 @qr_api.post('/coming/', tags=["checkIn"], status_code=200)
@@ -71,13 +72,6 @@ async def checkout(checkout: QRCode, token=Depends(auth_handler.get_token)):
 
 
 async def comming_in(qrGenId: str):
-    #  user_agent: Optional[str] = Header(None),
-    '''
-        fullname: str
-        licensePlate: str
-        homeNumber: str
-    '''
-
     if qrGenId == "":
         return {"isInvite": False}
 
@@ -122,14 +116,14 @@ async def comming_in(qrGenId: str):
             return {"isInvite": True, "data": item, "CLASS": "resident"}
         return {"isInvite": False, "CLASS": "resident"}
 
-    item = jsonable_encoder(await db.fetch_one(query))
+    item = await db.fetch_one(query)
 
     # มีข้อมูล
     if item is not None:
         # เข้าไปหรือยัง
         if qrGenId[0] == "V":
             # check in history
-            query = f"SELECT * FROM history_log WHERE class = 'visitor' AND class_id = {item['class_ids']}"
+            query = f"SELECT * FROM history_log WHERE class = 'visitor' AND class_id = {item.class_ids}"
             isComIN = jsonable_encoder(await db.fetch_one(query))
 
             # coming in is success
@@ -144,13 +138,13 @@ async def comming_in(qrGenId: str):
                 # insert data success
                 dt = datetime.now()
                 query = f'''INSERT INTO history_log (class, class_id, datetime_in, create_datetime)
-                    VALUES ('{item['type']}', {item['class_ids']}, '{dt}', '{dt}');'''
+                    VALUES ('{item.type}', {item.class_ids}, '{dt}', '{dt}');'''
                 data = await db.fetch_all(query)
                 data = jsonable_encoder(data)
 
         elif qrGenId[0] == "W":
             # check in history
-            query = f"SELECT * FROM history_log WHERE class = 'whitelist' AND class_id = {item['class_ids']} AND datetime_out is NULL;"
+            query = f"SELECT * FROM history_log WHERE class = 'whitelist' AND class_id = {item.class_ids} AND datetime_out is NULL;"
             isWalkIN = jsonable_encoder(await db.fetch_one(query))
 
             # walk in is success
@@ -159,13 +153,29 @@ async def comming_in(qrGenId: str):
                 # insert data success
                 dt = datetime.now()
                 query = f'''INSERT INTO history_log (class, class_id, datetime_in, create_datetime)
-                    VALUES ('{item['type']}', {item['class_ids']}, '{dt}', '{dt}');'''
+                    VALUES ('{item.type}', {item.class_ids}, '{dt}', '{dt}');'''
                 data = await db.fetch_all(query)
                 data = jsonable_encoder(data)
+
+                # realtime
+                await socket_manage.emit_message(f'toApp/{item.home_id}', 'COMING_WALK_IN')
+                await socket_manage.emit_message(f'toWeb', 'COMING_WALK_IN')
+
+                # notification
+                await send_notification_v2(db, item, Title.guard,
+                                        DataClass.comming, homeId=item.home_id)
 
                 return {"isInvite": True, "data": item, "CLASS": "visitor"}
             else:
                 return {"isInvite": False, "data": item, "CLASS": "visitor"}
+
+        # realtime
+        await socket_manage.emit_message(f'toApp/{item.home_id}', 'COMING_WALK_IN')
+        await socket_manage.emit_message(f'toWeb', 'COMING_WALK_IN')
+
+        # notification
+        await send_notification_v2(db, item, Title.guard,
+                                   DataClass.comming, homeId=item.home_id)
 
         return {"isInvite": True, "data": item, "CLASS": "visitor"}
     else:
@@ -213,65 +223,42 @@ async def checkout_func(qrGenId):
                 WHERE card_info = '{qrGenId}'
                     AND card_scan_position != 'Exit'
         '''
-        data = jsonable_encoder(await db.fetch_one(query))
+        data = await db.fetch_one(query)
 
         if data is None:
             return {"msg": "No information in the system"}
         else:
-            sql = f"UPDATE resident_account SET card_scan_position = 'Exit' WHERE resident_id = {data['resident_id']}"
+            sql = f"UPDATE resident_account SET card_scan_position = 'Exit' WHERE resident_id = {data.resident_id}"
             await db.execute(sql)
+
+            # realtime
+            await socket_manage.emit_message(f'toApp/{data.home_id}', 'CHECKOUT')
+            await socket_manage.emit_message(f'toWeb', 'CHECKOUT')
+
+            # notification
+            await send_notification_v2(db, data, Title.guard,
+                                    DataClass.checkout, homeId=data.home_id)
+                                    
             return {"msg": "Card_Pass", "data": data}
 
-    data = jsonable_encoder(await db.fetch_one(query))
+    data = await db.fetch_one(query)
 
     # มีข้อมูลในระบบ
     if data is not None:
         # car people or car
         # check resident is stamp
-        if data['resident_stamp'] is not None:
-            await updateTimeoutProject(data['log_id'])
-            return {
-                "msg": "Pass",
-                "data": data,
-            }
+        if data.resident_stamp is not None:
+            await updateTimeoutProject(data.log_id)
 
-            # diff_time = calculateDiffTime(data['datetime_in'])
+            # realtime
+            await socket_manage.emit_message(f'toApp/{data.home_id}', 'CHECKOUT')
+            await socket_manage.emit_message(f'toWeb', 'CHECKOUT')
 
-            # เกินเวลา
-            # if diff_time.total_seconds() > (3 * 60 * 60):   # 3 hour
-            #     # check นิติ stamp
-            #     if data['admin_approve'] is None:
-            #         # จ่ายเงิน
-            #         day, hour = calDayTime(
-            #             diff_time.total_seconds() - (3 * 60 * 60))
-
-            #         return {"msg": "payment", "day": day, "time": hour, "data": data}
-
-            #     elif data['admin_approve'] == True:
-            #         # calculate difference time
-            #         diff_time = calculateDiffTime(data['admin_datetime'])
-
-            #         if diff_time.total_seconds() > (24 * 60 * 60):
-            #             # เกินเวลา ต้องจ่ายเงิน
-            #             day, hour = calDayTime(
-            #                 diff_time.total_seconds() - ((3 * 60 * 60) + (24 * 60 * 60)))
-
-            #             return {"msg": "payment", "day": day, "time": hour, "data": data}
-            #         # ไม่เกินเวลาที่นิติกำหนด
-            #         else:
-            #             await updateTimeoutProject(data['log_id'])
-            #             return {
-            #                 "msg": "Pass",
-            #                 "data": data,
-            #             }
-
-            # # ไม่เกินเวลา
-            # else:
-            #     await updateTimeoutProject(data['log_id'])
-            #     return {
-            #         "msg": "Pass",
-            #         "data": data,
-            #     }
+            # notification
+            await send_notification_v2(db, data, Title.guard,
+                                    DataClass.checkout, homeId=data.home_id)
+                                    
+            return { "msg": "Pass", "data": data }
 
         # ลูกบ้านยังไม่สแตมป์
         else:
@@ -288,7 +275,7 @@ async def replaceRequest(request):
 
     for re in replaceList:
         qrId = qrId.replace(re, '')
-    
+
     return qrId
 
 
@@ -297,80 +284,3 @@ async def updateTimeoutProject(log_id):
                 SET  datetime_out = '{datetime.now()}'
                 WHERE history_log.log_id = {log_id};'''
     await db.execute(query)
-
-
-# def calDayTime(seconds_input):
-#     conversion = timedelta(seconds=int(seconds_input))
-#     listTime = str(conversion).split(', ')
-
-#     if len(listTime) == 1:
-#         day = "0 day"
-#         sp = listTime[0].split(':')
-#         hour = f"{sp[0]}.{sp[1]}"
-#     else:
-#         day, hour = listTime
-#         sp = hour.split(':')
-#         hour = f"{sp[0]}.{sp[1]}"
-
-#     return day, hour
-
-
-# def calculateDiffTime(data):
-#     date, time = data.split('T')
-#     year, mon, day = date.split('-')
-#     time, _ = time.split('.')
-#     datetime_str = f"{int(day)-0}/{mon}/{year[2:]} {time}"
-#     diff_time = datetime.now() - datetime.strptime(datetime_str, '%d/%m/%y %H:%M:%S')
-
-#     return diff_time
-
-
-# class ConnectionManager:
-#     def __init__(self):
-#         self.active_connections: List = []
-
-#     async def connect(self, websocket: WebSocket, position: str):
-#         await websocket.accept()
-#         self.active_connections.append({
-#             "position": position,
-#             "websocket": websocket,
-#         })
-
-#     def disconnect(self, websocket: WebSocket, position: str):
-#         try:
-#             self.active_connections.remove({
-#                 "position": position,
-#                 "websocket": websocket,
-#             })
-#         except:
-#             pass
-
-#     async def send_personal_message(self, message: str, websocket: WebSocket):
-#         await websocket.send_text(message)
-
-#     async def broadcast(self, message: str, websocket: WebSocket):
-#         for dict in self.active_connections:
-#             if dict['position'] == "IN" and dict['websocket'] is not websocket:
-#                 await dict['websocket'].send_text(message)
-#             elif dict['position'] == "OUT" and dict['websocket'] is not websocket:
-#                 await dict['websocket'].send_text(message)
-
-
-# manager = ConnectionManager()
-
-
-# @qr_api.websocket("/ws/{key}/{position}")
-# async def websocket_endpoint(websocket: WebSocket, key: str, position: str):
-#     if key == 'ogjvmodvmmaevjdvEVdsVOAERBMSDV0SFKD':
-#         await manager.connect(websocket, position)
-#         try:
-#             while True:
-#                 data = await websocket.receive_text()
-#                 # await manager.send_personal_message(f"You wrote: {data}", websocket)
-
-#                 await manager.broadcast(data, websocket)
-#         except WebSocketDisconnect:
-#             manager.disconnect(websocket, position)
-#             # await manager.broadcast(f"Client #{client_id} left the chat")
-#     else:
-#         await websocket.close()

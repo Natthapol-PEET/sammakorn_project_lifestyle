@@ -1,8 +1,18 @@
+from email import encoders
+from email.message import EmailMessage
+from email.mime.base import MIMEBase
 from smtplib import SMTP, SMTPException, SMTP_SSL
 import ssl
 import random
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
+import codecs
+
+from fastapi import HTTPException
+
+from configs import config
+
 
 # dotenv
 from dotenv import dotenv_values
@@ -11,183 +21,158 @@ from dotenv import dotenv_values
 creddentials = dotenv_values(".env")
 
 
-def get_random_string(length):
-    # # choose from all lowercase letter
-    # letters = string.ascii_lowercase
-    # result_str = ''.join(random.choice(letters) for i in range(length))
-    # print("Random string of length", length, "is:", result_str)
-    # return result_str
-
-    with open('utils/words.txt','r') as f:
-        words = f.readlines()
-        new_words = []
-        
-        for word in words:
-            new_words.append(word.replace('\n', ''))
-        f.close()
-
-    n = random.randint(0, 999)
-    return new_words[n]
-
 MAIL_USERNAME = creddentials['EMAIL']
 MAIL_PASSWORD = creddentials['PASSWORD']
 MAIL_FROM = creddentials['EMAIL']
 
 to_addrs = "natthapol.n@ku.th"
 
-# print(f"MAIL_USERNAME: {MAIL_USERNAME}")
-# print(f"MAIL_PASSWORD: {MAIL_PASSWORD}")
-# print(f"MAIL_FROM: {MAIL_FROM}")
-
-# message = """From: From Person <from@fromdomain.com>
-# To: To Person <to@todomain.com>
-# MIME-Version: 1.0
-# Content-type: text/html
-# Subject: SMTP HTML e-mail test
-
-# This is an e-mail message to be sent in HTML format
-
-# <b>This is HTML message.</b>
-# <h1>This is headline.</h1>
-# """
-
 message = MIMEMultipart("alternative")
 message["From"] = MAIL_FROM
 
 
-def resetPasswordAndSendmail(to_addrs, new_password):
-    global message
-    message["Subject"] = "Reset password"
-    message["To"] = to_addrs
-
-    text = ""
-    html = """\
-<html>
-<body>
-    <p>สวัสดีครับ นี่คือรหัสผ่านใหม่ของคุณ</p>
-    <p>"""+new_password+"""</p>
-</body>
-</html>
-"""
-
-    # Turn these into plain/html MIMEText objects
-    part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
-
-    # Add HTML/plain-text parts to MIMEMultipart message
-    # The email client will try to render the last part first
-    message.attach(part1)
-    message.attach(part2)
-
-    context = ssl.create_default_context()
-    with SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(MAIL_USERNAME, MAIL_PASSWORD)
-        server.sendmail(
-            MAIL_USERNAME, to_addrs, message.as_string()
-        )
-
-    # try:
-    #     server = SMTP("smtp.gmail.com", 587)
-    #     server.starttls()
-    #     server.login(MAIL_USERNAME, MAIL_PASSWORD)
-    #     server.sendmail(MAIL_FROM, to_addrs, message)
-    #     server.quit()
-    #     print("Successfully sent email")
-    # except SMTPException:
-    #     print("Error: unable to send email")
+def readHtml(file: str):
+    f = codecs.open(f"templates/{file}", 'r', 'utf-8')
+    return f.read()
 
 
+def registerAdminGuard(item, role):
+    msg = EmailMessage()
+    msg['Subject'] = f'Register {"Admin" if role == "admin" else "Guard"}'
+    msg['From'] = MAIL_FROM
+    msg['To'] = item.email
+
+    html = readHtml("register_admin_guard.html")
+
+    html = html.replace('this-full-name', f'{item.firstname} {item.lastname}')
+    html = html.replace('this-role', "นิติบุคคล" if role == "admin" else "พนักงานรักษาความปลอดภัย")
+
+    msg.set_content(html, subtype='html')
+
+    try:
+        context = ssl.create_default_context()
+        with SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+            smtp.login(MAIL_USERNAME, MAIL_PASSWORD)
+            smtp.send_message(msg)
+
+        return {"detail": "send email successful"}
+    except:
+        raise HTTPException(
+                status_code=403, detail="ไม่สามารถส่ง email ได้ในขณะนี้")
+
+
+def resetPasswordAndSendmail(item, key):
+    msg = EmailMessage()
+    msg['Subject'] = 'Forgot password'
+    msg['From'] = MAIL_FROM
+    msg['To'] = item.email
+
+    html = readHtml("forget_password.html")
+
+    html = html.replace('this-full-name', f'{item.firstname} {item.lastname}')
+    html = html.replace('this-id-card', item.id_card)
+    html = html.replace('this-home-number', f'{item.home_name} {item.home_number}')
+    html = html.replace('this-license-plate', item.license_plate)
+    html = html.replace('this-link', f"{config.forgotUrl}/?key={key}")
+
+    msg.set_content(html, subtype='html')
+
+    try:
+        context = ssl.create_default_context()
+        with SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+            smtp.login(MAIL_USERNAME, MAIL_PASSWORD)
+            smtp.send_message(msg)
+
+        return {"detail": "send email successful"}
+    except:
+        raise HTTPException(
+                status_code=403, detail="ไม่สามารถส่ง email ได้ในขณะนี้")
 
 
 
-def sendMailToWhitelist(to_addrs, qrCodeId, firstname, topic: str = "Register Whitelist"):
-    global message
-    message["Subject"] = topic
-    message["To"] = to_addrs
 
-    text = ""
-    html = """\
-<html>
-<head>
-    <!-- Include Bootstrap for styling -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
-    <style>
-        .qr-code {
-            max-width: 200px;
-            margin: 10px;
-        }
-    </style>
-</head>
-<body>
-    <p>สวัสดี คุณ """+firstname+"""</p>
-    <p>นี่คือ QR-Code สำหรับเข้าโครงการ</p>
-    <img src="https://chart.googleapis.com/chart?cht=qr&chl=""" +qrCodeId+ """&chs=160x160&chld=L|0"
-        class="qr-code img-thumbnail img-responsive" />
-</body>
-</html>
-"""
+def register_resident(item, listHome):
+    msg = EmailMessage()
+    msg['Subject'] = 'Register Resident'
+    msg['From'] = MAIL_FROM
+    msg['To'] = item.email
 
-    # Turn these into plain/html MIMEText objects
-    part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
+    html = readHtml("register_resident.html")
 
-    # Add HTML/plain-text parts to MIMEMultipart message
-    # The email client will try to render the last part first
-    message.attach(part1)
-    message.attach(part2)
+    html = html.replace('this-full-name', f'{item.firstname} {item.lastname}')
+    html = html.replace('this-id-card', item.id_card)
 
-    context = ssl.create_default_context()
-    with SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(MAIL_USERNAME, MAIL_PASSWORD)
-        server.sendmail(
-            MAIL_USERNAME, to_addrs, message.as_string()
-        )
+    home = ', '.join(map(str, listHome))
+    html = html.replace('this-home-number', home)
 
-#     message = f"""From: From Person <{MAIL_USERNAME}>
-# To: To Person <{to_addrs}>
-# Subject: 
+    license = ', '.join(map(str, item.license_plate))
+    html = html.replace('this-license-plate', license)
 
-# <h1>This is headline.</h1>
-# """
+    msg.set_content(html, subtype='html')
 
-    # server = SMTP("smtp.gmail.com", 587)
-    # server.starttls()
-    # server.login(MAIL_USERNAME, MAIL_PASSWORD)
-    # server.sendmail(MAIL_FROM, to_addrs, message)
-    # server.quit()
+    try:
+        context = ssl.create_default_context()
+        with SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+            smtp.login(MAIL_USERNAME, MAIL_PASSWORD)
+            smtp.send_message(msg)
+
+        return {"detail": "send email successful"}
+    except:
+        raise HTTPException(
+                status_code=403, detail="ไม่สามารถส่ง email ได้ในขณะนี้")
 
 
-def sendMailRecoveryPassword(to_addrs: str, key: str, firstname: str, url: str, topic: str = "Recovery password"):
-    global message
-    message["Subject"] = topic
-    message["To"] = to_addrs
+def sendMailToWhitelist(item, home, qrGenId, createDatetime):
+    msg = EmailMessage()
+    msg['Subject'] = 'Register Whitelist'
+    msg['From'] = MAIL_FROM
+    msg['To'] = item.email
 
-    text = ""
-    html = f"""\
-<html>
-<head>
-</head>
-<body>
-    <p>สวัสดี คุณ {firstname}</p>
-    <p>คลิกที่ link เพื่อตั้งค่ารหัสผ่านใหม่</p>
-    <a href="{url}?key={key}">{url}?key={key}</a>
-</body>
-</html>
-"""
+    html = readHtml("register_whitelist.html")
 
-    # Turn these into plain/html MIMEText objects
-    part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
+    html = html.replace('this-full-name', f'{item.firstname} {item.lastname}')
+    html = html.replace('this-id-card', item.id_card)
+    html = html.replace('this-home-number', f"{home.name} {home.home_number}")
+    html = html.replace('this-license-plate', item.license_plate)
+    html = html.replace('this-qr-code', qrGenId)
+    html = html.replace('this-create-date-time', createDatetime)
 
-    # Add HTML/plain-text parts to MIMEMultipart message
-    # The email client will try to render the last part first
-    message.attach(part1)
-    message.attach(part2)
+    msg.set_content(html, subtype='html')
 
-    context = ssl.create_default_context()
-    with SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(MAIL_USERNAME, MAIL_PASSWORD)
-        server.sendmail(
-            MAIL_USERNAME, to_addrs, message.as_string()
-        )
+    try:
+        context = ssl.create_default_context()
+        with SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+            smtp.login(MAIL_USERNAME, MAIL_PASSWORD)
+            smtp.send_message(msg)
+
+        return {"detail": "send email successful"}
+    except:
+        raise HTTPException(
+                status_code=403, detail="ไม่สามารถส่ง email ได้ในขณะนี้")
+
+
+
+def sendMailRecoveryPassword(item, key: str, role: str):
+    msg = EmailMessage()
+    msg['Subject'] = 'Forgot password'
+    msg['From'] = MAIL_FROM
+    msg['To'] = item.email
+
+    html = readHtml("forget_password.html")
+
+    html = html.replace('this-full-name', f'{item.firstname} {item.lastname}')
+    html = html.replace('this-id-card', item.id_card)
+    html = html.replace('this-link', f"{config.forgotUrl}/?role={role}&key={key}")
+
+    msg.set_content(html, subtype='html')
+
+    try:
+        context = ssl.create_default_context()
+        with SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+            smtp.login(MAIL_USERNAME, MAIL_PASSWORD)
+            smtp.send_message(msg)
+
+        return {"detail": "send email successful"}
+    except:
+        raise HTTPException(
+                status_code=403, detail="ไม่สามารถส่ง email ได้ในขณะนี้")

@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-# ------------------------------------- Authentication  ---------------------------
-
 
 class RegisterDetails(BaseModel):
     firstname: str
@@ -35,29 +33,13 @@ class LoginResident(BaseModel):
 
 class distTest(BaseModel):
     Class: str
-    home_id: str
+    home_id: int
 
 
 class NotificationItem(BaseModel):
     title: str
     body: str
     data: Optional[distTest]
-
-# ------------------------------------- End Authentication  ---------------------------
-
-# class NoteIn(BaseModel):
-#     text: str
-#     completed: bool
-
-
-# class Note(BaseModel):
-#     id: int
-#     text: str
-#     completed: bool
-
-# ------------------------------------- Application ---------------------------
-# insert visitor
-
 
 class VisitorIN(BaseModel):
     Class: str
@@ -92,110 +74,22 @@ class BlacklistIN(BaseModel):
     license_plate: str
     id_card: str
 
-
-class listItem_whitelist_blacklist(BaseModel):
-    home_id: str
-    resident_id: str  # class_id
-
-
-class deleteBlackWhite(BaseModel):
-    type: str
-    index: str
-
-
 class HomeId(BaseModel):
-    home_id: str
+    home_id: int
 
 
 class VisitorId(BaseModel):
-    visitor_id: str
+    visitor_id: int
+    home_id: int
 
 
 class HistoryLog(BaseModel):
-    log_id: str
-
-
-class SendToAdmin(BaseModel):
-    log_id: str
-    reason: str
-
-
-class AdminDelete(BaseModel):
-    type: str
-    id: str
-    reason: str
+    log_id: int
+    home_id: int
 
 
 class ResidentId(BaseModel):
     resident_id: str
-
-
-class CancelRequest(BaseModel):
-    type: str
-    id: str
-
-
-class DeleteWhiteBlackWhite(BaseModel):
-    type: str
-    id: str
-    reason: str
-
-
-# class VisitorOUT(BaseModel):
-#     visitor_id: int
-#     firstname: str
-#     lastname: str
-#     home_number: str
-#     license_plate: str
-#     date: date
-#     start_time: time
-#     end_time: time
-#     timestamp: datetime
-
-
-# insert blacklist
-# class Blacklist(BaseModel):
-#     firstname: str
-#     lastname: str
-#     home_number: str
-#     license_plate: str
-
-
-# class CreateResponse(BaseModel):
-#     id: int
-#     msg: str
-
-# ------------------------------------- End Application ---------------------------
-
-# -------------------------------- Website ------------------------
-# update whitelist
-
-
-# class UpdateVisitor(BaseModel):
-#     timestamp: datetime
-
-
-# class UpdateVisitorResponse(BaseModel):
-#     id: int
-#     timestamp: datetime
-
-
-# # insert whitelist_log
-# class WhitelistLog(BaseModel):
-#     firstname: str
-#     lastname: str
-#     home_number: str
-#     license_plate: str
-#     timestamp: datetime
-
-class ResidentHomeIn(BaseModel):
-    resident_id: int
-    home_id: int
-
-
-class HomeIn(BaseModel):
-    home_name: str
-    home_number: str
 
 
 class startDateendDate(BaseModel):
@@ -205,82 +99,59 @@ class startDateendDate(BaseModel):
 
 class GuardhouseCheckin(BaseModel):
     classname: str
-    class_id: int
+    class_id: str
+    home_id: str
     datetime_in: str
+    firstname: str
+    lastname: str
+    license_plate: str
+    qr_gen_id: str
 
 
 class GuardhouseCheckout(BaseModel):
     datetime_out: str
     log_id: int
+    home_id: int
+    firstname: str
+    lastname: str
+    license_plate: str
+    qr_gen_id: str
 
 
 class GuardhouseAddvisitor(BaseModel):
     id_number: str                  # id card
     firstname: str
     lastname: str
+    home_id: str
     home_number: str                # check home_id
     username: str = "guard"         # add_by -> class guard
     datetime_in: str
     license_plate: str
     email: str
-
-
-class Adminstamp(BaseModel):
-    admin_approve: bool
-    log_id: int
-    admin_reason: str
-    admin_datetime: str
-
-
-class ApproveBlacklist(BaseModel):
-    admin_approve: bool
-    blacklist_id: int
-    admin_reason: str
-    admin_datetime: str
-
-
-class ApproveWhitelist(BaseModel):
-    admin_approve: bool
-    whitelist_id: int
-    admin_reason: str
-    admin_datetime: str
+    qr_gen_id: str
 
 
 class DeleteWhitelist(BaseModel):
     whitelist_id: int
+    firstname: str
+    lastname: str
+    home_id: int
 
 
 class DeleteBlacklist(BaseModel):
     blacklist_id: int
-
-
-class DeclineDeleteWhitelist(BaseModel):
-    admin_decline_reason: str
-    admin_decline_datetime: str
-    whitelist_id: int
-
-
-class DeclineDeleteBlacklist(BaseModel):
-    admin_decline_reason: str
-    admin_decline_datetime: str
-    blacklist_id: int
-
-class GetIDResident(BaseModel):
     firstname: str
     lastname: str
-    username: str
-
-# -------------------------------- End Website ------------------------
-
-class ResidentHomeIn(BaseModel):
-    resident_id: int
     home_id: int
 
 
-class HomeIn(BaseModel):
-    home_name: str
-    home_number: str
 
+
+
+
+
+
+# -------------------------------- End Website ------------------------
 
 class QRCode(BaseModel):
     qrGenId: str
@@ -305,14 +176,6 @@ class CropImageResponse(BaseModel):
     cropImageBase64: str
     classCardImage: str
 
-class PayloadFromPi(BaseModel):
-    topic: str
-    payload: str
-
-
-class GetHomeId(BaseModel):
-    home_name: str
-    home_number: str
 
 class UpdateHome(BaseModel):
     resident_id: int
@@ -327,3 +190,15 @@ class ChangePassword(BaseModel):
 
 class EmailModel(BaseModel):
     email: str
+
+
+class AdminStamp(BaseModel):
+    admin_id: int
+    home_id: int
+    log_id: int
+    firstname: str
+    lastname: str
+    license_plate: str
+    qr_gen_id: str
+
+    
