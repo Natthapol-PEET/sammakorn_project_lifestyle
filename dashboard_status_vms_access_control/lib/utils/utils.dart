@@ -3,15 +3,17 @@
     - QR Reader module
  */
 
+import 'dart:ffi';
+
 import 'package:flutter/services.dart';
 
 class Utils {
   List qrIdList = [];
-  String qrId;
+  String? qrId;
 
   DateTime start = DateTime.now();
   DateTime end = DateTime.now();
-  double timeDiff;
+  double? timeDiff;
 
   String manageKey(event) {
     // if (key == '#') {
@@ -53,7 +55,7 @@ class Utils {
     // print("end: " + end.millisecond.toString());
     // print("start: " + start.millisecond.toString());
 
-    if (event.physicalKey == PhysicalKeyboardKey.enter && timeDiff > 1.8) {
+    if (event.physicalKey == PhysicalKeyboardKey.enter && timeDiff! > 1.8) {
       qrId = listToString(qrIdList);
 
       // clear qr list
@@ -62,7 +64,7 @@ class Utils {
       // update start time
       start = DateTime.now();
 
-      return qrId;
+      return qrId as String;
     } else {
       return "wait";
     }

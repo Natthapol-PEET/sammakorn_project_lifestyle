@@ -3,7 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class WaitContent extends StatelessWidget {
   const WaitContent({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

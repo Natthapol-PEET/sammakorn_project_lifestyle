@@ -1,16 +1,11 @@
 import 'dart:async';
-
 import 'package:dashboard_status_vms_access_control/models/data_in.dart';
 import 'package:dashboard_status_vms_access_control/models/data_screen.dart';
-import 'package:dashboard_status_vms_access_control/services/alert.dart';
 import 'package:dashboard_status_vms_access_control/services/exit_service.dart';
-import 'package:dashboard_status_vms_access_control/services/socket.dart';
 import 'package:get/get.dart';
 
 class ExitController extends GetxController {
   Exit exit = Exit();
-  Alert alert = Alert();
-  // SocketManager s = SocketManager();
 
   List qOut = [];
   String licensePlate = "";
@@ -18,8 +13,8 @@ class ExitController extends GetxController {
   // variables controller
   int status = 0;
   List listData = [];
-  String msg;
-  DataScreen data;
+  String? msg;
+  DataScreen? data;
 
   postcheckOut(String qrId) async {
     // wait
@@ -66,12 +61,6 @@ class ExitController extends GetxController {
       qOut.insert(0, dataIn);
     }
     update();
-
-    // send notification to app
-    alert.sendNotifications(dataIn, 'checkout');
-
-    // send socket realtime web app
-    // s.send_socket(dataIn.homeId, 'exit');
 
     backToWelcome();
   }

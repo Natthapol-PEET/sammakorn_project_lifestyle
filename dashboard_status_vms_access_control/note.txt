@@ -1,3 +1,12 @@
 flutter run -d web-server --web-hostname 0.0.0.0 --web-port 3000
 
 flutter run -d chrome --web-hostname 0.0.0.0 --web-port 55555
+
+
+
+## Run with null safety
+flutter run --no-sound-null-safety
+
+
+## Build apk null safety
+flutter build apk --release --no-sound-null-safety

@@ -2,7 +2,7 @@ import 'package:dashboard_status_vms_access_control/views/Components/backgroud.d
 import 'package:flutter/material.dart';
 
 class ThanksScreen extends StatelessWidget {
-  const ThanksScreen({Key key}) : super(key: key);
+  const ThanksScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,27 +18,27 @@ class ThanksScreen extends StatelessWidget {
                 children: [
                   Image.asset(
                     'assets/images/ArtaniLogoNotName.png',
-                    scale: 1,
+                    scale: 1.5,
                   ),
                   SizedBox(height: 50),
                   Text(
                     "THANK YOU FOR VISITING",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 96,
+                      fontSize: 60,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 25),
                   Text(
                     "ขอให้เดินทางโดยสวัสดิภาพ",
                     style: TextStyle(
                       fontFamily: "Prompt",
                       color: Colors.white,
-                      fontSize: 72,
+                      fontSize: 48,
                     ),
                   ),
-                  SizedBox(height: 100),
+                  SizedBox(height: 80),
                 ],
               ),
             ),

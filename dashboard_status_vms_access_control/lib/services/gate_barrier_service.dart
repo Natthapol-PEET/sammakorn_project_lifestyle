@@ -1,19 +1,15 @@
+import 'package:dashboard_status_vms_access_control/config/config.dart';
 import 'package:http/http.dart' as http;
 
-class GateBarirerService {
+gateController(String urlControl) async {
   var client = http.Client();
+  var url = Uri.parse(urlControl);
 
-  gateController(UrlControl) async {
-    var url = Uri.parse(UrlControl);
-
-    try {
-      final response = await client.get(url);
-
-      print("gateController: ${response.statusCode}");
-
-      return response.statusCode;
-    } catch (e) {
-      print(e);
-    }
+  try {
+    final response = await client.get(url, headers: headers);
+    print("gateController: ${response.statusCode}");
+    return response.statusCode;
+  } catch (e) {
+    print(e);
   }
 }

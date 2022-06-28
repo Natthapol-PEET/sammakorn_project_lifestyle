@@ -1,11 +1,10 @@
 import 'package:dashboard_status_vms_access_control/config/constant.dart';
-import 'package:dashboard_status_vms_access_control/views/Components/backgroud.dart';
 import 'package:dashboard_status_vms_access_control/views/Components/logo.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../Components/backgroud.dart';
 
-class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({Key? key}) : super(key: key);
+class NoNetworkScreen extends StatelessWidget {
+  const NoNetworkScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,24 +21,26 @@ class LoadingScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SpinKitPouringHourGlass(
-                    size: 200,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 40),
+                  Image.asset('assets/images/wrong_mark.png', scale: 0.7),
+                  SizedBox(height: 25),
                   Text(
-                    "ระบบกำลังประมวลผล",
+                    "เครือข่ายขัดข้อง",
                     style: TextStyle(
                       fontFamily: "Prompt",
                       fontSize: 60,
                       color: Colors.white,
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 550, vertical: 30),
+                    child: Divider(color: Colors.white, thickness: 5),
+                  ),
                   Text(
-                    "กรุณารอสักครู่",
+                    "*กรุณาติดต่อผู้ดูแลระบบเพื่อทำการแก้ไข",
                     style: TextStyle(
                       fontFamily: "Prompt",
-                      fontSize: 60,
+                      fontSize: 48,
                       color: Colors.white,
                     ),
                   ),

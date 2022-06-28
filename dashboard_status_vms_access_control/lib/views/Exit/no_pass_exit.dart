@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 
 // ignore: must_be_immutable
 class NoPassExitScreen extends StatelessWidget {
-  NoPassExitScreen({Key key}) : super(key: key);
+  NoPassExitScreen({Key? key}) : super(key: key);
 
   ExitModel data = Get.arguments;
 
@@ -21,25 +21,25 @@ class NoPassExitScreen extends StatelessWidget {
             Container(
               color: bgColor,
             ),
-            DisplayLogo(),
+            DisplayLogo(disableClick: true),
             Align(
               alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/images/wrong_mark.png', scale: 0.6),
-                  SizedBox(height: 50),
+                  Image.asset('assets/images/wrong_mark.png', scale: 0.7),
+                  SizedBox(height: 25),
                   Text(
                     "CAN'T LEAVE THE ARTANI",
                     style: TextStyle(
-                      fontSize: 96,
+                      fontSize: 60,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 800, vertical: 40),
+                        horizontal: 500, vertical: 30),
                     child: Divider(color: Colors.white, thickness: 5),
                   ),
                   Row(
@@ -48,15 +48,22 @@ class NoPassExitScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextDetails(text: "ชื่อ : ${data.fullname}"),
-
-                          if (data.licensePlate != '') ...[
+                          if (data.firstname != "") ...[
+                            TextDetails(
+                                text:
+                                    "สวัสดี ${data.firstname} ${data.lastname}"),
+                          ],
+                          if (data.firstname == "") ...[
+                            TextDetails(text: "รายการ ${data.qrGenId}"),
+                          ],
+                          if (data.licensePlate != "") ...[
                             TextDetails(
                                 text: "ทะเบียนรถ : ${data.licensePlate}"),
                           ],
-
                           TextDetails(text: "บ้านเลขที่ : ${data.homeNumber}"),
-                          // TextDetails(text: "ชื่อ : นัฐพล  นนทะศรี"),
+
+                          // TextDetails(text: "สวัสดี นัฐพล นนทะศรี"),
+                          // TextDetails(text: "รายการ : W123456"),
                           // TextDetails(text: "ทะเบียนรถ : 123กด"),
                           // TextDetails(text: "บ้านเลขที่ : 10/1"),
                         ],
@@ -71,7 +78,9 @@ class NoPassExitScreen extends StatelessWidget {
                           TextDetails(
                               text:
                                   "สถานะ : ${data.msg == 'resident not stamp' ? 'ยังไม่ได้รับการสแตมป์' : data.msg}"),
-                          // TextDetails(text: "วันที่เข้าโครงการ : 10 เมษายน 2541"),
+
+                          // TextDetails(
+                          //     text: "วันที่เข้าโครงการ : 10 เมษายน 2541"),
                           // TextDetails(text: "เวลาเข้าโครงการ : 10.10"),
                           // TextDetails(text: "สถานะ : No Stamp"),
                         ],

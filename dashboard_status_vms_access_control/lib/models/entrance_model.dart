@@ -7,7 +7,8 @@ class EntranceModel {
   int visitorId;
   int homeId;
   String cLass;
-  String fullname;
+  String firstname;
+  String lastname;
   String licensePlate;
   String idCard;
   String inviteDate;
@@ -23,7 +24,8 @@ class EntranceModel {
     this.visitorId,
     this.homeId,
     this.cLass,
-    this.fullname,
+    this.firstname,
+    this.lastname,
     this.licensePlate,
     this.idCard,
     this.inviteDate,
@@ -41,7 +43,8 @@ class EntranceModel {
       json['data']['visitor_id'],
       json['data']['home_id'],
       json['data']['class'],
-      json['data']['firstname'] + "  " + json['data']['lastname'],
+      json['data']['firstname'],
+      json['data']['lastname'],
       json['data']['license_plate'],
       json['data']['id_card'],
       json['data']['invite_date'],

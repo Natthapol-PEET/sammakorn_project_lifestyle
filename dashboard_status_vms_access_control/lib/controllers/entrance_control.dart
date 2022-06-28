@@ -1,14 +1,10 @@
 import 'dart:async';
 import 'package:dashboard_status_vms_access_control/models/data_screen.dart';
-import 'package:dashboard_status_vms_access_control/services/alert.dart';
 import 'package:dashboard_status_vms_access_control/services/comming_service.dart';
-import 'package:dashboard_status_vms_access_control/services/socket.dart';
 import 'package:get/get.dart';
 
 class EntranceController extends GetxController {
   Comming comming = Comming();
-  Alert alert = Alert();
-  // SocketManager s = SocketManager();
 
   List qIn = [];
   String licensePlate = "";
@@ -16,7 +12,7 @@ class EntranceController extends GetxController {
   // variables controller
   int status = 0;
   List listData = [];
-  DataScreen data;
+  DataScreen? data;
 
   postCommingIn(String qrId) async {
     // wait
@@ -53,12 +49,6 @@ class EntranceController extends GetxController {
       }
       update();
 
-      // send notification to app
-      alert.sendNotifications(dataIn, 'comming');
-
-      // send socket realtime web app
-      // s.send_socket(dataIn.homeId, 'entrance');
-
       backToWelcome();
     }
   }
@@ -70,16 +60,4 @@ class EntranceController extends GetxController {
       update();
     });
   }
-
-  // int count = 0;
-
-  // increment() {
-  //   count++;
-  //   update();
-  // }
-
-  // decrement() {
-  //   count--;
-  //   update();
-  // }
 }

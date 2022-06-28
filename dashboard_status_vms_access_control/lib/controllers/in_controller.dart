@@ -2,31 +2,22 @@ import 'dart:async';
 import 'package:dashboard_status_vms_access_control/config/config.dart';
 import 'package:dashboard_status_vms_access_control/models/data_resident_model.dart';
 import 'package:dashboard_status_vms_access_control/models/get_datetime.dart';
-import 'package:dashboard_status_vms_access_control/services/alert.dart';
 import 'package:dashboard_status_vms_access_control/services/comming_service.dart';
 import 'package:dashboard_status_vms_access_control/services/gate_barrier_service.dart';
-import 'package:dashboard_status_vms_access_control/services/htto_to_mqtt.dart';
 import 'package:dashboard_status_vms_access_control/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class InController extends GetxController {
   // time periodic
-  Timer timer;
+  Timer? timer;
 
   // API services
   Comming comming = Comming();
 
-  // Services
-  Alert alert = Alert();
-  // SocketManager s = SocketManager();
-
   // QrCode Id
   Utils util = Utils();
   // String licensePlate = "";
-
-  // Gate Barrirer Controller
-  GateBarirerService gateService = GateBarirerService();
 
   // date time variable
   var hour = "".obs,
@@ -37,34 +28,17 @@ class InController extends GetxController {
       mon = "".obs,
       year = "".obs;
 
-  // MQTT Class
-  // var client = MqttServerClient(mqttBroker, '');
-  // MqttManager mqttManager = MqttManager();
-  HttpToMqtt httpToMqtt = HttpToMqtt();
-
   @override
   void onInit() {
-    // init relay
-    // initRelay(pinIn);
-
     getTime();
 
     timer = Timer.periodic(Duration(seconds: 60), (t) {
       // update time in screen
       getTime();
-
-      // Test Function Call API
-      // httpToMqtt.postMqttToServer("pi-to-web", "COMING_WALK_IN");
     });
 
-    // Future.delayed(const Duration(seconds: 3), () {
-    //   // Test Function Call API
-    //   postCommingIn("V84857175752071423783");
-    // });
-
-    // Future.delayed(const Duration(seconds: 3), () {
-    //   // Test Function Call API
-    //   httpToMqtt.postMqttToServer("pi-to-web", "COMING_WALK_IN");
+    // Timer(Duration(seconds: 5), () {
+    //   postCommingIn("V43084150432676517985");
     // });
 
     super.onInit();
@@ -79,36 +53,20 @@ class InController extends GetxController {
     if (dataIn == "data not found") {
       Get.offNamed('/nopass');
       backToHome();
+    } else if (dataIn == "no network") {
+      Get.offNamed('/no_network');
+      backToHome();
     } else if (dataIn is ResidentModel) {
-      gateService.gateController(gateBarrierOpenUrl);
-      Future.delayed(Duration(seconds: 8),
-          () => gateService.gateController(gateBarrierCloseUrl));
+      gateController(gateBarrierOpenUrl);
+      Future.delayed(
+          Duration(seconds: 8), () => gateController(gateBarrierCloseUrl));
 
       Get.offNamed('/pass', arguments: dataIn);
       backToHome();
     } else {
-      // send pin to relay process
-      // manageRelay(pinIn);
-      // httpToMqtt.postMqttToServer("/mqtt_relay_control", "1");
-      gateService.gateController(gateBarrierOpenUrl);
-      Future.delayed(Duration(seconds: 8),
-          () => gateService.gateController(gateBarrierCloseUrl));
-
-      // Future.delayed(const Duration(seconds: 2), () {
-      // Test Function Call API
-      //   httpToMqtt.postMqttToServer("/mqtt_relay_control", "2");
-      // });
-
-      // send notification to app
-      alert.sendNotifications(dataIn, 'comming');
-
-      // send socket realtime web app
-      // s.send_socket(dataIn.homeId, 'entrance');
-      httpToMqtt.postMqttToServer(
-          "pi-to-app/${dataIn.homeId}", "COMING_WALK_IN");
-      httpToMqtt.postMqttToServer(
-          "pi-to-app/${dataIn.homeId}", "ALERT_MESSAGE");
-      httpToMqtt.postMqttToServer("pi-to-web", "COMING_WALK_IN");
+      gateController(gateBarrierOpenUrl);
+      Future.delayed(
+          Duration(seconds: 8), () => gateController(gateBarrierCloseUrl));
 
       Get.offNamed('/pass', arguments: dataIn);
       backToHome();
@@ -172,7 +130,7 @@ class InController extends GetxController {
   @override
   void onClose() {
     // called just before the Controller is deleted from memory
-    timer.cancel();
+    timer!.cancel();
 
     super.onClose();
   }

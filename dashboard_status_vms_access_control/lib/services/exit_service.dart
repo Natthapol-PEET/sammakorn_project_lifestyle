@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class Exit {
   Utils util = Utils();
   var client = http.Client();
-  var url = Uri.parse(HTTP_URL + 'qr_api/checkout/');
+  var url = Uri.parse(server + 'qr_api/checkout/');
 
   checkOut(String qrId) async {
     // String qrGenId = util.removeSymbol(qrId);
@@ -37,6 +37,7 @@ class Exit {
       }
     } catch (e) {
       print(e);
+      return "no_network";
     }
   }
 }

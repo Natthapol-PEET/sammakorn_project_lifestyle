@@ -6,7 +6,7 @@ import '../Components/backgroud.dart';
 
 // ignore: must_be_immutable
 class NoPassDesc extends StatelessWidget {
-  NoPassDesc({Key key}) : super(key: key);
+  NoPassDesc({Key? key}) : super(key: key);
 
   String msg = Get.arguments;
 
@@ -19,25 +19,25 @@ class NoPassDesc extends StatelessWidget {
             Container(
               color: bgColor,
             ),
-            DisplayLogo(),
+            DisplayLogo(disableClick: true),
             Align(
               alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/images/wrong_mark.png', scale: 0.6),
-                  SizedBox(height: 60),
+                  Image.asset('assets/images/wrong_mark.png', scale: 0.7),
+                  SizedBox(height: 35),
                   Text(
                     "คุณไม่มีสิทธิออกจากโครงการ",
                     style: TextStyle(
                       fontFamily: "Prompt",
-                      fontSize: 72,
+                      fontSize: 60,
                       color: Colors.white,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 800, vertical: 30),
+                        horizontal: 550, vertical: 30),
                     child: Divider(color: Colors.white, thickness: 5),
                   ),
                   Text(
@@ -45,7 +45,7 @@ class NoPassDesc extends StatelessWidget {
                     msg == 'resident not stamp' ? 'ยังไม่ได้รับการสแตมป์' : msg,
                     style: TextStyle(
                       fontFamily: "Prompt",
-                      fontSize: 72,
+                      fontSize: 48,
                       color: Colors.white,
                     ),
                   ),

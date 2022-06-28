@@ -3,17 +3,15 @@ import 'package:dashboard_status_vms_access_control/config/config.dart';
 import 'package:dashboard_status_vms_access_control/models/exit_model.dart';
 import 'package:dashboard_status_vms_access_control/models/get_datetime.dart';
 import 'package:dashboard_status_vms_access_control/models/resident_model_checkout.dart';
-import 'package:dashboard_status_vms_access_control/services/alert.dart';
 import 'package:dashboard_status_vms_access_control/services/exit_service.dart';
 import 'package:dashboard_status_vms_access_control/services/gate_barrier_service.dart';
-import 'package:dashboard_status_vms_access_control/services/htto_to_mqtt.dart';
 import 'package:dashboard_status_vms_access_control/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class OutController extends GetxController {
   // time periodic
-  Timer timer;
+  Timer? timer;
 
   // API Services
   Exit exit = Exit();
@@ -23,15 +21,6 @@ class OutController extends GetxController {
 
   // QR Code Manage
   Utils util = Utils();
-
-  Alert alert = Alert();
-
-  // MQTT Class
-  // var client = MqttServerClient(mqttBroker, '');
-  // MqttManager mqttManager = MqttManager();
-  HttpToMqtt httpToMqtt = HttpToMqtt();
-
-  GateBarirerService gateService = GateBarirerService();
 
   // date time variable
   var hour = "".obs,
@@ -53,9 +42,8 @@ class OutController extends GetxController {
       getTime();
     });
 
-    // Future.delayed(const Duration(seconds: 3), () {
-    //   // Test Function Call API
-    //   postCheckout("V15837647610171605280");
+    // Timer(Duration(seconds: 5), () {
+    //   postcheckOut("V38031894695390287967");
     // });
 
     super.onInit();
@@ -67,11 +55,17 @@ class OutController extends GetxController {
     // post to server
     var data = await exit.checkOut(qrId);
 
+    if (data == "no_network") {
+      Get.offNamed('/no_network');
+      leaveBackToHomeAndThx();
+      return;
+    }
+
     if (data is ResidentModelCheckout) {
       Get.offNamed('/pass_card', arguments: data);
-      gateService.gateController(gateBarrierOpenUrl);
+      gateController(gateBarrierOpenUrl);
       Future.delayed(Duration(seconds: 8),
-          () => gateService.gateController(gateBarrierCloseUrl));
+          () => gateController(gateBarrierCloseUrl));
 
       leaveBackToHomeAndThx();
     } else if (data is String) {
@@ -86,26 +80,11 @@ class OutController extends GetxController {
         Get.offNamed('/nopass_exit', arguments: data);
         leaveBackToHome();
       } else if (data.msg == "Pass") {
-        // send pin to relay process
-        // manageRelay(pinOut);
-        gateService.gateController(gateBarrierOpenUrl);
+        gateController(gateBarrierOpenUrl);
         Future.delayed(Duration(seconds: 8),
-            () => gateService.gateController(gateBarrierCloseUrl));
-        // httpToMqtt.postMqttToServer("/mqtt_relay_control", "1");
-        // Future.delayed(const Duration(seconds: 2), () {
-        //   // Test Function Call API
-        //   httpToMqtt.postMqttToServer("/mqtt_relay_control", "2");
-        // });
-        // send notification to app
-        alert.sendNotifications(data, 'checkout');
+            () => gateController(gateBarrierCloseUrl));
 
         Get.offNamed('/leave', arguments: data);
-
-        // send socket realtime web app
-        // s.send_socket(data.homeId, 'exit');
-
-        httpToMqtt.postMqttToServer("pi-to-app/${data.homeId}", "CHECKOUT");
-        httpToMqtt.postMqttToServer("pi-to-web", "CHECKOUT");
 
         leaveBackToHomeAndThx();
       }
@@ -175,7 +154,7 @@ class OutController extends GetxController {
   @override
   void onClose() {
     // called just before the Controller is deleted from memory
-    timer.cancel();
+    timer!.cancel();
     super.onClose();
   }
 }

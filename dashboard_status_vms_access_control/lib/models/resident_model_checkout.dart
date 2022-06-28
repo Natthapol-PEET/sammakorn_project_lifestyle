@@ -2,7 +2,8 @@
 
 class ResidentModelCheckout {
   int residentId;
-  String fullname;
+  String firstname;
+  String lastname;
   String username;
   int homeId;
   String cardInfo;
@@ -12,7 +13,8 @@ class ResidentModelCheckout {
 
   ResidentModelCheckout(
     this.residentId,
-    this.fullname,
+    this.firstname,
+    this.lastname,
     this.username,
     this.homeId,
     this.cardInfo,
@@ -22,10 +24,10 @@ class ResidentModelCheckout {
 
   factory ResidentModelCheckout.fromJson(dynamic json) {
     json = json['data'];
-    String fullname = json['firstname'] + ' ' + json['lastname'];
     return ResidentModelCheckout(
       json['resident_id'],
-      fullname,
+      json['firstname'],
+      json['lastname'],
       json['username'],
       json['home_id'],
       json['card_info'],

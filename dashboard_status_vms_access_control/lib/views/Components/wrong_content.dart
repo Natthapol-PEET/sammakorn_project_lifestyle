@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class WorngContent extends StatelessWidget {
   const WorngContent({
-    Key key,
-    @required this.text,
+    Key? key,
+    required this.text,
   }) : super(key: key);
 
   final String text;

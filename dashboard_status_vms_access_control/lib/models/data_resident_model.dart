@@ -7,7 +7,8 @@ class ResidentModel {
   int visitorId;
   int homeId;
   String cLass;
-  String fullname;
+  String firstname;
+  String lastname;
   String licensePlate;
   String qrGenId;
   String homeName;
@@ -20,7 +21,8 @@ class ResidentModel {
     this.visitorId,
     this.homeId,
     this.cLass,
-    this.fullname,
+    this.firstname,
+    this.lastname,
     this.licensePlate,
     this.qrGenId,
     this.homeName,
@@ -35,7 +37,8 @@ class ResidentModel {
       json['data']['resident_id'],
       json['data']['home_id'],
       'resident', // json['data']['class'],
-      json['data']['firstname'] + "  " + json['data']['lastname'],
+      json['data']['firstname'],
+      json['data']['lastname'],
       '', // json['data']['license_plate'],
       json['data']['card_info'],
       json['data']['home_name'],

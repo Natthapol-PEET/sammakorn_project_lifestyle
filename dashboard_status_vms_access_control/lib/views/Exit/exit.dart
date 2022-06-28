@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ExitPage extends StatefulWidget {
-  const ExitPage({Key key}) : super(key: key);
+  const ExitPage({Key? key}) : super(key: key);
 
   @override
   _ExitPageState createState() => _ExitPageState();
@@ -23,7 +23,7 @@ class _ExitPageState extends State<ExitPage> {
 
   Utils util = Utils();
 
-  String qrId;
+  String? qrId;
 
   // defind getx controller
   ExitController _controller = Get.put(ExitController());
@@ -101,7 +101,7 @@ class _ExitPageState extends State<ExitPage> {
           print(qrId);
 
           // controller
-          _controller.postcheckOut(qrId);
+          _controller.postcheckOut(qrId as String);
         }
       },
       focusNode: FocusNode(),
@@ -138,7 +138,7 @@ class _ExitPageState extends State<ExitPage> {
               if (controller.status == 2) ...[
                 Content(
                   boxSize: size.height * 0.5,
-                  child: WorngContent(text: controller.msg),
+                  child: WorngContent(text: controller.msg as String),
                 ),
               ],
 

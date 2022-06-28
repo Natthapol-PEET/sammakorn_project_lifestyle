@@ -8,7 +8,8 @@ class ExitModel {
   int homeId;
   String cLass;
   int classId;
-  String fullname;
+  String firstname;
+  String lastname;
   String licensePlate;
   String idCord;
   String inviteDate;
@@ -34,7 +35,11 @@ class ExitModel {
     int mon = int.parse(formattedDate.split("-")[1]);
     int day = int.parse(formattedDate.split("-")[2]);
 
-    return day.toString() + " " + mapMonEndToMonThai(mon) + " " + (year+543).toString();
+    return day.toString() +
+        " " +
+        mapMonEndToMonThai(mon) +
+        " " +
+        (year + 543).toString();
   }
 
   mapMonEndToMonThai(int m) {
@@ -75,7 +80,8 @@ class ExitModel {
     this.homeId,
     this.cLass,
     this.classId,
-    this.fullname,
+    this.firstname,
+    this.lastname,
     this.licensePlate,
     this.idCord,
     this.inviteDate,
@@ -96,7 +102,8 @@ class ExitModel {
       json['data']['home_id'],
       json['data']['class'],
       json['data']['class_id'],
-      json['data']['firstname'] + "  " + json['data']['lastname'],
+      json['data']['firstname'],
+      json['data']['lastname'],
       json['data']['license_plate'],
       json['data']['id_card'],
       json['data']['invite_date'],

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../Components/backgroud.dart';
 
 class NoPassScreen extends StatelessWidget {
-  const NoPassScreen({Key key}) : super(key: key);
+  const NoPassScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,32 +15,32 @@ class NoPassScreen extends StatelessWidget {
             Container(
               color: bgColor,
             ),
-            DisplayLogo(),
+            DisplayLogo(disableClick: true),
             Align(
               alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/images/wrong_mark.png', scale: 0.6),
-                  SizedBox(height: 50),
+                  Image.asset('assets/images/wrong_mark.png', scale: 0.7),
+                  SizedBox(height: 25),
                   Text(
                     "คุณไม่มีสิทธิเข้าโครงการ",
                     style: TextStyle(
                       fontFamily: "Prompt",
-                      fontSize: 96,
+                      fontSize: 60,
                       color: Colors.white,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 800, vertical: 40),
+                        horizontal: 550, vertical: 30),
                     child: Divider(color: Colors.white, thickness: 5),
                   ),
                   Text(
                     "*กรุณาให้ลูกบ้านลงทะเบียนเพื่อเข้าโครงการ",
                     style: TextStyle(
                       fontFamily: "Prompt",
-                      fontSize: 72,
+                      fontSize: 48,
                       color: Colors.white,
                     ),
                   ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class TextDetails extends StatelessWidget {
   const TextDetails({
-    Key key,
-    @required this.text,
+    Key? key,
+    required this.text,
   }) : super(key: key);
 
   final String text;
@@ -16,7 +16,7 @@ class TextDetails extends StatelessWidget {
         text,
         style: TextStyle(
           fontFamily: "Prompt",
-          fontSize: 60,
+          fontSize: 36,
           color: Colors.white,
         ),
       ),

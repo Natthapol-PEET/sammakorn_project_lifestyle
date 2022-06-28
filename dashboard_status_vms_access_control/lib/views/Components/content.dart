@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class Content extends StatelessWidget {
   const Content({
-    Key key,
-    @required this.child,
-    @required this.boxSize,
+    Key? key,
+    required this.child,
+    required this.boxSize,
   }) : super(key: key);
 
   final Widget child;

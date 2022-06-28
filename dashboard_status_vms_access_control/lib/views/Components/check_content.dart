@@ -2,13 +2,12 @@
 
 import 'package:dashboard_status_vms_access_control/config/constant.dart';
 import 'package:dashboard_status_vms_access_control/models/data_screen.dart';
-import 'package:dashboard_status_vms_access_control/views/Components/text_details.dart';
 import 'package:flutter/material.dart';
 
 class CheckContent extends StatelessWidget {
   const CheckContent({
-    Key key,
-    @required this.data,
+    Key? key,
+    required this.data,
   }) : super(key: key);
 
   final DataScreen data;

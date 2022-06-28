@@ -1,8 +1,3 @@
-/*
-  Checkin Service
-    - Service Module
-*/
-
 import 'dart:convert';
 import 'package:dashboard_status_vms_access_control/config/config.dart';
 import 'package:dashboard_status_vms_access_control/models/data_resident_model.dart';
@@ -13,11 +8,10 @@ import 'package:http/http.dart' as http;
 class Comming {
   Utils util = Utils();
   var client = http.Client();
-  var url = Uri.parse(HTTP_URL + 'qr_api/coming/');
+  var url = Uri.parse(server + 'qr_api/coming/');
 
-  checkIn(String qrId) async {
-    // String qrGenId = util.removeSymbol(qrId);
-    String qrGenId = qrId;
+  checkIn(String qrGenId) async {
+    // String qrGenId = util.removeSymbol(qrGenId);
 
     try {
       final response = await client.post(
@@ -31,16 +25,14 @@ class Comming {
         String body = utf8.decode(response.bodyBytes);
         var dataJson = json.decode(body);
 
-        print(dataJson['isInvite']);
+        print(dataJson);
 
         if (dataJson['isInvite']) {
           // success
           if (dataJson['CLASS'] == 'visitor') {
-            EntranceModel data = EntranceModel.fromJson(dataJson);
-            return data;
+            return EntranceModel.fromJson(dataJson);
           } else {
-            ResidentModel data = ResidentModel.fromJson(dataJson);
-            return data;
+            return ResidentModel.fromJson(dataJson);
           }
         } else {
           // data not found
@@ -49,6 +41,7 @@ class Comming {
       }
     } catch (e) {
       print(e);
+      return "no network";
     }
   }
 }

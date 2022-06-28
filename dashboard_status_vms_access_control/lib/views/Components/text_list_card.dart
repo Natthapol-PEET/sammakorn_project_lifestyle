@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class TextListCard extends StatelessWidget {
   const TextListCard({
-    Key key,
-    @required this.text,
+    Key? key,
+    required this.text,
   }) : super(key: key);
 
   final String text;

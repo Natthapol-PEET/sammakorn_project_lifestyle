@@ -7,7 +7,7 @@ import '../Components/backgroud.dart';
 
 // ignore: must_be_immutable
 class PassCardScreen extends StatelessWidget {
-  PassCardScreen({Key key}) : super(key: key);
+  PassCardScreen({Key? key}) : super(key: key);
 
   var data = Get.arguments;
 
@@ -20,35 +20,41 @@ class PassCardScreen extends StatelessWidget {
             Container(
               color: bgColor,
             ),
-            DisplayLogo(),
+            DisplayLogo(disableClick: true),
             Align(
               alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/images/check_mark.png', scale: 0.6),
-                  SizedBox(height: 40),
+                  Image.asset('assets/images/check_mark.png', scale: 0.7),
+                  SizedBox(height: 30),
                   Text(
                     "LEAVE THE ARTANI",
                     style: TextStyle(
-                      fontSize: 96,
+                      fontSize: 60,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 600, vertical: 30),
+                        horizontal: 550, vertical: 20),
                     child: Divider(color: Colors.white, thickness: 5),
                   ),
-                  TextDetails(text: "สวัสดี ${data.fullname}"),
-
+                  if (data.firstname != "") ...[
+                    TextDetails(
+                        text: "สวัสดี ${data.firstname} ${data.lastname}"),
+                  ],
+                  if (data.firstname == "") ...[
+                    TextDetails(text: "รายการ ${data.qrGenId}"),
+                  ],
                   if (data.licensePlate != "") ...[
                     TextDetails(text: "ทะเบียนรถ : ${data.licensePlate}"),
                   ],
-
                   TextDetails(text: "บ้านเลขที่ : ${data.homeNumber}"),
+
                   // TextDetails(text: "สวัสดี นัฐพล นนทะศรี"),
+                  // TextDetails(text: "รายการ : W123456"),
                   // TextDetails(text: "ทะเบียนรถ : 123กด"),
                   // TextDetails(text: "บ้านเลขที่ : 10/1"),
                 ],

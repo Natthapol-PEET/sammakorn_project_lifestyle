@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 
 // ignore: must_be_immutable
 class LeaveScreen extends StatelessWidget {
-  LeaveScreen({Key key}) : super(key: key);
+  LeaveScreen({Key? key}) : super(key: key);
 
   ExitModel data = Get.arguments;
 
@@ -22,33 +22,33 @@ class LeaveScreen extends StatelessWidget {
             Container(
               color: bgColor,
             ),
-            DisplayLogo(),
+            DisplayLogo(disableClick: true),
             Align(
               alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: greenBgIcon,
-                      borderRadius: BorderRadius.circular(200),
+                      borderRadius: BorderRadius.circular(100),
                     ),
                     child: SvgPicture.asset('assets/images/leave.svg',
                         semanticsLabel: 'leave logo'),
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 35),
                   Text(
                     "LEAVE THE ARTANI",
                     style: TextStyle(
-                      fontSize: 72,
+                      fontSize: 48,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 800, vertical: 40),
+                        horizontal: 600, vertical: 20),
                     child: Divider(color: Colors.white, thickness: 5),
                   ),
                   Row(
@@ -57,15 +57,22 @@ class LeaveScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextDetails(text: "ชื่อ : ${data.fullname}"),
-
-                          if (data.licensePlate != '') ...[
+                          if (data.firstname.toString() != "null") ...[
+                            TextDetails(
+                                text:
+                                    "สวัสดี ${data.firstname} ${data.lastname}"),
+                          ],
+                          if (data.firstname.toString() == "null") ...[
+                            TextDetails(text: "รายการ ${data.qrGenId}"),
+                          ],
+                          if (data.licensePlate != "") ...[
                             TextDetails(
                                 text: "ทะเบียนรถ : ${data.licensePlate}"),
                           ],
-
                           TextDetails(text: "บ้านเลขที่ : ${data.homeNumber}"),
-                          // TextDetails(text: "ชื่อ : นัฐพล  นนทะศรี"),
+
+                          // TextDetails(text: "สวัสดี นัฐพล นนทะศรี"),
+                          // TextDetails(text: "รายการ : W123456"),
                           // TextDetails(text: "ทะเบียนรถ : 123กด"),
                           // TextDetails(text: "บ้านเลขที่ : 10/1"),
                         ],

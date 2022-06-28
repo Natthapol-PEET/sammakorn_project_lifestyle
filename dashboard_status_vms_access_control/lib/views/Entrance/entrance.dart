@@ -1,6 +1,6 @@
-
 import 'package:dashboard_status_vms_access_control/config/constant.dart';
 import 'package:dashboard_status_vms_access_control/controllers/entrance_control.dart';
+import 'package:dashboard_status_vms_access_control/models/data_screen.dart';
 import 'package:dashboard_status_vms_access_control/services/comming_service.dart';
 import 'package:dashboard_status_vms_access_control/utils/utils.dart';
 import 'package:dashboard_status_vms_access_control/views/Components/card_details.dart';
@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EntrancePage extends StatefulWidget {
-  const EntrancePage({Key key}) : super(key: key);
+  const EntrancePage({Key? key}) : super(key: key);
 
   @override
   _EntrancePageState createState() => _EntrancePageState();
@@ -24,8 +24,8 @@ class _EntrancePageState extends State<EntrancePage> {
   Comming checkin = Comming();
   Utils util = Utils();
 
-  String rememChar;
-  String qrId;
+  String? rememChar;
+  String? qrId;
 
   EntranceController _controller = Get.put(EntranceController());
 
@@ -40,7 +40,7 @@ class _EntrancePageState extends State<EntrancePage> {
 
         if (qrId != "wait") {
           // controller
-          _controller.postCommingIn(qrId);
+          _controller.postCommingIn(qrId as String);
         }
       },
       focusNode: FocusNode(),
@@ -69,7 +69,7 @@ class _EntrancePageState extends State<EntrancePage> {
               if (controller.status == 1) ...[
                 Content(
                   boxSize: size.height * 0.7,
-                  child: CheckContent(data: controller.data),
+                  child: CheckContent(data: controller.data as DataScreen),
                 ),
               ],
 

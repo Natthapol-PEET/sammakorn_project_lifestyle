@@ -4,7 +4,7 @@ import 'package:dashboard_status_vms_access_control/views/Components/text_detail
 import 'package:flutter/material.dart';
 
 class StatusContent extends StatelessWidget {
-  const StatusContent({Key key}) : super(key: key);
+  const StatusContent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

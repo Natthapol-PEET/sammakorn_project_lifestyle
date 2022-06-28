@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 
 class CardDetails extends StatelessWidget {
   const CardDetails({
-    Key key,
-    @required this.data,
+    Key? key,
+    required this.data,
   }) : super(key: key);
 
   // final DataList data;

@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 
 class Backgroud extends StatelessWidget {
   const Backgroud({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
   }) : super(key: key);
 
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Container(
+      width: size.width,
+      height: size.height,
       constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(
         image: DecorationImage(
