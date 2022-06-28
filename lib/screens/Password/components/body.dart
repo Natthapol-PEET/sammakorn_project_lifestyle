@@ -1,32 +1,30 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:registerapp_flutter/components/show_dialog.dart';
 import 'package:registerapp_flutter/components/show_text_check_input.dart';
 import 'package:registerapp_flutter/components/success_dialog.dart';
 import 'package:registerapp_flutter/controller/change_password_controller.dart';
 import 'package:registerapp_flutter/controller/login_controller.dart';
-import 'package:registerapp_flutter/screens/Select_Home/service/reset_password.dart';
+import 'package:registerapp_flutter/service/change_and_reset_password.dart';
 import '../../../constance.dart';
 import 'button_group.dart';
 
 class Body extends StatefulWidget {
-  const Body({Key key}) : super(key: key);
+  const Body({Key? key}) : super(key: key);
 
   @override
   State<Body> createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
-  final changeController = Get.put(ChangePasswordController());
   final loginController = Get.put(LoginController());
+  final changeController = Get.put(ChangePasswordController());
 
   @override
   void initState() {
-    changeController.checkOldPassword.value = false;
-    changeController.checkPassword.value = false;
-
+    changeController.onInit();
     super.initState();
   }
 
@@ -38,44 +36,41 @@ class _BodyState extends State<Body> {
       child: Column(
         children: [
           RoundInputField(title: "รหัสผ่านเดิม"),
-          Obx(() => !changeController.checkOldPassword.value
+          Obx(() => changeController.oldPassword.value == ""
               ? ShowTextCheckInput(text: 'กรุณากรอกรหัสผ่านเดิม')
               : Container()),
           RoundInputField(title: "รหัสผ่านใหม่"),
           RoundInputField(title: "ยืนยันรหัสผ่านใหม่"),
-          Obx(() => !changeController.checkPassword.value
-              ? ShowTextCheckInput(text: 'รหัสผ่านไม่ตรง')
-              : ShowTextCheckInput(
-                  text: 'รหัสผ่านตรงกัน', color: Colors.green)),
-          SizedBox(height: size.height * 0.35),
+          Obx(() => changeController.newPassword.value == ""
+              ? Container()
+              : changeController.newPassword.value !=
+                      changeController.confirmPassword.value
+                  ? ShowTextCheckInput(text: 'รหัสผ่านไม่ตรง')
+                  : ShowTextCheckInput(
+                      text: 'รหัสผ่านตรงกัน', color: Colors.green)),
+          SizedBox(height: size.height * 0.3),
           Obx(
             () => ButtonGroup(
-              press: changeController.lock.value
-                  ? null
-                  : () async {
-                      Fluttertoast.showToast(
-                        msg: "กรุณารอสักครู่ ...",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                      );
+              press: changeController.oldPassword.value != "" &&
+                      (changeController.newPassword.value ==
+                          changeController.confirmPassword.value)
+                  ? () async {
+                      showLoadingDialog();
 
                       var response = await changePasswordApi(
-                          loginController.dataLogin.authToken,
+                          loginController.dataLogin!.authToken as String,
                           changeController.oldPassword.value,
                           changeController.newPassword.value,
-                          loginController.dataLogin.residentId.toString());
+                          loginController.dataLogin!.residentId.toString());
 
                       if (response == true) {
-                        success_dialog(context, "เปลี่ยนรหัสผ่านสำเร็จ");
+                        successDialog(context, "เปลี่ยนรหัสผ่านสำเร็จ");
                         Timer(Duration(seconds: 3), () => Get.toNamed('/home'));
                       } else {
-                        Fluttertoast.showToast(
-                          msg: response,
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                        );
+                        EasyLoading.showError(response);
                       }
-                    },
+                    }
+                  : null,
             ),
           ),
           SizedBox(height: size.height * 0.03),
@@ -87,12 +82,12 @@ class _BodyState extends State<Body> {
 
 class RoundInputField extends StatelessWidget {
   final String title;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final changeController = Get.put(ChangePasswordController());
 
   RoundInputField({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.controller,
   }) : super(key: key);
 
@@ -107,16 +102,13 @@ class RoundInputField extends StatelessWidget {
         children: [
           SizedBox(height: size.height * 0.03),
           Padding(
-            // padding: const EdgeInsets.only(top: 5, bottom: 10, left: 30),
             padding: const EdgeInsets.only(left: 40, bottom: 10),
             child: Text(
               title,
               style: TextStyle(
-                // color: goldenSecondary,
                 color: Colors.white,
                 fontSize: 18,
                 fontFamily: 'Prompt',
-                // fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -141,8 +133,6 @@ class RoundInputField extends StatelessWidget {
                   } else if (title == "ยืนยันรหัสผ่านใหม่") {
                     changeController.confirmPassword.value = v;
                   }
-
-                  changeController.onCheck();
                 },
                 style: TextStyle(
                   fontWeight: FontWeight.bold,

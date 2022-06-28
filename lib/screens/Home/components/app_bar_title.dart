@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class AppBarTitle extends StatelessWidget {
-  final Function press;
+  final Function()? press;
   final String title;
   final int titleIndex;
 
   const AppBarTitle({
-    Key key,
-    @required this.press,
-    @required this.title,
-    @required this.titleIndex,
+    Key? key,
+    required this.press,
+    required this.title,
+    required this.titleIndex,
   }) : super(key: key);
 
   @override

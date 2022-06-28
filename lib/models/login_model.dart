@@ -1,20 +1,22 @@
+import 'package:flutter/cupertino.dart';
+
 class LoginModel {
-  int residentId;
-  String firstname;
-  String lastname;
-  String username;
-  String pasword;
-  String email;
-  String deviceToken;
-  String deviceId;
-  bool isLogin;
-  int homeId;
-  String cardInfo;
-  String cardScanPosition;
-  bool activeUser;
-  String loginDatetime;
-  String createDatetime;
-  String authToken;
+  int? residentId;
+  String? firstname;
+  String? lastname;
+  String? username;
+  String? pasword;
+  String? email;
+  String? deviceToken;
+  String? deviceId;
+  bool? isLogin;
+  int? homeId;
+  String? cardInfo;
+  String? cardScanPosition;
+  bool? activeUser;
+  String? loginDatetime;
+  String? createDatetime;
+  String? authToken;
 
   LoginModel({
     this.residentId,

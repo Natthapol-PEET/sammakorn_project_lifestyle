@@ -4,21 +4,19 @@ class ButtonSelectGroup extends StatelessWidget {
   final List selectColorElem;
   final List selectColorButton;
 
-  final Function press1;
-  final Function press2;
-  final Function press3;
-  final Function press4;
-  final Function press5;
+  final Function()? press1;
+  final Function()? press2;
+  final Function()? press3;
+  final Function()? press4;
 
   const ButtonSelectGroup({
-    Key key,
-    @required this.selectColorElem,
-    @required this.selectColorButton,
-    @required this.press1,
-    @required this.press2,
-    @required this.press3,
-    @required this.press4,
-    @required this.press5,
+    Key? key,
+    required this.selectColorElem,
+    required this.selectColorButton,
+    required this.press1,
+    required this.press2,
+    required this.press3,
+    required this.press4,
   }) : super(key: key);
 
   @override
@@ -64,10 +62,10 @@ class ButtonSelectGroup extends StatelessWidget {
           bsize,
           "ประวัติ",
           Icons.history,
-          selectColorElem[4],
-          press5,
-          selectColorButton[4],
-          selectColorElem[4],
+          selectColorElem[3],
+          press4,
+          selectColorButton[3],
+          selectColorElem[3],
         ),
         SizedBox(width: horsize),
         // ConstrainedBox(
@@ -192,7 +190,7 @@ class ButtonSelectGroup extends StatelessWidget {
     String title,
     IconData icon,
     Color iconColor,
-    Function press,
+    Function()? press,
     Color selectColorButton,
     Color selectColorElem,
   ) {

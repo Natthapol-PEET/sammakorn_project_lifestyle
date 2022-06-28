@@ -1,137 +1,90 @@
-import 'package:intl/intl.dart';
-import 'package:registerapp_flutter/data/home.dart';
-import 'sqlite.dart';
+import 'package:path/path.dart';
+import 'package:registerapp_flutter/models/notification_model.dart';
+import 'package:sqflite/sqflite.dart';
 
-class NotificationDB {
-  SQLite sqlite = SQLite('''CREATE TABLE Notification (
-          id INTEGER PRIMARY KEY AUTOINCREMENT, 
-          class TEXT,
-          home_id INTEGER,
-          title TEXT,
-          description TEXT, 
-          time DATETIME,
-          is_read BOOLEAN);''');
+class Notification {
+  Database? db;
 
-  initNotification() async {
-    sqlite.queryDatabase('''CREATE TABLE Notification (
-          id INTEGER PRIMARY KEY AUTOINCREMENT, 
-          class TEXT,
-          home_id INTEGER,
-          title TEXT, 
-          description TEXT, 
-          time DATETIME,
-          is_read BOOLEAN);''');
+  Future getDatabase() async {
+    db = await openDatabase(
+      join(await getDatabasesPath(), 'notification_database.db'),
+      onCreate: (db, version) {
+        return db.execute(
+          '''
+          CREATE TABLE notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            class TEXT,
+            home_id INTEGER,
+            title TEXT,
+            description TEXT, 
+            datetime TEXT,
+            is_read INTEGER
+          );
+          ''',
+        );
+      },
+      version: 1,
+    );
   }
 
-  getNotification(int homeId) async {
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    final String command =
-        "SELECT * FROM Notification WHERE time >= '$formattedDate 00:00:00' AND home_id = $homeId ORDER BY time DESC";
-    final row = await sqlite.queryDatabase(command);
-    // print(row.toList());
-    return row.toList();
+  Future<void> insertNotification(NotificationModel notification) async {
+    await db!.insert(
+      'notifications',
+      notification.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  getCountNotification(int homeId) async {
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+  Future<List<NotificationModel>> notifications(int homeId) async {
+    final List<Map<String, dynamic>> maps = await db!.query(
+      'notifications',
+      where: "home_id = $homeId",
+    );
 
-    final String command = """
-                SELECT COUNT(id) AS count 
-                  FROM Notification 
-                  WHERE is_read = 0
-                    AND home_id = $homeId
-                    AND time >= '$formattedDate 00:00:00'
-            """;
-
-    final row = await sqlite.queryDatabase(command);
-
-    // select();
-    return row.toList()[0]['count'].toString();
+    return List.generate(maps.length, (i) {
+      return NotificationModel(
+        id: maps[i]['id'],
+        classs: maps[i]['class'],
+        homeId: maps[i]['home_id'],
+        title: maps[i]['title'],
+        description: maps[i]['description'],
+        datetime: maps[i]['datetime'],
+        isRead: maps[i]['is_read'] == 1 ? true : false,
+      );
+    });
   }
 
-  select() async {
-    String command = "SELECT * FROM Notification";
-    final row = await sqlite.queryDatabase(command);
-
-    for (var d in row) {
-      print('row >> ${d}');
-    }
+  Future<void> updateNotification(int homeId) async {
+    String sql = "UPDATE notifications SET is_read = 1 WHERE home_id = $homeId";
+    db!.execute(sql);
+    // await db!.update(
+    //   'notifications',
+    //   notification.toMap(),
+    //   where: 'id = ?',
+    //   whereArgs: [notification.id],
+    // );
   }
 
-  insertNotification(
-      String Class, String title, String description, String homeId) async {
-    DateTime now = DateTime.now();
-
-    String command = """
-          INSERT INTO Notification (class, title, description, time, is_read, home_id) 
-            VALUES ('${Class}', '${title}', '${description}', '${now}', 0, ${homeId})
-        """;
-
-    print('command >> ${command}');
-
-    await sqlite.insertDatabase(command);
-
-    // command = """SELECT * FROM Notification""";
-    // final row = await sqlite.queryDatabase(command);
-    // print("row >> ${row}");
+  Future<void> deleteOneNotification(int id) async {
+    await db!.delete(
+      'notifications',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
-  updateNotification() async {
-    final String command = """
-        UPDATE Notification 
-          SET is_read = 1 
-            WHERE is_read = 0
-      """;
-
-    await sqlite.updateDatabase(command);
+  Future<void> deleteAllNotification(int homeId) async {
+    await db!.delete(
+      'notifications',
+      where: 'home_id = ?',
+      whereArgs: [homeId],
+    );
   }
 
-  deleteNotification(int id) async {
-    final String command = """
-        DELETE FROM Notification 
-          WHERE id = ${id}
-      """;
-    sqlite.deleteDatabase(command);
+  void dropTable() async {
+    String sql = "DROP TABLE notifications";
+    await db!.execute(sql);
   }
 
-  deleteAllNotification(String homeId) async {
-    final String command = """
-        DELETE FROM Notification 
-          WHERE home_id = ${homeId}
-      """;
-    sqlite.deleteDatabase(command);
-  }
-
-  dropNotification() async {
-    final String command = "DROP TABLE Notification";
-    await sqlite.deleteDatabase(command);
-  }
-
-  checkDBNotification() async {
-    String command = """
-        SELECT name 
-          FROM sqlite_master 
-            WHERE type IN ('table','view') 
-              AND name NOT LIKE 'sqlite_%' 
-              ORDER BY 1;
-      """;
-
-    var row = await sqlite.queryDatabase(command);
-    bool isHave = false;
-
-    for (var elem in row.toList()) {
-      print("elem >> ${elem}");
-      if (elem['name'] == 'Notification') {
-        isHave = true;
-      }
-    }
-
-    if (isHave == false) {
-      initNotification();
-    }
-
-    return true;
-  }
+  Future close() async => db!.close();
 }

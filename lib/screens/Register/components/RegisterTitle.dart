@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class RegisterTitle extends StatelessWidget {
   const RegisterTitle({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

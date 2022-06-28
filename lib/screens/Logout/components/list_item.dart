@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class ListItem extends StatelessWidget {
-  final Function press;
+  final Function()? press;
   final String title;
   final String desc;
 
   const ListItem({
-    Key key,
+    Key? key,
     this.press,
-    @required this.title,
-    @required this.desc,
+    required this.title,
+    required this.desc,
   }) : super(key: key);
 
   @override

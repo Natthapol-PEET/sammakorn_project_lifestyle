@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
@@ -7,25 +6,29 @@ import 'package:registerapp_flutter/components/empty_componenmt.dart';
 import 'package:registerapp_flutter/components/success_dialog.dart';
 import 'package:registerapp_flutter/controller/home_controller.dart';
 import 'package:registerapp_flutter/controller/login_controller.dart';
-import 'package:registerapp_flutter/screens/Add_License_plate/models/screenArg.dart';
-import 'package:registerapp_flutter/screens/Home/service/service.dart';
-import 'package:registerapp_flutter/screens/ShowDetailScreen/components/card_list_timeline.dart';
+import 'package:registerapp_flutter/models/pack_data_model.dart';
+import 'package:registerapp_flutter/models/screenArg.dart';
+import 'package:registerapp_flutter/models/visitor_model.dart';
+import 'package:registerapp_flutter/service/delete_invite.dart';
 import 'package:registerapp_flutter/screens/ShowQrcode/showQrCodeScreen.dart';
-import 'package:registerapp_flutter/utils/time__to_thai.dart';
+import 'package:registerapp_flutter/functions/time__to_thai.dart';
+import 'package:registerapp_flutter/service/resident_stamp.dart';
 import '../../../constance.dart';
+import 'card_list_timeline.dart';
 
 class BoxShowList extends StatelessWidget {
-  final List lists, resident_send_admin, pms_show, checkout;
+  final List lists;
+  final List? resident_send_admin, pms_show, checkout;
   final Color color;
-  final String select;
-  final String selectRSA, selectPMS, selectCO;
+  final String? select;
+  final String? selectRSA, selectPMS, selectCO;
 
   final loginController = Get.put(LoginController());
 
   BoxShowList({
-    Key key,
-    @required this.lists,
-    @required this.color,
+    Key? key,
+    required this.lists,
+    required this.color,
     this.select,
     this.resident_send_admin,
     this.pms_show,
@@ -38,15 +41,11 @@ class BoxShowList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    // final date = DateFormat('dd-MMMM-yyyy').format(DateTime.now());
-    DateTime now = DateTime.now();
 
     // controller
     final controller = Get.put(HomeController());
 
     // String month_eng_to_thai
-    String date =
-        "วันที่ ${now.day} ${month_eng_to_thai(now.month)} ${christian_buddhist_year(now.year)}";
 
     // String select = "Invite";
     // List lists = [
@@ -88,41 +87,10 @@ class BoxShowList extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 21, top: 26, bottom: 26),
-                // child: Text('Date ${date}',
-                child: Text(
-                  // dateInBuddhistCalendarFormat,
-                  date,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Prompt',
-                    color: dividerColor,
-                  ),
-                ),
-              ),
-              if (select != "Resident stamp") ...[
-                // Empty
-                if (lists.length == 0) ...[noHaveData(context, 'ไม่มีข้อมูล')],
-
-                // Not Empty
-                builderList(context, lists, select, controller),
-              ],
-              if (select == "Resident stamp") ...[
-                // Empty
-                if ((lists.length +
-                        resident_send_admin.length +
-                        pms_show.length +
-                        checkout.length) ==
-                    0) ...[noHaveData(context, 'ไม่มีข้อมูล')],
-
-                // Not Empty
-                builderList(context, lists, select, controller),
-                builderList(
-                    context, resident_send_admin, selectRSA, controller),
-                builderList(context, pms_show, selectPMS, controller),
-                builderList(context, checkout, selectCO, controller)
-              ],
+              ShowDateTime(),
+              lists.length == 0
+                  ? noHaveData(context, 'ไม่มีข้อมูล')
+                  : builderList(context, lists),
             ],
           ),
         ),
@@ -130,7 +98,7 @@ class BoxShowList extends StatelessWidget {
     );
   }
 
-  Widget builderList(context, lists, select, controller) {
+  Widget builderList(context, lists) {
     final Size size = MediaQuery.of(context).size;
 
     return ListView.builder(
@@ -138,57 +106,32 @@ class BoxShowList extends StatelessWidget {
       shrinkWrap: true,
       itemCount: lists.length,
       itemBuilder: (context, index) {
-        List data = [];
+        List<PackData> data = [];
 
-        if (lists[index].containsKey('invite')) {
-          if (lists[index]['invite'] != null) {
-            Map d = packData(lists[index]['invite'], 'เชิญเข้ามาในโครงการ');
-            data.add(d);
-          }
+        // create dummy invite
+        if (lists[index] is VisitorModel)
+          data.add(packData(lists[index].inviteDate, 'เชิญเข้ามาในโครงการ'));
+
+        // create dummy comming and  wait stamp
+        if (lists[index].datetimeIn != null) {
+          data.add(packData(lists[index].datetimeIn, 'เข้ามาในโครงการแล้ว'));
+          data.add(packData(lists[index].datetimeIn, 'รอแสตมป์ออกจากโครงการ'));
         }
 
-        if (lists[index].containsKey('datetime_in')) {
-          if (lists[index]['datetime_in'] != null) {
-            Map d =
-                packData(lists[index]['datetime_in'], 'เข้ามาในโครงการแล้ว');
-            data.add(d);
-          }
+        // create dummy resident stamp or admin stamp
+        // if (lists[index].residentStamp != null || lists[index].adminStamp != null) {
+        if (lists[index].residentStamp != null)
+          data.add(
+              packData(lists[index].residentStamp, 'แสตมป์ออกจากโครงการแล้ว'));
 
-          if (lists[index]['license_plate'] != null) {
-            if (lists[index]['license_plate'] != null) {
-              if (lists[index]['license_plate'] != null) {
-                Map d = packData(
-                    lists[index]['datetime_in'], 'รอแสตมป์ออกจากโครงการ');
-                data.add(d);
-              }
-            }
-          }
-        }
-
-        if (lists[index].containsKey('resident_stamp')) {
-          if (lists[index]['resident_stamp'] != null) {
-            Map d = packData(
-                lists[index]['resident_stamp'], 'แสตมป์ออกจากโครงการแล้ว');
-            data.add(d);
-          }
-        }
-
-        if (lists[index].containsKey('datetime_out')) {
-          if (lists[index]['datetime_out'] != null) {
-            Map d = packData(lists[index]['datetime_out'], 'ออกจากโครงการแล้ว');
-            data.add(d);
-          }
-        }
+        // create dummy checkout
+        if (lists[index].datetimeOut != null)
+          data.add(packData(lists[index].datetimeOut, 'ออกจากโครงการแล้ว'));
 
         return GestureDetector(
           onTap: () {
             ScrollController _controller = ScrollController();
-
-            // SchedulerBinding.instance.addPostFrameCallback((_) {
-            //   _controller.jumpTo(_controller.position.maxScrollExtent);
-            // });
-
-            SchedulerBinding.instance.addPostFrameCallback((_) {
+            SchedulerBinding.instance!.addPostFrameCallback((_) {
               _controller.animateTo(
                 _controller.position.maxScrollExtent,
                 duration: const Duration(milliseconds: 500),
@@ -229,13 +172,13 @@ class BoxShowList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         textFieldPopup(
-                            "เลขทะเบียนรถ : ${lists[index]['license_plate'] != null ? lists[index]['license_plate'] : '-'}"),
+                            "เลขทะเบียนรถ : ${lists[index].licensePlate ?? '-'}"),
                         textFieldPopup(
-                            "เลขประจำตัวประชาชน : ${lists[index]['id_card'] != null ? lists[index]['id_card'] : '-'}"),
+                            "เลขประจำตัวประชาชน : ${lists[index].idCard ?? '-'}"),
                         textFieldPopup(
-                            "ชื่อ-นามสกุล : ${lists[index]['fullname']}"),
+                            "ชื่อ-นามสกุล : ${lists[index].fullname ?? '-'}"),
                         textFieldPopup(
-                            "ประเภท : ${lists[index]['license_plate'] != null ? 'รถ' : 'คน'}"),
+                            "ประเภท : ${lists[index].licensePlate != null ? 'รถ' : 'คน'}"),
                         SizedBox(height: size.height * 0.03),
 
                         // timeline
@@ -247,49 +190,12 @@ class BoxShowList extends StatelessWidget {
                             shrinkWrap: true,
                             itemCount: data.length,
                             itemBuilder: (BuildContext context, int index) {
-                              /*
-                              date: วันที่ 22 พฤษภาคม 2564
-                              time: เวลา 11.30 น.
-                              text: เชิญเข้ามาในโครงการ
-                              index: 1
-                            */
-                              // List data = [
-                              //   {
-                              //     'date': 'วันที่ 22 พฤษภาคม 2564',
-                              //     'time': 'เวลา 11.30 น.',
-                              //     'text': 'เชิญเข้ามาในโครงการ',
-                              //   },
-                              //   {
-                              //     'date': 'วันที่ 22 พฤษภาคม 2564',
-                              //     'time': 'เวลา 12.00 น.',
-                              //     'text': 'รถเข้ามาในโครงการแล้ว',
-                              //   },
-                              //   {
-                              //     'date': 'วันที่ 22 พฤษภาคม 2564',
-                              //     'time': 'เวลา 12.00 น.',
-                              //     'text': 'รอแสตมป์ออกจากโครงการ',
-                              //   },
-                              //   {
-                              //     'date': 'วันที่ 22 พฤษภาคม 2564',
-                              //     'time': 'เวลา 12.00 น.',
-                              //     'text': 'แสตมป์ออกจากโครงการแล้ว',
-                              //   },
-                              //   {
-                              //     'date': 'วันที่ 22 พฤษภาคม 2564',
-                              //     'time': 'เวลา 12.00 น.',
-                              //     'text': 'ออกจากโครงการแล้ว',
-                              //   }
-                              // ];
-
                               return CardListTimeline(
-                                date: data[index]['date'],
-                                time: data[index]['time'],
-                                text: data[index]['text'],
+                                date: data[index].date as String,
+                                time: data[index].time as String,
+                                text: data[index].text as String,
                                 index: index,
                               );
-
-                              // print(data[index]['date']);
-                              // return Container();
                             },
                           ),
                         ),
@@ -297,70 +203,65 @@ class BoxShowList extends StatelessWidget {
                     ),
                   ),
                   actions: [
-                    if (select == 'Invite') ...[
-                      ButtonDialoog(
-                        text: "คิวอาร์โค้ด",
-                        icon: Icons.qr_code_2,
-                        press: () {
-                          Get.offAll(
-                            () => ShowQrcodeScreen(
-                              data: ScreenArguments(
-                                lists[index]['qr_gen_id'],
-                                lists[index]['invite'].split('T')[
-                                    0], // DateFormat('yyyy-MM-dd').format(dateTime),
-                                lists[index]['id_card'] != null
-                                    ? lists[index]['id_card']
-                                    : '-',
-                                lists[index]['fullname'],
-                                lists[index]['license_plate'],
-                                lists[index]['license_plate'] != null
-                                    ? 'รถ'
-                                    : 'คน', // addController.classValue.value,
-                              ),
-                            ),
-                          );
-                        },
-                      )
-                    ],
-                    if (select == 'coming_walk') ...[
+                    // if (lists[index].datetimeIn != null && (lists[index].residentStamp == null || lists[index].adminStamp == null)) ...[
+                    if (lists[index].datetimeIn != null &&
+                        lists[index].residentStamp == null) ...[
                       ButtonDialoog(
                         text: "แสตมป์",
                         icon: Icons.approval,
                         press: () {
-                          residentStampApi(loginController.dataLogin.authToken,
-                              lists[index]['log_id'].toString());
+                          residentStampApi(
+                            loginController.dataLogin!.authToken as String,
+                            lists[index].logId,
+                            lists[index].homeId,
+                          );
 
-                          // update
-                          controller.publishMqtt(
-                              "app-to-app", "RESIDENT_STAMP");
-                          controller.publishMqtt(
-                              "app-to-web", "RESIDENT_STAMP");
-
+                          Get.back();
                           // dialog
-                          success_dialog(context, 'แสตมป์เรียบร้อย');
+                          successDialog(context, 'แสตมป์เรียบร้อย');
 
                           Timer(Duration(seconds: 2), () {
-                            Get.back();
                             Get.back();
                           });
                         },
                       ),
                     ],
-                    if (select == 'Invite') ...[
+                    ButtonDialoog(
+                      text: "คิวอาร์โค้ด",
+                      icon: Icons.qr_code_2,
+                      press: () {
+                        Get.offAll(
+                          () => ShowQrcodeScreen(
+                            data: ScreenArguments(
+                              lists[index].qrGenId ?? '-',
+                              lists[index].inviteDate,
+                              lists[index].idCard ?? '-',
+                              lists[index].fullname ?? '-',
+                              lists[index].licensePlate ?? '-',
+                              lists[index].licensePlate == null ? 'คน' : 'รถ',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    if (lists[index].datetimeIn == null) ...[
                       ButtonDialoog(
                         text: "ลบ",
                         icon: Icons.delete,
                         press: () {
-                          deleteInviteApi(loginController.dataLogin.authToken,
-                              lists[index]['visitor_id'].toString());
-
-                          // update
-                          controller.publishMqtt(
-                              "app-to-app", "INVITE_VISITOR");
-                          controller.publishMqtt(
-                              "app-to-web", "INVITE_VISITOR");
+                          deleteInviteApi(
+                            loginController.dataLogin!.authToken as String,
+                            lists[index].visitorId,
+                            lists[index].homeId,
+                          );
 
                           Get.back();
+                          successDialog(context, 'ลบรายการเชิญเรียบร้อย');
+
+                          Timer(Duration(seconds: 2), () {
+                            Get.back();
+                          });
                         },
                       )
                     ],
@@ -399,10 +300,11 @@ class BoxShowList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         textField(
-                            "เลขทะเบียนรถ : ${lists[index]['license_plate'] != null ? lists[index]['license_plate'] : '-'}"),
+                            "เลขทะเบียนรถ : ${lists[index].licensePlate ?? '-'}"),
                         textField(
-                            "เลขประจำตัวประชาชน : ${lists[index]['id_card'] != null ? lists[index]['id_card'] : '-'}"),
-                        textField("ชื่อ-นามสกุล : ${lists[index]['fullname']}"),
+                            "เลขประจำตัวประชาชน : ${lists[index].idCard ?? '-'}"),
+                        textField(
+                            "ชื่อ-นามสกุล : ${lists[index].fullname ?? '-'}"),
                       ],
                     ),
                   ),
@@ -418,7 +320,6 @@ class BoxShowList extends StatelessWidget {
   Text textFieldPopup(String text) {
     return Text(
       text,
-      // overflow: TextOverflow.fade,
       overflow: TextOverflow.clip,
       maxLines: 1,
       softWrap: false,
@@ -444,17 +345,44 @@ class BoxShowList extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
+class ShowDateTime extends StatelessWidget {
+  ShowDateTime({
+    Key? key,
+  }) : super(key: key);
+
+  DateTime now = DateTime.now();
+
+  @override
+  Widget build(BuildContext context) {
+    String date =
+        "วันที่ ${now.day} ${month_eng_to_thai(now.month)} ${christian_buddhist_year(now.year)}";
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 21, top: 26, bottom: 26),
+      child: Text(
+        date,
+        style: TextStyle(
+          fontSize: 18,
+          fontFamily: 'Prompt',
+          color: dividerColor,
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
 class ButtonDialoog extends StatelessWidget {
   const ButtonDialoog({
-    @required this.text,
-    @required this.icon,
-    @required this.press,
-    Key key,
+    required this.text,
+    required this.icon,
+    required this.press,
+    Key? key,
   }) : super(key: key);
 
   final String text;
   final IconData icon;
-  final Function press;
+  final Function()? press;
 
   @override
   Widget build(BuildContext context) {
@@ -495,40 +423,11 @@ class ButtonDialoog extends StatelessWidget {
   }
 }
 
-Map packData(String datetime, String text) {
-  String inviteDateTime = datetime;
-
-  print('text: $text || inviteDateTime: $inviteDateTime');
-  if (inviteDateTime[0] == 'T') {
-    final now = DateTime.now();
-
-    inviteDateTime = "${now.year}-${now.month}-${now.day}$inviteDateTime";
-  }
-
-  if (inviteDateTime == null) {
-    return {};
-  }
-
-  List inviteList = inviteDateTime.split('-');
-  List inviteSplitT = inviteList[2].split('T');
-
-  int date = int.parse(inviteSplitT[0]);
-  int month = int.parse(inviteList[1]);
-  int year = int.parse(inviteList[0]);
-
-  String hour = inviteSplitT[1].split(':')[0];
-  String minute = inviteSplitT[1].split(':')[1];
-
-  return {
-    'date':
-        'วันที่ ${date} ${month_eng_to_thai(month)} ${christian_buddhist_year(year)}',
-    'time': 'เวลา ${hour}.${minute} น.',
-    'text': text,
-  };
-
-  // return {
-  //   'date': 'วันที่ ',
-  //   'time': 'เวลา  น.',
-  //   'text': text,
-  // };
+PackData packData(DateTime dt, String text) {
+  return PackData(
+    date:
+        'วันที่ ${dt.day} ${month_eng_to_thai(dt.month)} ${christian_buddhist_year(dt.year)}',
+    time: 'เวลา ${dt.hour}.${dt.minute} น.',
+    text: text,
+  );
 }

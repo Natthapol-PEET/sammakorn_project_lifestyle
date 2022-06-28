@@ -5,12 +5,12 @@ import '../../../constance.dart';
 
 class RememberForgot extends StatelessWidget {
   final bool rememberCheckbox;
-  final Function rememberPress;
+  final Function(bool?) rememberPress;
 
   const RememberForgot({
-    Key key,
-    @required this.rememberCheckbox,
-    @required this.rememberPress,
+    Key? key,
+    required this.rememberCheckbox,
+    required this.rememberPress,
   }) : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class RememberForgot extends StatelessWidget {
             children: [
               Checkbox(
                 checkColor: Colors.white,
-                onChanged: rememberPress,
+                onChanged: rememberPress ,
                 value: rememberCheckbox,
               ),
               Text("จดจำฉัน",
@@ -39,7 +39,7 @@ class RememberForgot extends StatelessWidget {
             ],
           ),
           InkWell(
-            onTap: () => Get.toNamed('/forgot_password'),
+            onTap: () => Get.toNamed('/forgotPassword'),
             child: Text("ลืมรหัสผ่าน?",
                 style: TextStyle(
                   fontSize: 16,

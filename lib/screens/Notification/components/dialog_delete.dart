@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../constance.dart';
 import 'button_dialog.dart';
 
 Future<dynamic> dialogDelete(
-    BuildContext context, String text, String textDelete, Function press) {
+    BuildContext context, String text, String textDelete, Function()? press) {
   return showDialog(
     context: context,
     barrierDismissible: false,

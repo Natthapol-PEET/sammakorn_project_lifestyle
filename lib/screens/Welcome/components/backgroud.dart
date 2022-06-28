@@ -6,9 +6,9 @@ class Backgroud extends StatelessWidget {
   final isLogin;
 
   const Backgroud({
-    Key key,
-    @required this.child,
-    @required this.isLogin,
+    Key? key,
+    required this.child,
+    required this.isLogin,
   }) : super(key: key);
 
   @override

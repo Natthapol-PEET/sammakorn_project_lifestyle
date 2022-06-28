@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class WelcomeText extends StatelessWidget {
   const WelcomeText({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

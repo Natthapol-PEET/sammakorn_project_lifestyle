@@ -3,12 +3,12 @@ import '../../../constance.dart';
 
 class AppBarAction extends StatelessWidget {
   final String countAlert;
-  final Function pass;
+  final Function()? pass;
 
   const AppBarAction({
-    Key key,
-    @required this.countAlert,
-    @required this.pass,
+    Key? key,
+    required this.countAlert,
+    required this.pass,
   }) : super(key: key);
 
   @override
@@ -34,10 +34,6 @@ class AppBarAction extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.red,
-              // border: Border.all(
-              //   color: goldenSecondary,
-              //   width: 1.5,
-              // ),
             ),
             child: Center(
                 child: Text(countAlert,

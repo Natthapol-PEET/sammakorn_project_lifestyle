@@ -4,15 +4,15 @@ import '../../../constance.dart';
 // ignore: must_be_immutable
 class ButtonDialoog extends StatelessWidget {
   const ButtonDialoog({
-    @required this.text,
-    @required this.setBackgroudColor,
-    @required this.press,
-    Key key,
+    Key? key,
+    required this.text,
+    required this.setBackgroudColor,
+    required this.press,
   }) : super(key: key);
 
   final String text;
   final bool setBackgroudColor;
-  final Function press;
+  final Function()? press;
 
   @override
   Widget build(BuildContext context) {

@@ -6,9 +6,9 @@ class CardListItem extends StatelessWidget {
   final String title;
 
   const CardListItem({
-    Key key,
-    @required this.imagePath,
-    @required this.title,
+    Key? key,
+    required this.imagePath,
+    required this.title,
   }) : super(key: key);
 
   @override

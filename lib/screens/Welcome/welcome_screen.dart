@@ -9,7 +9,7 @@ import 'components/body.dart';
 import 'is_loading.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  WelcomeScreen({Key key}) : super(key: key);
+  WelcomeScreen({Key? key}) : super(key: key);
 
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
@@ -45,12 +45,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  DateTime currentBackPressTime;
+  DateTime? currentBackPressTime;
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
 
     if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+        now.difference(currentBackPressTime as DateTime) >
+            Duration(seconds: 2)) {
       currentBackPressTime = now;
 
       Fluttertoast.showToast(msg: "Press back again to exit");

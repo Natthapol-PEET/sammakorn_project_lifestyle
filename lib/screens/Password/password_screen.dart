@@ -4,7 +4,7 @@ import '../../constance.dart';
 import 'components/body.dart';
 
 class PasswordScreen extends StatelessWidget {
-  const PasswordScreen({Key key}) : super(key: key);
+  const PasswordScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +26,8 @@ class PasswordScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: greenPrimary),
-            onPressed: null
-          )
+              icon: Icon(Icons.arrow_back_ios, color: greenPrimary),
+              onPressed: null)
         ],
         backgroundColor: darkgreen,
       ),

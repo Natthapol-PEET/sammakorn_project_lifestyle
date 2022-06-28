@@ -1,61 +1,63 @@
 import 'package:get/get.dart';
 import 'package:registerapp_flutter/controller/select_home_controller.dart';
 import 'package:registerapp_flutter/data/notification.dart';
+import 'package:registerapp_flutter/models/notification_list_model.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationController extends GetxController {
   final selectHomeController = Get.put(SelectHomeController());
-  var lists = [].obs;
-  var descTime = "".obs;
+  Notification notification = Notification();
 
-  NotificationDB notifications = NotificationDB();
+  var lists = <NotificationListModel>[].obs;
+  var countAlert = 0.obs;
 
-  getNotification() async {
-    var data =
-        await notifications.getNotification(selectHomeController.homeId.value);
-    DateTime now = DateTime.now();
-    String text;
-    Map dataMap = {};
-    List dataList = [];
+  @override
+  void onInit() {
+    notification.getDatabase();
 
-    for (var elem in data) {
-      DateTime dt = DateTime.parse(elem['time']);
-      int hour = now.hour - dt.hour;
-      int minute = now.minute - dt.minute;
-      int second = now.second - dt.second;
+    // set location time ago
+    timeago.setLocaleMessages('th', timeago.ThMessages());
+    // final fifteenAgo = DateTime.now().subtract(Duration(minutes: 15));
+    // print(timeago.format(fifteenAgo, locale: 'th'));
 
-      if (minute == 0) {
-        text = '${second} วินาทีที่แล้ว';
-      } else if (minute == 1) {
-        text = '${minute} นาทีที่แล้ว';
-      } else if (minute > 1) {
-        text = '${minute} นาทีที่แล้ว';
-      } else if (hour == 1) {
-        text = '${hour} ชั่วโมงที่แล้ว';
-      } else {
-        text = '${hour} ชั่วโมงที่แล้ว';
-      }
-
-      dataMap = {
-        "id": elem['id'],
-        "class": elem['class'],
-        "description": elem['description'],
-        "time_desc": text
-      };
-
-      dataList.add(dataMap);
-      dataMap = {};
-    }
-
-    lists.value = dataList;
-    descTime.value = text;
+    super.onInit();
   }
 
-  delete(int id) {
-    notifications.deleteNotification(id);
+  getNotification() async {
+    lists.clear();
+    // require homeId
+    var noti =
+        await notification.notifications(selectHomeController.homeId.value);
+
+    noti.forEach((item) {
+      lists.add(
+        NotificationListModel(
+          id: item.id ?? 0,
+          classs: item.classs ?? '-',
+          description: item.description ?? '-',
+          timeAgo: timeago.format(DateTime.parse(item.datetime as String),
+              locale: 'th'),
+        ),
+      );
+
+      if (item.isRead == false) countAlert += 1;
+    });
+
+    lists.value = List.from(lists.reversed);
   }
 
   deleteAll() async {
-    notifications
-        .deleteAllNotification(selectHomeController.homeId.value.toString());
+    // require homeId
+    await notification.deleteAllNotification(selectHomeController.homeId.value);
+  }
+
+  updateNotification() async {
+    // require homeId
+    // set is_read = true
+    await notification.updateNotification(selectHomeController.homeId.value);
+  }
+
+  delete(int id) async {
+    await notification.deleteOneNotification(id);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class AddLicenseController extends GetxController {
+class AddVisitorController extends GetxController {
   var lock = true.obs;
 
   var checkFullname = false.obs;
@@ -11,44 +11,41 @@ class AddLicenseController extends GetxController {
   var license = "".obs;
 
   onCheck() {
-    print("fullname >> ${fullname.value}");
-    print("idcard >> ${idcard.value}");
-    print("license >> ${license.value}");
+    // print("fullname >> ${fullname.value}");
+    // print("idcard >> ${idcard.value}");
+    // print("license >> ${license.value}");
 
-    print(fullname.isNotEmpty && idcard.isNotEmpty);
-    print(fullname.isNotEmpty && idcard.isNotEmpty && license.isNotEmpty);
+    // print(fullname.isNotEmpty && idcard.isNotEmpty);
+    // print(fullname.isNotEmpty && idcard.isNotEmpty && license.isNotEmpty);
 
     List fullnameList = fullname.toString().split(" ");
     fullnameList.removeWhere((item) => item == "");
 
     // check full name
-    if (fullnameList.length == 2) {
+    if (fullnameList.length == 2)
       checkFullname(true);
-    } else {
+    else
       checkFullname(false);
-    }
 
     // check id card
-    if (idcard.toString().length == 13 || idcard.toString().length == 0) {
+    if (idcard.toString().length == 0 || idcard.toString().length == 13)
       checkIdCard(true);
-    } else {
+    else
       checkIdCard(false);
-    }
 
-    print('checkFullname >> $checkFullname');
+    // print("idcard.toString().length: ${idcard.toString().length}");
+    // print("checkIdCard: ${checkIdCard.value}");
+    // print('checkFullname >> $checkFullname');
 
-    if (fullnameList.length == 2 &&
-        (idcard.toString().length == 13 || idcard.toString().length == 0)) {
+    if (fullnameList.length == 2 && (idcard.toString().length == 0 || idcard.toString().length == 13))
       lock(false);
-    } else {
+    else
       lock(true);
-    }
-    if (fullnameList.length == 2 &&
-        (idcard.toString().length == 13 || idcard.toString().length == 0)) {
+
+    if (fullnameList.length == 2 && (idcard.toString().length == 0 || idcard.toString().length == 13))
       lock(false);
-    } else {
+    else
       lock(true);
-    }
   }
 
   clear() {

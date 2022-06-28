@@ -1,7 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class PushNotification {
-  String message;
+  String? message;
   String channelId = "100";
   String channelName = "FLUTTER_NOTIFICATION_CHANNEL";
   String channelDescription = "FLUTTER_NOTIFICATION_CHANNEL_DETAIL";
@@ -18,7 +18,7 @@ class PushNotification {
 
     // when user tap on notification.
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String payload) async {});
+        onSelectNotification: (payload) async {});
   }
 
   sendNotification(String title, String body) async {

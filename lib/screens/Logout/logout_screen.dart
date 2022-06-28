@@ -6,7 +6,7 @@ import 'components/list_item.dart';
 import 'components/logout.dart';
 
 class LogoutScreen extends StatefulWidget {
-  const LogoutScreen({Key key}) : super(key: key);
+  const LogoutScreen({Key? key}) : super(key: key);
 
   @override
   _LogoutScreenState createState() => _LogoutScreenState();
@@ -60,9 +60,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
             SizedBox(height: size.height * 0.05),
             ListItem(
               title: "อีเมล",
-              // desc: username,
-              desc: loginController.dataLogin.email,
-              // desc: "vms-user@domail.com",
+              desc: loginController.dataLogin!.email as String,
             ),
             SizedBox(height: size.height * 0.02),
             ListItem(
@@ -72,7 +70,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
               // press: null,
             ),
             SizedBox(height: size.height * 0.02),
-            ListItem(title: "เวอร์ชั่น", desc: "1.0"),
+            ListItem(title: "เวอร์ชั่น", desc: "2.0"),
             SizedBox(height: size.height * 0.4),
             LogoutButton(),
             SizedBox(height: 10),

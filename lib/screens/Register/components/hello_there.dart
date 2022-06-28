@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class HelloThere extends StatelessWidget {
   const HelloThere({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -19,4 +19,3 @@ class HelloThere extends StatelessWidget {
     );
   }
 }
-

@@ -4,7 +4,7 @@ import '../../../constance.dart';
 
 class FloatingButtonGroup extends StatelessWidget {
   const FloatingButtonGroup({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -16,7 +16,7 @@ class FloatingButtonGroup extends StatelessWidget {
         children: <Widget>[
           FloatingActionButton(
             heroTag: "btn1",
-            onPressed: () => Get.toNamed('/addLicenseplate'),
+            onPressed: () => Get.toNamed('/addVisitor'),
             child: Icon(Icons.add, size: 36, color: tabBarBodyColor),
             backgroundColor: goldenSecondary,
           ),

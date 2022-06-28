@@ -8,7 +8,7 @@ import 'hello_there.dart';
 
 class CardFormInput extends StatelessWidget {
   const CardFormInput({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

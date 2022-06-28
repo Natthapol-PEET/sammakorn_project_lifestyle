@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class LoginTitle extends StatelessWidget {
   const LoginTitle({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

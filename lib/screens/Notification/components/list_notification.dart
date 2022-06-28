@@ -5,44 +5,48 @@ import 'package:registerapp_flutter/controller/notification_controller.dart';
 import '../../../constance.dart';
 import 'dialog_delete.dart';
 
+// ignore: must_be_immutable
 class ListNotifiication extends StatelessWidget {
+  ListNotifiication({
+    Key? key,
+    required this.onclickTrashIcon,
+    required this.text,
+    required this.time,
+    required this.id,
+    required this.classNoti,
+  }) : super(key: key);
+
   final String text;
   final String time;
   final int id;
   final String classNoti;
-  // final Color color;
-  // final Function pass;
 
   final bool onclickTrashIcon;
-  final controller = Get.put(NotificationController());
 
   Color avatarColor = Colors.amber;
   Icon avatarIcon = Icon(Icons.check_circle_outline);
 
-  ListNotifiication({
-    Key key,
-    @required this.onclickTrashIcon,
-    @required this.text,
-    @required this.time,
-    @required this.id,
-    @required this.classNoti,
-    // @required this.color,
-    // @required this.pass,
-  }) : super(key: key);
+  final notificationController = Get.put(NotificationController());
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
     if (classNoti == 'comming') {
-      avatarColor = Colors.greenAccent;
+      avatarColor = Colors.pinkAccent;
       avatarIcon = Icon(Icons.emoji_transportation);
     } else if (classNoti == 'stamp') {
-      avatarColor = Colors.blueAccent;
+      avatarColor = Colors.amber.shade300;
       avatarIcon = Icon(Icons.approval);
     } else if (classNoti == 'checkout') {
-      avatarColor = Colors.redAccent;
+      avatarColor = Colors.blueAccent;
       avatarIcon = Icon(Icons.directions_car);
+    } else if (classNoti == 'whitelist') {
+      avatarColor = Colors.greenAccent;
+      avatarIcon = Icon(Icons.how_to_reg);
+    } else if (classNoti == 'blacklist') {
+      avatarColor = Colors.redAccent;
+      avatarIcon = Icon(Icons.person_off);
     }
 
     return Container(
@@ -81,14 +85,14 @@ class ListNotifiication extends StatelessWidget {
                   "ลบ",
                   () {
                     // delete noti
-                    controller.delete(id);
+                    notificationController.delete(id);
 
                     // update noti screen
-                    controller.getNotification();
+                    notificationController.getNotification();
 
                     Get.back();
                     Future.delayed(Duration(microseconds: 500),
-                        () => success_dialog(context, "ลบสำเร็จ"));
+                        () => successDialog(context, "ลบสำเร็จ"));
                     Future.delayed(Duration(seconds: 2), () => Get.back());
                   },
                 ),
@@ -107,33 +111,9 @@ class ListNotifiication extends StatelessWidget {
             fontFamily: 'Prompt',
           ),
         ),
-        onTap: () => Get.offNamed('/home', arguments: 'noti_screen'),
+        // onTap: () => Get.offNamed('/home', arguments: 'noti_screen'),
+        onTap: () => Get.back(),
       ),
     );
   }
-
-  // Widget _show_dialod(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         backgroundColor: bgDialog,
-  //         title: new Text(
-  //           "Alert!!",
-  //           textAlign: TextAlign.center,
-  //           style: TextStyle(color: Colors.white),
-  //         ),
-  //         content: Text(
-  //           "Are you sure you want to delete\nyour notifications ?",
-  //           textAlign: TextAlign.center,
-  //           style: TextStyle(color: Colors.white),
-  //         ),
-  //         actions: [
-  //           // KeepItButton(),
-  //           // DeleteButton(pass: pass),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 }

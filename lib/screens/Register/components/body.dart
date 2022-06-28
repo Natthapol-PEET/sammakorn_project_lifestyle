@@ -6,9 +6,9 @@ import 'backicon.dart';
 import 'card_form_input.dart';
 
 class Body extends StatelessWidget {
-  const Body({ Key key }) : super(key: key);
+  const Body({Key? key}) : super(key: key);
 
- @override
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 

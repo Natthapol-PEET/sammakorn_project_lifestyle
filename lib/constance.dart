@@ -18,7 +18,7 @@ const timelineColor = dividerColor;
 const inviteColor = Color(0xffB5C21D);
 const comingColor = Color(0xffF4AD43);
 const infrontColor = Color(0xFF4FB4ED);
-const villColor = Color(0xff12976F);
+const stampColor = Color(0xff12976F);
 const approveColor = Color(0xff17CD4A);
 const disapproveColor = Color(0xffEA464C);
 const backtoHomeBtnColor = Color(0xff456B69);
@@ -31,34 +31,12 @@ List projectImages = [
   'assets/images/Rectangle 2873.png'
 ];
 
-// String host = "192.168.43.160";
-// String URL = "http://${host}:8080/app_api"; // local
-// String WS = "ws://${host}:8080";
-
-// const String serverIp = "192.168.1.85";
-// // const String serverIp = "192.168.1.9";
-// const String URL = "http://${serverIp}:8080/app_api"; // server aws
-// const String mqttBroker = serverIp;
-
+// Rest API Server
 const String serverIp = "vms-service.ngrok.io";
 const String domain = "http://$serverIp/app_api"; // ngrok
-const String mqttBroker = "broker.hivemq.com";
+const String domainWeb = "http://$serverIp/web_api"; // ngrok
 
-// const String WS = "ws://${serverIp}:8080";
 
-/* MQTT config */
-
-const int mqttPort = 1883;
-const String mqttUsername = "user1@vms.com";
-const String mqttPassword = "passwd-vms";
-const String mqttClientId = "resident-"; // resident-<device id>
-
-List pubTopic = [
-  "app-to-web",
-];
-
-List subTopic = [
-  "app-to-app/",
-  "web-to-app/",
-  "pi-to-app/",
-];
+// SocketIO Server
+const String socketUrl = "http://socketio-service.ngrok.io";
+const String socketAuth = "0edf3e46-8c78-49da-8980-a96eb3263941";

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class ButtonGroup extends StatelessWidget {
-  final Function press;
+  final Function()? press;
 
   const ButtonGroup({
-    Key key,
+    Key? key,
     this.press,
   }) : super(key: key);
 

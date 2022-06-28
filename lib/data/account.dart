@@ -3,14 +3,14 @@ import 'package:registerapp_flutter/models/account_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Account {
-  Database db;
+  Database? db;
 
   Future getDatabase() async {
     db = await openDatabase(
       join(await getDatabasesPath(), 'accounts_database.db'),
       onCreate: (db, version) {
         return db.execute(
-          'CREATE TABLE accounts(id INTEGER PRIMARY KEY, username TEXT, password TEXT, isLogin INTEGER)',
+          'CREATE TABLE accounts(id INTEGER PRIMARY KEY, username TEXT, password TEXT, isLogin INTEGER, isRemember INTEGER)',
         );
       },
       version: 1,
@@ -18,33 +18,23 @@ class Account {
   }
 
   Future initAccount() async {
-    // final db = await getDatabase();
     var result = await accounts();
 
-    print('result.isNotEmpty: ${result.isNotEmpty}');
-
-    if (result.isNotEmpty) {
-      return;
-    }
+    if (result.isNotEmpty) return;
 
     var data = const AccountModel(
       id: 1,
       username: '',
       password: '',
       isLogin: 0,
+      isRemember: 0,
     );
 
-    await db.insert(
-      'accounts',
-      data.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    insertAccount(data);
   }
 
   Future<void> insertAccount(AccountModel account) async {
-    // final db = await getDatabase();
-
-    await db.insert(
+    await db!.insert(
       'accounts',
       account.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -52,9 +42,7 @@ class Account {
   }
 
   Future<List<AccountModel>> accounts() async {
-    // final db = await getDatabase();
-
-    final List<Map<String, dynamic>> maps = await db.query(
+    final List<Map<String, dynamic>> maps = await db!.query(
       'accounts',
     );
 
@@ -64,14 +52,13 @@ class Account {
         username: maps[i]['username'],
         password: maps[i]['password'],
         isLogin: maps[i]['isLogin'],
+        isRemember: maps[i]['isRemember'],
       );
     });
   }
 
   Future<void> updateAccount(AccountModel account) async {
-    // final db = await getDatabase();
-
-    await db.update(
+    await db!.update(
       'accounts',
       account.toMap(),
       where: 'id = ?',
@@ -80,9 +67,7 @@ class Account {
   }
 
   Future<void> deleteAccount(int id) async {
-    // final db = await getDatabase();
-
-    await db.delete(
+    await db!.delete(
       'accounts',
       where: 'id = ?',
       whereArgs: [id],
@@ -91,12 +76,10 @@ class Account {
 
   void dropTable() async {
     String sql = "DROP TABLE accounts";
-    // final db = await getDatabase();
-
-    await db.execute(sql);
+    await db!.execute(sql);
   }
 
-  Future close() async => db.close();
+  Future close() async => db!.close();
 
   void test() async {
     // --------- Test ------------------------

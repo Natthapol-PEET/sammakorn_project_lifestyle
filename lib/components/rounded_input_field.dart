@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/components/text_field_container.dart';
 
 class RoundedInputField extends StatelessWidget {
-  final String hintText;
+  final String? hintText;
   final IconData icon;
-  final ValueChanged<String> onChanged;
-  final TextEditingController controller;
-  // final String title;
+  final ValueChanged<String>? onChanged;
+  final TextEditingController? controller;
 
   const RoundedInputField({
-    Key key,
+    Key? key,
     this.hintText,
     this.icon = Icons.person,
     this.onChanged,
     this.controller,
-    // @required this.title,
   }) : super(key: key);
 
   @override
@@ -27,7 +25,7 @@ class RoundedInputField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            hintText,
+            hintText??'',
             style: TextStyle(
               fontFamily: 'Prompt',
               fontSize: 16,

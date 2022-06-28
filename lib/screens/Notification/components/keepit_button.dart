@@ -3,7 +3,7 @@ import '../../../constance.dart';
 
 class KeepItButton extends StatelessWidget {
   const KeepItButton({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

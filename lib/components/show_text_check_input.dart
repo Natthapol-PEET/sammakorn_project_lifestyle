@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class ShowTextCheckInput extends StatelessWidget {
   const ShowTextCheckInput({
-    Key key,
-    @required this.text,
+    Key? key,
+    required this.text,
     this.color = Colors.red,
   }) : super(key: key);
 

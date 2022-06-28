@@ -3,8 +3,8 @@ import 'components/backgroud.dart';
 
 class IsLoadding extends StatelessWidget {
   const IsLoadding({
-    Key key,
-    @required this.isLogin,
+    Key? key,
+    required this.isLogin,
   }) : super(key: key);
 
   final bool isLogin;
@@ -23,12 +23,11 @@ class IsLoadding extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
-          // mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(color: Colors.white),
             SizedBox(height: size.height * 0.03),
-            Text("Loading",
+            Text("กรุณารอสักครู่ ...",
                 style: TextStyle(color: Colors.white, fontSize: 18)),
           ],
         ),

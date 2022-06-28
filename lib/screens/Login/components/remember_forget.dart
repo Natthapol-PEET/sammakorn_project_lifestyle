@@ -3,7 +3,7 @@ import '../../../constance.dart';
 
 class RememberAndForget extends StatelessWidget {
   const RememberAndForget({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

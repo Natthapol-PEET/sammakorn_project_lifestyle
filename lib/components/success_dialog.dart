@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constance.dart';
 
-Future<dynamic> success_dialog(BuildContext context, String text) {
+Future<dynamic> successDialog(BuildContext context, String text) {
   final Size size = MediaQuery.of(context).size;
 
   return showDialog(

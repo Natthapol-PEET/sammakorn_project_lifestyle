@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../constance.dart';
 
 class DeleteButton extends StatelessWidget {
-  final Function pass;
+  final Function()? pass;
 
   const DeleteButton({
-    Key key,
-    @required this.pass,
+    Key? key,
+    required this.pass,
   }) : super(key: key);
 
   @override

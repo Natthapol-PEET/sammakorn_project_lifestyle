@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 class BackIcon extends StatelessWidget {
   const BackIcon({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

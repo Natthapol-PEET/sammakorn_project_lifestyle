@@ -1,38 +1,30 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 import '../../constance.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ShowQrcodeScreen extends StatefulWidget {
-  const ShowQrcodeScreen({Key key, @required this.data}) : super(key: key);
+  const ShowQrcodeScreen({Key? key, required this.data}) : super(key: key);
   final data;
-
-  // const ShowQrcodeScreen({Key key}) : super(key: key);
 
   @override
   _ShowQrcodeScreenState createState() => _ShowQrcodeScreenState();
 }
 
 class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
-  //Create an instance of ScreenshotController
+  // Create an instance of ScreenshotController
   ScreenshotController screenshotController = ScreenshotController();
 
-  String licensePlate, date, fnmae, lname, type;
+  String? licensePlate, date, fnmae, lname, type;
   bool isScreenshot = false;
 
   @override
   void initState() {
     super.initState();
-
-    // licensePlate = widget.data.licensePlate;
-    // date = widget.data.date;
-    // fnmae = widget.data.firstname;
-    // lname = widget.data.lastname;
-    // type = widget.data.type;
   }
 
   @override
@@ -43,122 +35,128 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
       onWillPop: onWillPop,
       child: Scaffold(
         backgroundColor: darkgreen,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(size.width * 0.05),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Image.asset(
-                  'assets/images/Artani Logo Ai B-01.png',
-                  width: size.width * 0.15,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(size.width * 0.05),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Image.asset(
+                    'assets/images/Artani Logo Ai B-01.png',
+                    width: size.width * 0.15,
+                  ),
                 ),
               ),
-            ),
-            Screenshot(
-              controller: screenshotController,
-              child: Container(
-                width: size.width * 0.9,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  children: [
-                    // head box ui
-                    Container(
-                      height: size.height * 0.05,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
+              Screenshot(
+                controller: screenshotController,
+                child: Container(
+                  width: size.width * 0.9,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    children: [
+                      // head box ui
+                      Container(
+                        height: size.height * 0.05,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
+                          color: goldenSecondary,
                         ),
-                        color: goldenSecondary,
                       ),
-                    ),
-                    // component 1 - title text
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: size.height * 0.02),
-                      child: Center(
-                        child: Text(
-                          "ลงทะเบียนเชิญเข้ามาในโครงการสำเร็จ",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'Prompt',
-                            fontWeight: FontWeight.w500,
+                      // component 1 - title text
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: size.height * 0.02),
+                        child: Center(
+                          child: Text(
+                            "ลงทะเบียนเชิญเข้ามาในโครงการสำเร็จ",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'Prompt',
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
-                    ),
 
-                    // component 2 - qr code
-                    Container(
-                      color: darkgreen,
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.only(bottom: size.height * 0.03),
-                      child: QrImage(
-                        data: widget.data.qrGenId,
-                        size: size.width * 0.6,
-                        backgroundColor: Colors.white,
-                        version: QrVersions.auto,
-                        // gapless: false,
-                      ),
-                    ),
-
-                    // component 3 - details
-                    SubTitle(
-                      subTitle: "วันที่นัดหมาย",
-                      desc: widget.data.date,
-                    ),
-                    SubTitle(
-                      subTitle: "เลขประจำตัวประชาชน",
-                      desc: widget.data.idcard,
-                    ),
-                    SubTitle(
-                      subTitle: "ชื่อ-นามสกุล",
-                      desc: widget.data.fullname,
-                    ),
-                    SubTitle(
-                      subTitle: "เลขทะเบียนรถ",
-                      desc: widget.data.licensePlate.isNotEmpty ? widget.data.licensePlate : '-',
-                    ),
-                    SubTitle(
-                      subTitle: "ประเภท",
-                      desc: widget.data.type,
-                    ),
-
-                    if (!isScreenshot) ...[
-                      SizedBox(height: size.height * 0.02),
-                      // component 4 - share button
-                      RoundButton(
-                        text: "แชร์",
-                        colorText: backtoHomeBtnColor,
-                        colorButton: Colors.white,
-                        press: () {
-                          setState(() => isScreenshot = true);
-                          _takeScreenshot();
-                        },
+                      // component 2 - qr code
+                      Container(
+                        color: darkgreen,
+                        padding: EdgeInsets.all(8),
+                        margin: EdgeInsets.only(bottom: size.height * 0.03),
+                        child: QrImage(
+                          data: widget.data.qrGenId,
+                          size: size.width * 0.6,
+                          backgroundColor: Colors.white,
+                          version: QrVersions.auto,
+                          // gapless: false,
+                        ),
                       ),
 
-                      // component 5 - redirec to home button
-                      RoundButton(
-                        text: "กลับหน้าหลัก",
-                        colorText: Colors.white,
-                        colorButton: backtoHomeBtnColor,
-                        press: () => Get.toNamed('/home'),
+                      // component 3 - details
+                      SubTitle(
+                          subTitle: "วันที่นัดหมาย",
+                          desc:
+                              "${widget.data.date.day}-${widget.data.date.month}-${widget.data.date.year}"),
+                      SubTitle(
+                        subTitle: "เลขประจำตัวประชาชน",
+                        desc: widget.data.idcard,
                       ),
-                      SizedBox(height: size.height * 0.02),
+                      SubTitle(
+                        subTitle: "ชื่อ-นามสกุล",
+                        desc: widget.data.fullname,
+                      ),
+                      SubTitle(
+                        subTitle: "เลขทะเบียนรถ",
+                        desc: widget.data.licensePlate.isNotEmpty
+                            ? widget.data.licensePlate
+                            : '-',
+                      ),
+                      SubTitle(
+                        subTitle: "ประเภท",
+                        desc: widget.data.type,
+                      ),
+
+                      if (!isScreenshot) ...[
+                        SizedBox(height: size.height * 0.02),
+                        // component 4 - share button
+                        RoundButton(
+                          text: "แชร์",
+                          colorText: backtoHomeBtnColor,
+                          colorButton: Colors.white,
+                          press: () {
+                            setState(() => isScreenshot = true);
+                            _takeScreenshot();
+                          },
+                        ),
+
+                        // component 5 - redirec to home button
+                        RoundButton(
+                          text: "กลับหน้าหลัก",
+                          colorText: Colors.white,
+                          colorButton: backtoHomeBtnColor,
+                          press: () => Get.toNamed('/home'),
+                        ),
+                        SizedBox(height: size.height * 0.02),
+                      ],
+
+                      if (isScreenshot) ...[
+                        SizedBox(height: size.height * 0.03)
+                      ],
                     ],
-
-                    if (isScreenshot) ...[SizedBox(height: size.height * 0.03)],
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -170,9 +168,9 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
     // get directory
     final directory = await getApplicationDocumentsDirectory();
     final imagePath = await File('${directory.path}/image.png').create();
-    await imagePath.writeAsBytes(image);
+    await imagePath.writeAsBytes(image as List<int>);
 
-    print(imagePath.path);
+    // print(imagePath.path);
 
     // Share Plugin
     Share.shareFiles([imagePath.path]);
@@ -188,9 +186,9 @@ class _ShowQrcodeScreenState extends State<ShowQrcodeScreen> {
 
 class SubTitle extends StatelessWidget {
   const SubTitle({
-    Key key,
-    @required this.subTitle,
-    @required this.desc,
+    Key? key,
+    required this.subTitle,
+    required this.desc,
   }) : super(key: key);
 
   final String subTitle;
@@ -236,17 +234,17 @@ class SubTitle extends StatelessWidget {
 
 class RoundButton extends StatelessWidget {
   const RoundButton({
-    Key key,
-    @required this.text,
-    @required this.colorText,
-    @required this.colorButton,
-    @required this.press,
+    Key? key,
+    required this.text,
+    required this.colorText,
+    required this.colorButton,
+    required this.press,
   }) : super(key: key);
 
   final String text;
   final Color colorText;
   final Color colorButton;
-  final Function press;
+  final Function()? press;
 
   @override
   Widget build(BuildContext context) {

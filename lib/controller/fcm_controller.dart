@@ -3,7 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 
 class FcmController extends GetxController {
-  String fcmToken;
+  String? fcmToken;
 
   @override
   void onInit() {

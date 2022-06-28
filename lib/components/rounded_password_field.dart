@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:registerapp_flutter/components/text_field_container.dart';
 
 class RoundedPasswordField extends StatelessWidget {
-  final ValueChanged<String> onChanged;
-  final String textHiht;
-  final TextEditingController controller;
+  final ValueChanged<String>? onChanged;
+  final String? textHiht;
+  final TextEditingController? controller;
   final bool hidePassword;
-  final Function press;
+  final Function()? press;
 
   const RoundedPasswordField({
-    Key key,
+    Key? key,
     this.onChanged,
     @required this.textHiht,
     this.controller,
@@ -27,7 +27,7 @@ class RoundedPasswordField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            textHiht,
+            textHiht??'',
             style: TextStyle(
               fontFamily: 'Prompt',
               fontSize: 16,
@@ -60,32 +60,5 @@ class RoundedPasswordField extends StatelessWidget {
         ],
       ),
     );
-
-    // return Padding(
-    //   padding: EdgeInsets.symmetric(horizontal: 30),
-    //   child: Container(
-    //     width: size.width,
-    //     child: TextFieldContainer(
-    //       child: TextField(
-    //         controller: controller,
-    //         obscureText: true,
-    //         onChanged: onChanged,
-    //         cursorColor: Colors.black,
-    //         decoration: InputDecoration(
-    //           hintText: textHiht,
-    //           icon: Icon(
-    //             Icons.lock,
-    //             color: Colors.black,
-    //           ),
-    //           suffixIcon: Icon(
-    //             Icons.visibility,
-    //             color: Colors.black,
-    //           ),
-    //           border: InputBorder.none,
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

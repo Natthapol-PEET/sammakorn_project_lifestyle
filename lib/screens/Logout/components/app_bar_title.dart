@@ -5,8 +5,8 @@ class AppBarTitle extends StatelessWidget {
   final String title;
 
   const AppBarTitle({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
   }) : super(key: key);
 
   @override
