@@ -1367,7 +1367,7 @@ class API:
             return self.load_stream_image(image_name, 'jpeg')
         except:
             # image_name = 'images/id-card-image.png'
-            image_name =  os.path.join(config.pathCard, "id-card-image.png")
+            image_name =  os.path.join(config.pathImage, "id-card-image.png")
             return self.load_stream_image(image_name, 'png')
 
     async def decode_image(self, image):
