@@ -5,7 +5,7 @@ const socket = io('http://127.0.0.1:8000/', {
     transportOptions: {
         polling: {
             extraHeaders: {
-                'Authorization': 'Bearer fg1pY_DwF8eZ8HyMAAAD',
+                'Authorization': 'Bearer 0edf3e46-8c78-49da-8980-a96eb3263941',
             },
         },
     },
